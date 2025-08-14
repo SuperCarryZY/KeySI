@@ -12,8 +12,10 @@ import matplotlib
 matplotlib.use("Agg") 
 import pandas as pd
 import dash
-from dash import dcc, html, Input, Output, State, ALL
+from dash import dcc, html, callback_context
+from dash.dependencies import Input, Output, State, ALL
 from dash.exceptions import PreventUpdate
+import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 import matplotlib.pyplot as plt
@@ -160,7 +162,7 @@ else:
 num_threads=8
 top_similiar_file_to_keywords=500
 learningrate=1e-4
-num_epochs = 1
+num_epochs = 50
 margin_number = 3
 top_keywords=3
 early_stop_threshold = 8
@@ -465,48 +467,27 @@ def create_layout():
         dcc.Store(id="selected-file", data=None),
         dcc.Store(id="selected-keyword", data=None),
         dcc.Store(id="articles-data", data=[]),  # Store article data
-        dcc.Store(id="document-embeddings", data=None),  # Store document embeddings for 2D visualization
         
         # Main content area - left-right column layout
         html.Div([
-            # Left: keyword 2D visualization with text labels
+            # Left: keyword 2D dimensionality reduction visualization
             html.Div([
                 html.H4("Keywords 2D Visualization"),
-                html.P("Click on keywords to highlight related documents on the right"),
+                html.P("Hover over points to see keywords, click to select"),
                 dcc.Graph(
                     id='keywords-2d-plot',
                     style={'height': '600px'},
                     config={'displayModeBar': True, 'displaylogo': False}
                 )
             ], style={
-                'width': '50%',
+                'width': '60%',
                 'display': 'inline-block',
                 'verticalAlign': 'top',
                 'padding': '10px',
                 'border': '2px solid black'
             }),
             
-            # Right: documents 2D visualization
-            html.Div([
-                html.H4("Documents 2D Visualization"),
-                html.P("Documents colored by category, highlighted by selected keyword"),
-                dcc.Graph(
-                    id='documents-2d-plot',
-                    style={'height': '600px'},
-                    config={'displayModeBar': True, 'displaylogo': False}
-                )
-            ], style={
-                'width': '50%',
-                'display': 'inline-block',
-                'verticalAlign': 'top',
-                'padding': '10px',
-                'border': '2px solid black'
-            })
-        ], style={'display': 'flex', 'marginBottom': '20px'}),
-        
-        # Group management area (below the 2D visualizations) - left-right layout
-        html.Div([
-            # Left: Group selection and keywords
+            # Right: group management
             html.Div([
                 html.H4("Group Management"),
                 html.Div(id="group-containers", style={
@@ -516,17 +497,20 @@ def create_layout():
                     "margin-bottom": "20px"
                 }),
             ], style={
-                'width': '30%',
+                'width': '40%',
                 'display': 'inline-block',
                 'verticalAlign': 'top',
-                'padding': '10px',
-                'border': '1px solid #ddd'
-            }),
-            
-            # Right: Articles display
+                'padding': '10px'
+            })
+        ], style={'display': 'flex', 'marginBottom': '20px'}),
+        
+        # Recommended files and details area - left-right column layout
+        html.Div([
+            # Left: recommended files list
             html.Div([
-                html.H4("Recommended Articles", style={"margin-bottom": "10px"}),
-                html.Div(id="articles-container", style={
+                html.H4("Recommended Files"),
+                html.P("Based on selected group keywords, showing files containing these keywords"),
+                html.Div(id="recommended-files-container", style={
                     "border": "1px solid #ddd",
                     "padding": "15px",
                     "backgroundColor": "#f9f9f9",
@@ -535,11 +519,43 @@ def create_layout():
                     "overflowY": "auto"
                 })
             ], style={
-                'width': '70%',
+                'width': '60%',
                 'display': 'inline-block',
                 'verticalAlign': 'top',
-                'padding': '10px',
-                'border': '1px solid #ddd'
+                'padding': '10px'
+            }),
+            
+            # Right: file details and actions
+            html.Div([
+                html.H4("File Details"),
+                html.Div([
+                    html.P("Click on left files to view details", style={"color": "#666", "fontStyle": "italic"}),
+                    html.H5("Actions:", style={"marginTop": "20px"}),
+                    html.Div([
+                        html.Button("View Text", 
+                                  id="view-text-btn", 
+                                  style={"margin": "5px", "padding": "8px 15px", "width": "100%"})
+                    ], style={"marginBottom": "15px"}),
+                    html.Div(id="file-details-content", style={
+                        "marginTop": "15px",
+                        "border": "1px solid #ddd",
+                        "padding": "15px",
+                        "backgroundColor": "#f9f9f9",
+                        "minHeight": "300px",
+                        "maxHeight": "400px",
+                        "overflowY": "auto"
+                    })
+                ], style={
+                    "border": "1px solid #ddd",
+                    "padding": "15px",
+                    "backgroundColor": "#fff",
+                    "minHeight": "400px"
+                })
+            ], style={
+                'width': '40%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '10px'
             })
         ], style={'display': 'flex', 'marginBottom': '20px'}),
         
@@ -577,12 +593,225 @@ def create_layout():
 # Set application layout
 app.layout = create_layout()
 
-# Add necessary callback functions
+@app.callback(
+    [
+        Output("group-data", "data"),
+        Output({"type": "keyword-btn", "index": ALL}, "style"),
+        Output("selected-keyword", "data")
+    ],
+    [
+        Input({"type": "keyword-btn", "index": ALL}, "n_clicks")
+    ],
+    [
+        State("selected-group", "data"),
+        State("group-data", "data")
+    ]
+)
+def update_keyword_styles(keyword_clicks, selected_group, group_data):
+    """Server-side callback: update keyword button styles"""
+    from dash import callback_context
+    
+    if not callback_context.triggered:
+        raise dash.exceptions.PreventUpdate
+    
+    # Safety check: if no keyword buttons, return empty styles
+    if not keyword_clicks:
+        return group_data, []
+    
+    triggered = callback_context.triggered[0]
+    
+    new_data = dict(group_data) if group_data else {}
+    
+    # Default style - includes complete button styling
+    base_style = {
+        "width": "120px",
+        "height": "40px",
+        "margin": "40x",
+        "textAlign": "center",
+        "lineHeight": "40px",
+        "borderRadius": "8px",
+        "fontSize": "16px",
+        "display": "inline-block",
+        "verticalAlign": "middle"
+    }
+    
+    default_style = {**base_style, 'backgroundColor': '#f0f0f0', 'color': 'black'}
+    selected_style = {**base_style, 'backgroundColor': '#4CAF50', 'color': 'white'}
+    
+    # Handle keyword button clicks - fix: only modify data when keyword button is actually clicked
+    try:
+        import json
+        btn_id = json.loads(triggered['prop_id'].split('.')[0])
+        if btn_id.get('type') == 'keyword-btn':
+            kw = btn_id['index']
+            # Fix: implement accumulative add logic - always add to selected group, no toggling
+            if selected_group:
+                if kw in new_data and new_data[kw]:
+                    if new_data[kw] != selected_group:
+                        print(f"Moved keyword '{kw}' from group '{new_data[kw]}' to group '{selected_group}'")
+                    else:
+                        print(f"Keyword '{kw}' is already in group '{selected_group}'")
+                else:
+                    print(f"Added keyword '{kw}' to group '{selected_group}'")
+                new_data[kw] = selected_group
+                # Fix: when adding keywords, don't auto-select them, keep showing entire group files
+                selected_keyword = None
+    except (json.JSONDecodeError, KeyError):
+        # If not a keyword button click, don't modify data
+        selected_keyword = None
+    
+    # Generate style array
+    styles = []
+    global_keywords = globals().get('GLOBAL_KEYWORDS', [])
+    for i, kw in enumerate(global_keywords):
+        if i < len(keyword_clicks):
+            style = selected_style if new_data.get(kw) else default_style
+            styles.append(style)
+    
+    return new_data, styles, selected_keyword
+
+@app.callback(
+    Output("group-data", "data", allow_duplicate=True),
+    Input("add-keyword-btn", "n_clicks"),
+    State("group-data", "data"),
+    State("new-keyword-input", "value"),
+    State("selected-group", "data"),
+    prevent_initial_call=True
+)
+def add_keywords(add_clicks, group_data, new_kw, selected_group):
+    ctx = callback_context
+    if not ctx.triggered:
+        raise dash.exceptions.PreventUpdate
+
+    if not new_kw or new_kw.strip() == "":
+        raise dash.exceptions.PreventUpdate
+
+    if not selected_group:
+        raise dash.exceptions.PreventUpdate
+
+    new_data = dict(group_data)
+    keywords = re.split(r"[;；]", new_kw)
+    
+    for kw in keywords:
+        cleaned_kw = kw.strip()
+        if cleaned_kw:
+            new_data[cleaned_kw] = selected_group
+
+    return new_data
+
+@app.callback(
+    Output('keywords-2d-plot', 'figure'),
+    [Input('group-data', 'data'),
+     Input('selected-group', 'data')]
+)
+def update_keywords_2d_plot(group_data, selected_group):
+    """Update keyword 2D dimensionality reduction visualization chart"""
+    global GLOBAL_OUTPUT_DICT, GLOBAL_KEYWORDS
+    
+    if not GLOBAL_OUTPUT_DICT or not GLOBAL_KEYWORDS:
+        return {
+            'data': [],
+            'layout': {
+                'title': 'No keywords available',
+                'xaxis': {'title': 'X'},
+                'yaxis': {'title': 'Y'}
+            }
+        }
+    
+    # Get keyword embeddings and dimensionality reduction results
+    try:
+        # Use previously calculated keyword embeddings and t-SNE results
+        keyword_embeddings = embedding_model_kw.encode(GLOBAL_KEYWORDS, convert_to_tensor=True).to(device).cpu().numpy()
+        
+        # Recalculate t-SNE (or use previous results)
+        perplexity = min(30, max(5, len(keyword_embeddings) // 3))
+        tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
+        reduced_embeddings = tsne.fit_transform(keyword_embeddings)
+        
+        # Assign colors to each keyword (based on cluster category and grouping status)
+        colors = []
+        hover_texts = []
+        
+        # Define category colors (one color per category)
+        category_colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+            '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+            '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2'
+        ]
+        
+        for kw in GLOBAL_KEYWORDS:
+            # First check if in user grouping
+            if group_data and kw in group_data and group_data[kw]:
+                # Grouped keywords - use user group color
+                colors.append('#4CAF50')  # Green
+                hover_texts.append(f"{kw}<br>User Group: {group_data[kw]}")
+            else:
+                # Ungrouped keywords - use cluster category color
+                # Find which cluster the keyword is in
+                category_found = False
+                for cluster_name, cluster_keywords in GLOBAL_OUTPUT_DICT.items():
+                    if kw in cluster_keywords:
+                        # Calculate category index to get color
+                        cluster_index = int(cluster_name.replace('cluster', '')) - 1
+                        color_index = cluster_index % len(category_colors)
+                        colors.append(category_colors[color_index])
+                        hover_texts.append(f"{kw}<br>Cluster: {cluster_name}")
+                        category_found = True
+                        break
+                
+                if not category_found:
+                    # If no category found, use default color
+                    colors.append('#2196F3')  # Blue
+                    hover_texts.append(f"{kw}<br>Uncategorized")
+        
+        # Create scatter plot
+        fig = {
+            'data': [{
+                'x': reduced_embeddings[:, 0],
+                'y': reduced_embeddings[:, 1],
+                'mode': 'markers',
+                'type': 'scatter',
+                'marker': {
+                    'size': 12,
+                    'color': colors,
+                    'line': {'width': 1, 'color': 'white'}
+                },
+                'text': hover_texts,
+                'hoverinfo': 'text',
+                'customdata': GLOBAL_KEYWORDS,  # For click events
+                'hovertemplate': '<b>%{text}</b><extra></extra>'
+            }],
+            'layout': {
+                'title': 'Keywords 2D Visualization - BertTopic + Clustering Colors (Hover to see keywords, click to select)',
+                'xaxis': {'title': 'Dimension 1'},
+                'yaxis': {'title': 'Dimension 2'},
+                'hovermode': 'closest',
+                'clickmode': 'event+select',
+                'dragmode': 'pan',
+                'showlegend': False,
+                'margin': {'l': 50, 'r': 50, 't': 50, 'b': 50}
+            }
+        }
+        
+        return fig
+        
+    except Exception as e:
+        print(f"Error creating 2D plot: {e}")
+        return {
+            'data': [],
+            'layout': {
+                'title': f'Error: {str(e)}',
+                'xaxis': {'title': 'X'},
+                'yaxis': {'title': 'Y'}
+            }
+        }
+
 @app.callback(
     Output("group-order", "data"),
     [
         Input("generate-btn", "n_clicks"),
         Input("group-data", "data"),
+        Input({"type": "remove-keyword", "group": ALL, "index": ALL}, "n_clicks"),
     ],
     [
         State("group-count", "value"),
@@ -590,20 +819,20 @@ app.layout = create_layout()
     ],
     prevent_initial_call=True
 )
-def update_group_order(generate_n_clicks, group_data, num_groups, current_order):
+def update_group_order(generate_n_clicks, group_data, remove_clicks, num_groups, current_order):
     ctx = dash.callback_context
     print(f"🟠 update_group_order called")
     print(f"🟠 triggered: {ctx.triggered}")
     print(f"🟠 group_data: {group_data}")
     if not ctx.triggered:
-        raise PreventUpdate
+        raise dash.exceptions.PreventUpdate
     
     new_order = dict(current_order) if current_order else {}
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if triggered_id == "generate-btn":
         if not num_groups or num_groups < 1:
-            raise PreventUpdate
+            raise dash.exceptions.PreventUpdate
         return {f"Group {i+1}": [] for i in range(num_groups)}
     
     elif triggered_id == "group-data":
@@ -618,7 +847,86 @@ def update_group_order(generate_n_clicks, group_data, num_groups, current_order)
                 new_order[grp].append(kw)
         return new_order
 
+    elif triggered_id.startswith("{"):
+        try:
+            # Check if it's a real button click (prevent auto-trigger)
+            triggered_value = ctx.triggered[0]['value']
+            if triggered_value is None:
+                print(f"🟠 Skip delete operation: n_clicks is None, may be auto-triggered")
+                raise dash.exceptions.PreventUpdate
+                
+            btn_info = json.loads(triggered_id)
+            grp_name = btn_info.get("group")
+            action = btn_info.get("type")
+            idx = btn_info.get("index")
+
+            print(f"🟠 Real delete button clicked: group={grp_name}, action={action}, index={idx}")
+
+            if grp_name not in new_order or idx is None:
+                raise dash.exceptions.PreventUpdate
+            
+            kw_list = list(new_order[grp_name])
+
+            if action == "remove-keyword":
+                # Keyword removal logic is already handled in remove_keyword_from_group
+                # Here just need to update group order
+                if idx < len(kw_list):
+                    kw_list.pop(idx)
+                    new_order[grp_name] = kw_list
+                    return new_order
+
+            new_order[grp_name] = kw_list
+            return new_order
+        except Exception as e:
+            print(f"Error handling move button: {e}")
+            raise dash.exceptions.PreventUpdate
+
     return new_order
+
+
+@app.callback(
+    [Output("group-data", "data", allow_duplicate=True),
+     Output("selected-keyword", "data", allow_duplicate=True)],
+    Input("keywords-2d-plot", "clickData"),
+    State("selected-group", "data"),
+    State("group-data", "data"),
+    prevent_initial_call=True
+)
+def handle_plot_click(click_data, selected_group, group_data):
+    """Handle chart click events, add keywords to selected group"""
+    print(f"🔴 handle_plot_click called")
+    if not click_data or not selected_group:
+        print(f"🔴 handle_plot_click exit: click_data={click_data}, selected_group={selected_group}")
+        raise PreventUpdate
+    
+    try:
+        # Get clicked keyword
+        clicked_keyword = click_data['points'][0]['customdata']
+        print(f"🔴 Clicked keyword: {clicked_keyword}")
+        print(f"🔴 Current group_data: {group_data}")
+        print(f"🔴 Selected group: {selected_group}")
+        
+        # Update grouping data - fix: implement accumulative add logic
+        new_data = dict(group_data) if group_data else {}
+        
+        # Fix: implement accumulative add logic - always add to selected group, no toggling
+        if clicked_keyword in new_data and new_data[clicked_keyword]:
+            if new_data[clicked_keyword] != selected_group:
+                print(f"Moved keyword '{clicked_keyword}' from group '{new_data[clicked_keyword]}' to group '{selected_group}'")
+            else:
+                print(f"Keyword '{clicked_keyword}' is already in group '{selected_group}'")
+        else:
+            print(f"Added keyword '{clicked_keyword}' to group '{selected_group}'")
+        new_data[clicked_keyword] = selected_group
+        
+        print(f"🔴 Returned new_data: {new_data}")
+        print(f"🔴 Added keyword but don't auto-select, keep showing entire group files")
+        return new_data, None  # Fix: when adding keywords, don't auto-select them, keep showing entire group files
+        
+    except Exception as e:
+        print(f"Error handling plot click: {e}")
+        raise PreventUpdate
+
 
 @app.callback(
     Output("group-containers", "children"),
@@ -627,32 +935,28 @@ def update_group_order(generate_n_clicks, group_data, num_groups, current_order)
      Input("selected-keyword", "data")]
 )
 def render_groups(group_order, selected_group, selected_keyword):
-    print(f"render_groups called")
-    print(f"group_order: {group_order}")
-    print(f"selected_group: {selected_group}")
-    print(f"selected_keyword: {selected_keyword}")
+    print(f"🟣 render_groups called")
+    print(f"🟣 group_order: {group_order}")
+    print(f"🟣 selected_group: {selected_group}")
+    print(f"🟣 selected_keyword: {selected_keyword}")
     if not group_order:
         return []
 
     children = []
     for grp_name, kw_list in group_order.items():
-        # Group header with number
-        group_number = grp_name.replace("Group ", "")
+        # Fix: always show all group keywords, not dependent on selected_group
         group_header = html.Button(
-            f"Group {group_number}",
+            grp_name,
             id={"type": "group-header", "index": grp_name},
             style={
-                "width": "100%",
+                "width": "200px",
                 "background": "#4CAF50" if grp_name == selected_group else "#f0f0f0",
                 "border": "none",
-                "padding": "10px",
-                "cursor": "pointer",
-                "fontWeight": "bold",
-                "marginBottom": "5px"
+                "padding": "8px",
+                "cursor": "pointer"
             }
         )
 
-        # Keywords list
         group_keywords = []
         for i, kw in enumerate(kw_list):
             # Check if this keyword is selected
@@ -662,248 +966,43 @@ def render_groups(group_order, selected_group, selected_keyword):
                 kw,
                 id={"type": "select-keyword", "keyword": kw, "group": grp_name},
                 style={
-                    "padding": "5px 8px", 
-                    "margin": "2px", 
+                    "padding": "5px 10px", 
+                    "margin": "3px", 
                     "border": "1px solid #ddd", 
-                    "width": "100%",
-                    "textAlign": "left",
+                    "flex": "1",
                     "backgroundColor": "#007bff" if is_selected else "#f8f9fa",
                     "color": "white" if is_selected else "black",
                     "cursor": "pointer",
-                    "borderRadius": "4px",
-                    "fontSize": "12px"
+                    "borderRadius": "4px"
                 }
             )
             
             keyword_item = html.Div([
                 keyword_button,
                 html.Button("×", id={"type": "remove-keyword", "group": grp_name, "index": i}, 
-                           style={"margin": "2px", "padding": "2px 6px", "fontSize": "10px", "color": "red", "float": "right"})
-            ], style={"display": "flex", "alignItems": "center", "marginBottom": "3px"})
+                           style={"margin": "2px", "padding": "2px 6px", "fontSize": "12px", "color": "red"})
+            ], style={"display": "flex", "alignItems": "center", "marginBottom": "5px"})
             group_keywords.append(keyword_item)
 
         group_body = html.Div(
             group_keywords,
             style={
                 "border": "1px solid #ddd",
-                "padding": "8px",
-                "minHeight": "50px",
-                "maxHeight": "200px",
+                "padding": "10px",
+                "minHeight": "100px",
+                "maxHeight": "300px",
                 "overflowY": "auto",
-                "backgroundColor": "#f9f9f9",
-                "marginBottom": "10px"
+                "backgroundColor": "#f9f9f9"
             }
         )
 
         group_container = html.Div(
             [group_header, group_body],
-            style={"marginBottom": "15px"}
+            style={"display": "inline-block", "margin": "5px"}
         )
         children.append(group_container)
 
     return children
-
-@app.callback(
-    [Output("selected-group", "data"),
-     Output("selected-keyword", "data", allow_duplicate=True)],
-    Input({"type": "group-header", "index": ALL}, "n_clicks"),
-    prevent_initial_call=True
-)
-def select_group(n_clicks):
-    ctx = dash.callback_context
-    print(f"🔵 select_group called")
-    print(f"🔵 triggered: {ctx.triggered}")
-    if not ctx.triggered:
-        raise PreventUpdate
-
-    triggered_id = ctx.triggered[0]['prop_id']
-    triggered_n_clicks = ctx.triggered[0]['value']
-
-    if not triggered_n_clicks or triggered_n_clicks is None:
-        raise PreventUpdate
-
-    selected_group = json.loads(triggered_id.split('.')[0])["index"]
-    print(f"Switch to group: {selected_group}")  # Add debug info
-    print(f"🔵 Clear selected keyword")
-    
-    return selected_group, None  # Clear selected keyword when switching groups
-
-@app.callback(
-    Output("selected-keyword", "data", allow_duplicate=True),
-    [Input({"type": "select-keyword", "keyword": ALL, "group": ALL}, "n_clicks"),
-     Input("selected-group", "data")],
-    prevent_initial_call=True
-)
-def select_keyword_from_group(n_clicks, selected_group):
-    """Handle keyword selection from group management"""
-    print(f"🔶 select_keyword_from_group called")
-    print(f"🔶 n_clicks: {n_clicks}")
-    print(f"🔶 selected_group: {selected_group}")
-    
-    ctx = dash.callback_context
-    print(f"🔶 ctx.triggered: {ctx.triggered}")
-    
-    if not ctx.triggered:
-        print("🔶 No context triggered")
-        raise PreventUpdate
-    
-    triggered_id = ctx.triggered[0]['prop_id']
-    triggered_n_clicks = ctx.triggered[0]['value']
-    
-    print(f"🔶 triggered_id: {triggered_id}")
-    print(f"🔶 triggered_n_clicks: {triggered_n_clicks}")
-    
-    # Check if this is a keyword selection
-    if triggered_n_clicks and "select-keyword" in triggered_id:
-        try:
-            import json
-            btn_info = json.loads(triggered_id.split('.')[0])
-            keyword = btn_info.get("keyword")
-            print(f"🔶 Select keyword from group management: {keyword}")
-            return keyword
-        except Exception as e:
-            print(f"🔶 Error parsing button info: {e}")
-            raise PreventUpdate
-    
-    print("🔶 Not a keyword selection or no clicks")
-    raise PreventUpdate
-
-@app.callback(
-    Output("articles-container", "children"),
-    [Input("selected-group", "data"),
-     Input("selected-keyword", "data"),
-     Input("group-order", "data")]
-)
-def display_recommended_articles(selected_group, selected_keyword, group_order):
-    """Display recommended articles based on selected group or keyword"""
-    print(f"🔍 display_recommended_articles called")
-    print(f"🔍 selected_group: {selected_group}")
-    print(f"🔍 selected_keyword: {selected_keyword}")
-    print(f"🔍 group_order: {group_order}")
-    
-    try:
-        global df
-        if 'df' not in globals():
-            print("🔍 Data not loaded")
-            return html.P("Data not loaded")
-        
-        if selected_keyword:
-            # Display articles containing the selected keyword
-            print(f"🔍 Searching for articles containing keyword: {selected_keyword}")
-            
-            matching_articles = []
-            for idx, row in df.iterrows():
-                text = str(row.iloc[1]) if len(row) > 1 else ""
-                
-                if selected_keyword.lower() in text.lower():
-                    file_keywords = extract_top_keywords(text, 5)
-                    matching_articles.append({
-                        'file_number': idx + 1,
-                        'file_index': idx,
-                        'text': text,
-                        'keywords': file_keywords
-                    })
-            
-            if not matching_articles:
-                print(f"🔍 No articles found containing keyword '{selected_keyword}'")
-                return html.P(f"No articles found containing keyword '{selected_keyword}'")
-            
-            print(f"🔍 Found {len(matching_articles)} articles containing '{selected_keyword}'")
-            
-            # Create article display items
-            article_items = [
-                html.H6(f"Articles containing '{selected_keyword}' (Found {len(matching_articles)} articles)", 
-                       style={"color": "#2c3e50", "marginBottom": "15px"})
-            ]
-            
-        elif selected_group and group_order:
-            # Display articles containing any keyword from the selected group
-            group_keywords = group_order.get(selected_group, [])
-            if not group_keywords:
-                print(f"🔍 No keywords in group '{selected_group}'")
-                return html.P(f"No keywords in group '{selected_group}'")
-            
-            print(f"🔍 Searching for articles containing keywords from group: {group_keywords}")
-            
-            matching_articles = []
-            for idx, row in df.iterrows():
-                text = str(row.iloc[1]) if len(row) > 1 else ""
-                
-                # Check if article contains any of the group keywords
-                contains_keyword = any(keyword.lower() in text.lower() for keyword in group_keywords)
-                
-                if contains_keyword:
-                    file_keywords = extract_top_keywords(text, 5)
-                    matching_articles.append({
-                        'file_number': idx + 1,
-                        'file_index': idx,
-                        'text': text,
-                        'keywords': file_keywords
-                    })
-            
-            if not matching_articles:
-                print(f"🔍 No articles found containing keywords from group '{selected_group}'")
-                return html.P(f"No articles found containing keywords from group '{selected_group}'")
-            
-            print(f"🔍 Found {len(matching_articles)} articles in group '{selected_group}'")
-            
-            # Create article display items
-            article_items = [
-                html.H6(f"Articles in Group '{selected_group}' (Found {len(matching_articles)} articles)", 
-                       style={"color": "#2c3e50", "marginBottom": "15px"})
-            ]
-        else:
-            print("🔍 No group or keyword selected")
-            return html.Div([
-                html.H6("Recommended Articles", style={"color": "#2c3e50", "marginBottom": "10px"}),
-                html.P("👈 Please select a group or keyword from the left panel to view recommended articles", 
-                       style={"color": "#666", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
-            ])
-        
-        # Create article items with file number and top 5 keywords
-        for article_info in matching_articles:
-            # Create keyword tags
-            keyword_tags = []
-            for keyword in article_info['keywords']:
-                keyword_tag = html.Span(
-                    keyword,
-                    style={
-                        "backgroundColor": "#e3f2fd",
-                        "color": "#1976d2",
-                        "padding": "2px 6px",
-                        "margin": "2px",
-                        "borderRadius": "12px",
-                        "fontSize": "11px",
-                        "display": "inline-block"
-                    }
-                )
-                keyword_tags.append(keyword_tag)
-            
-            # Create article item with file number and keywords
-            article_item = html.Div([
-                html.H6(f"Article {article_info['file_number']}", 
-                       style={"color": "#333", "marginBottom": "8px", "fontSize": "14px"}),
-                html.Div([
-                    html.Span("Top 5 Keywords: ", style={"fontWeight": "bold", "color": "#666"}),
-                    html.Div(keyword_tags, style={"display": "inline-block", "marginLeft": "5px"})
-                ], style={"marginBottom": "8px"}),
-                html.Hr(style={"margin": "8px 0", "borderColor": "#ddd"})
-            ], style={
-                "padding": "12px", 
-                "borderBottom": "1px solid #eee", 
-                "backgroundColor": "white",
-                "borderRadius": "5px",
-                "marginBottom": "8px",
-                "boxShadow": "0 1px 3px rgba(0,0,0,0.1)"
-            })
-            article_items.append(article_item)
-        
-        print(f"🔍 Returning {len(article_items)} article items")
-        return html.Div(article_items)
-        
-    except Exception as e:
-        print(f"Error displaying recommended articles: {e}")
-        return html.P(f"Error displaying recommended articles: {str(e)}")
 
 def extract_top_keywords(text, top_k=5):
     """Extract top N keywords from text"""
@@ -926,17 +1025,207 @@ def extract_top_keywords(text, top_k=5):
         print(f"Keyword extraction failed: {e}")
         return ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"]
 
+@app.callback(
+    Output("recommended-files-container", "children"),
+    [Input("group-order", "data"),
+     Input("selected-group", "data"),
+     Input("selected-keyword", "data")]
+)
+def update_recommended_files(group_order, selected_group, selected_keyword):
+    """Generate recommended file list based on selected keywords, default shows files corresponding to all keywords in group"""
+    
+    if not group_order or not selected_group:
+        return html.P("Please select a keyword group first")
+    
+    # Determine keywords to search
+    if selected_keyword:
+        # If specific keyword selected, only search this keyword
+        search_keywords = [selected_keyword]
+        search_info = f"Files containing keyword '{selected_keyword}'"
+        print(f"🔍 Search specific keyword: {selected_keyword}")
+    else:
+        # If no specific keyword selected, search all keywords in group
+        search_keywords = group_order.get(selected_group, [])
+        search_info = f"Files containing '{selected_group}' group keywords"
+        print(f"🔍 Search entire group keywords: {search_keywords}")
+    
+    if not search_keywords:
+        return html.P(f"No keywords in group '{selected_group}'")
+    
+    try:
+        # Use global df variable to search files
+        global df
+        if 'df' not in globals():
+            return html.P("Data not loaded")
+        
+        # Search for files containing keywords
+        recommended_files = []
+        for idx, row in df.iterrows():
+            file_text = str(row.iloc[1]) if len(row) > 1 else ""
+            file_number = idx + 1  # File number starts from 1
+            
+            # Check if file contains any keywords
+            should_include = any(keyword.lower() in file_text.lower() for keyword in search_keywords)
+            
+            if should_include:
+                # Extract top 5 keywords from file
+                file_keywords = extract_top_keywords(file_text, 5)
+                recommended_files.append({
+                    'file_number': file_number,
+                    'file_index': idx,
+                    'keywords': file_keywords
+                })
+        
+        if not recommended_files:
+            return html.P(f"No {search_info} found")
+        
+      
+        file_items = [
+            html.H6(f"{search_info} (Found {len(recommended_files)} files)", 
+                   style={"color": "#2c3e50", "marginBottom": "15px"})
+        ]
+        for file_info in recommended_files:
+            # Create keyword tags
+            keyword_tags = []
+            for keyword in file_info['keywords']:
+                keyword_tag = html.Span(
+                    keyword,
+                    style={
+                        "backgroundColor": "#e3f2fd",
+                        "color": "#1976d2",
+                        "padding": "2px 6px",
+                        "margin": "2px",
+                        "borderRadius": "12px",
+                        "fontSize": "11px",
+                        "display": "inline-block"
+                    }
+                )
+                keyword_tags.append(keyword_tag)
+            
+            file_item = html.Div([
+                html.Span(f"File {file_info['file_number']}", 
+                         style={"fontWeight": "bold", "marginRight": "10px", "minWidth": "80px"}),
+                html.Div(keyword_tags, style={"flex": "1", "display": "flex", "flexWrap": "wrap"}),
+                html.Button("View Details", 
+                           id={"type": "view-file", "index": file_info['file_index']},
+                           style={"marginLeft": "10px", "padding": "2px 8px", "fontSize": "12px"})
+            ], style={"padding": "8px", "borderBottom": "1px solid #eee", "display": "flex", "alignItems": "center"})
+            file_items.append(file_item)
+        
+        return html.Div([
+            html.P(f"Found {len(recommended_files)} files containing keywords:"),
+            html.Div(file_items)
+        ])
+        
+    except Exception as e:
+        print(f"Error generating recommended files: {e}")
+        return html.P(f"Error generating recommended files: {str(e)}")
+
+@app.callback(
+    [Output("selected-group", "data"),
+     Output("selected-keyword", "data", allow_duplicate=True)],
+    Input({"type": "group-header", "index": ALL}, "n_clicks"),
+    prevent_initial_call=True
+)
+def select_group(n_clicks):
+    ctx = dash.callback_context
+    print(f"🔵 select_group called")
+    print(f"🔵 triggered: {ctx.triggered}")
+    if not ctx.triggered:
+        raise dash.exceptions.PreventUpdate
+
     triggered_id = ctx.triggered[0]['prop_id']
     triggered_n_clicks = ctx.triggered[0]['value']
 
     if not triggered_n_clicks or triggered_n_clicks is None:
-        raise PreventUpdate
+        raise dash.exceptions.PreventUpdate
 
     selected_group = json.loads(triggered_id.split('.')[0])["index"]
     print(f"Switch to group: {selected_group}")  # Add debug info
     print(f"🔵 Clear selected keyword")
-    
     return selected_group, None  # Clear selected keyword when switching groups
+
+
+@app.callback(
+    Output("selected-keyword", "data", allow_duplicate=True),
+    Input({"type": "select-keyword", "keyword": ALL, "group": ALL}, "n_clicks"),
+    prevent_initial_call=True
+)
+def select_keyword_from_group(n_clicks):
+    """Handle keyword selection from group management"""
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        raise PreventUpdate
+    
+    triggered_id = ctx.triggered[0]['prop_id']
+    triggered_n_clicks = ctx.triggered[0]['value']
+    
+    if triggered_n_clicks and "select-keyword" in triggered_id:
+        try:
+            import json
+            btn_info = json.loads(triggered_id.split('.')[0])
+            keyword = btn_info.get("keyword")
+            print(f"🔶 Select keyword from group management: {keyword}")
+            return keyword
+        except:
+            raise PreventUpdate
+    
+    raise PreventUpdate
+
+
+
+@app.callback(
+    Output("group-data", "data", allow_duplicate=True),
+    Input({"type": "remove-keyword", "group": ALL, "index": ALL}, "n_clicks"),
+    State("group-order", "data"),
+    State("group-data", "data"),
+    prevent_initial_call=True
+)
+def remove_keyword_from_group(remove_clicks, group_order, group_data):
+    """Remove keyword from group"""
+    ctx = dash.callback_context
+    print(f"🟢 remove_keyword_from_group called")
+    print(f"🟢 triggered: {ctx.triggered}")
+    if not ctx.triggered:
+        raise PreventUpdate
+    
+    try:
+        # Get clicked button info
+        triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        triggered_value = ctx.triggered[0]['value']
+        
+        # Guard: only execute delete operation when n_clicks has value
+        if triggered_value is None:
+            print(f"🟢 Skip delete operation: n_clicks is None, may be auto-triggered")
+            raise PreventUpdate
+        
+        btn_info = json.loads(triggered_id)
+        group_name = btn_info.get("group")
+        keyword_index = btn_info.get("index")
+        
+        print(f"🟢 Delete button really clicked: group={group_name}, index={keyword_index}, n_clicks={triggered_value}")
+        
+        if not group_name or keyword_index is None:
+            raise PreventUpdate
+        
+        # Remove keyword from group order
+        new_order = dict(group_order) if group_order else {}
+        if group_name in new_order and keyword_index < len(new_order[group_name]):
+            removed_keyword = new_order[group_name].pop(keyword_index)
+            
+            # Remove from grouping data
+            new_data = dict(group_data) if group_data else {}
+            if removed_keyword in new_data:
+                del new_data[removed_keyword]
+            
+            print(f"Removed keyword '{removed_keyword}' from group '{group_name}'")
+            return new_data
+        
+        raise PreventUpdate
+        
+    except Exception as e:
+        print(f"🟢 Error removing keyword: {e}")
+        raise PreventUpdate
 
 def get_all_cls_vectors(df_data, model, tokenizer, device):
     vectors = []
@@ -1327,7 +1616,7 @@ def run_training():
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': total_loss.item()
             }, model_save_path_epoch)
-            print(f"Model saved at epoch {epoch+1} -> {model_save_path_epoch}")
+            print(f"✅ Model saved at epoch {epoch+1} -> {model_save_path_epoch}")
                
 
     torch.save({
@@ -1467,318 +1756,219 @@ def run_training():
     fig_after = create_plotly_figure(projected_2d_after, "2D Projection After Finetuning", True)
     
     return fig_before, fig_after
-
-# Add necessary 2D visualization callbacks
+#UI-design
 @app.callback(
-    Output('keywords-2d-plot', 'figure'),
-    [Input('group-data', 'data'),
-     Input('selected-group', 'data')]
+    Output("train-btn", "style"),
+    Input("train-btn", "n_clicks")
 )
-def update_keywords_2d_plot(group_data, selected_group):
-    """Update keyword 2D dimensionality reduction visualization chart with text labels"""
-    global GLOBAL_OUTPUT_DICT, GLOBAL_KEYWORDS
-    
-    if not GLOBAL_OUTPUT_DICT or not GLOBAL_KEYWORDS:
-        return {
-            'data': [],
-            'layout': {
-                'title': 'No keywords available',
-                'xaxis': {'title': 'X'},
-                'yaxis': {'title': 'Y'}
-            }
-        }
-    
-    # Get keyword embeddings and dimensionality reduction results
+def update_train_btn_style(n_clicks):
+    if n_clicks and n_clicks > 0:
+        return {"margin-top": "10px", "backgroundColor": "green", "color": "white"}
+    return {"margin-top": "10px"}
+
+@app.callback(
+    [Output("plot-before", "figure"),
+     Output("plot-after", "figure"),
+     Output("train-output", "style"),
+     Output("content-display", "style")],
+    Input("train-btn", "n_clicks"),
+    State("group-order", "data")
+)
+def train_and_plot(n_clicks, group_order):
+    if not n_clicks:
+        raise PreventUpdate
+
     try:
-        # Use previously calculated keyword embeddings and t-SNE results
-        keyword_embeddings = embedding_model_kw.encode(GLOBAL_KEYWORDS, convert_to_tensor=True).to(device).cpu().numpy()
+        with open(save_path, "w", encoding="utf-8") as f:
+            print(group_order)
+            json.dump(group_order, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print("Error saving group order:", e)
+
+    # Run training and get two charts
+    fig_before, fig_after = run_training()
+    
+    # Show training output and content display areas
+    train_output_style = {"width": "100%", "height": "70vh", "display": "block"}
+    content_display_style = {"display": "block", "margin-top": "20px"}
+    
+    return fig_before, fig_after, train_output_style, content_display_style
+
+# Handle chart click events, display article content
+@app.callback(
+    Output("article-content", "children"),
+    [Input("plot-before", "clickData"),
+     Input("plot-after", "clickData")]
+)
+def display_article_content(click_data_before, click_data_after):
+    ctx = callback_context
+    if not ctx.triggered:
+        return "Click on a point in the plots above to view article content"
+    
+    # Determine which chart was clicked
+    click_data = None
+    if ctx.triggered[0]['prop_id'] == 'plot-before.clickData':
+        click_data = click_data_before
+    elif ctx.triggered[0]['prop_id'] == 'plot-after.clickData':
+        click_data = click_data_after
+    
+    if not click_data or 'points' not in click_data:
+        return "Click on a point in the plots above to view article content"
+    
+    try:
+        # Get clicked article index
+        point = click_data['points'][0]
         
-        # Recalculate t-SNE (or use previous results)
-        perplexity = min(30, max(5, len(keyword_embeddings) // 3))
-        tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
-        reduced_embeddings = tsne.fit_transform(keyword_embeddings)
+
         
-        # Assign colors to each keyword (based on cluster category and grouping status)
-        colors = []
-        hover_texts = []
-        
-        # Define category colors (one color per category)
-        category_colors = [
-            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-            '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
-            '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2'
-        ]
-        
-        for kw in GLOBAL_KEYWORDS:
-            # First check if in user grouping
-            if group_data and kw in group_data and group_data[kw]:
-                # Grouped keywords - use user group color
-                colors.append('#4CAF50')  # Green
-                hover_texts.append(f"{kw}<br>User Group: {group_data[kw]}")
+        if 'customdata' in point and point['customdata'] is not None:
+            # customdata is now a list, need to take first element
+            custom_data = point['customdata']
+            if isinstance(custom_data, list) and len(custom_data) > 0:
+                article_idx = custom_data[0]
             else:
-                # Ungrouped keywords - use cluster category color
-                # Find which cluster the keyword is in
-                category_found = False
-                for cluster_name, cluster_keywords in GLOBAL_OUTPUT_DICT.items():
-                    if kw in cluster_keywords:
-                        # Calculate category index to get color
-                        cluster_index = int(cluster_name.replace('cluster', '')) - 1
-                        color_index = cluster_index % len(category_colors)
-                        colors.append(category_colors[color_index])
-                        hover_texts.append(f"{kw}<br>Cluster: {cluster_name}")
-                        category_found = True
-                        break
-                
-                if not category_found:
-                    # If no category found, use default color
-                    colors.append('#2196F3')  # Blue
-                    hover_texts.append(f"{kw}<br>Uncategorized")
-        
-        # Create scatter plot with text labels instead of points
-        fig = {
-            'data': [{
-                'x': reduced_embeddings[:, 0],
-                'y': reduced_embeddings[:, 1],
-                'mode': 'text',  # Use text mode instead of markers
-                'type': 'scatter',
-                'text': GLOBAL_KEYWORDS,  # Display keyword text
-                'textfont': {
-                    'size': 12,
-                    'color': colors
-                },
-                'textposition': 'middle center',
-                'hovertext': hover_texts,
-                'hoverinfo': 'text',
-                'customdata': GLOBAL_KEYWORDS,  # For click events
-                'hovertemplate': '<b>%{hovertext}</b><extra></extra>'
-            }],
-            'layout': {
-                'title': 'Keywords 2D Visualization - Click keywords to highlight documents',
-                'xaxis': {'title': 'Dimension 1'},
-                'yaxis': {'title': 'Dimension 2'},
-                'hovermode': 'closest',
-                'clickmode': 'event+select',
-                'dragmode': 'pan',
-                'showlegend': False,
-                'margin': {'l': 50, 'r': 50, 't': 50, 'b': 50},
-                'plot_bgcolor': 'white',
-                'paper_bgcolor': 'white'
-            }
-        }
-        
-        return fig
-        
-    except Exception as e:
-        print(f"Error creating 2D plot: {e}")
-        return {
-            'data': [],
-            'layout': {
-                'title': f'Error: {str(e)}',
-                'xaxis': {'title': 'X'},
-                'yaxis': {'title': 'Y'}
-            }
-        }
+                article_idx = custom_data
+            
 
-@app.callback(
-    Output('documents-2d-plot', 'figure'),
-    [Input('selected-keyword', 'data'),
-     Input('selected-group', 'data'),
-     Input('group-order', 'data')]
-)
-def update_documents_2d_plot(selected_keyword, selected_group, group_order):
-    """Update documents 2D visualization chart"""
-    global df
-    
-    if 'df' not in globals():
-        return {
-            'data': [],
-            'layout': {
-                'title': 'No data available',
-                'xaxis': {'title': 'X'},
-                'yaxis': {'title': 'Y'}
-            }
-        }
-    
-    try:
-        # Calculate document embeddings
-        print("Calculating document embeddings for 2D visualization...")
-        all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
-        
-        # Calculate embeddings in batches
-        batch_size = 32
-        all_embeddings = []
-        
-        for i in range(0, len(all_articles_text), batch_size):
-            batch_texts = all_articles_text[i:i + batch_size]
-            batch_embeddings = embedding_model_kw.encode(batch_texts, convert_to_tensor=True).to(device).cpu().numpy()
-            all_embeddings.extend(batch_embeddings)
-        
-        document_embeddings = np.array(all_embeddings)
-        
-        # Calculate TSNE for documents
-        print("Calculating TSNE for documents...")
-        perplexity = min(30, max(5, len(document_embeddings) // 3))
-        tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
-        document_2d = tsne.fit_transform(document_embeddings)
-        
-        # Determine which documents to highlight
-        highlight_mask = []
-        highlight_reason = ""
-        
-        if selected_keyword:
-            # Highlight documents containing the selected keyword
-            for i in range(len(df)):
-                text = str(df.iloc[i, 1])
-                highlight_mask.append(selected_keyword.lower() in text.lower())
-            highlight_reason = f"containing '{selected_keyword}'"
             
-        elif selected_group and group_order:
-            # Highlight documents containing any keyword from the selected group
-            group_keywords = group_order.get(selected_group, [])
-            for i in range(len(df)):
-                text = str(df.iloc[i, 1])
-                contains_group_keyword = any(keyword.lower() in text.lower() for keyword in group_keywords)
-                highlight_mask.append(contains_group_keyword)
-            highlight_reason = f"from group '{selected_group}'"
-        
-        # Create traces
-        if any(highlight_mask):
-            # Documents to highlight
-            highlight_indices = np.where(np.array(highlight_mask))[0]
-            other_indices = np.where(~np.array(highlight_mask))[0]
-            
-            traces = []
-            
-            # Add trace for highlighted documents
-            if len(highlight_indices) > 0:
-                traces.append({
-                    'x': document_2d[highlight_indices, 0],
-                    'y': document_2d[highlight_indices, 1],
-                    'mode': 'markers',
-                    'type': 'scatter',
-                    'name': f'Documents {highlight_reason}',
-                    'marker': {
-                        'size': 15,
-                        'color': '#FFD700',  # Gold color for highlighted documents
-                        'symbol': 'star',
-                        'line': {'width': 2, 'color': 'black'}
-                    },
-                    'text': [f'Doc {i+1}' for i in highlight_indices],
-                    'hovertemplate': '<b>%{text}</b><extra></extra>'
-                })
-            
-            # Add trace for other documents
-            if len(other_indices) > 0:
-                traces.append({
-                    'x': document_2d[other_indices, 0],
-                    'y': document_2d[other_indices, 1],
-                    'mode': 'markers',
-                    'type': 'scatter',
-                    'name': 'Other documents',
-                    'marker': {
-                        'size': 8,
-                        'color': '#2196F3',  # Blue color for other documents
-                        'opacity': 0.6,
-                        'line': {'width': 0.5, 'color': 'white'}
-                    },
-                    'text': [f'Doc {i+1}' for i in other_indices],
-                    'hovertemplate': '<b>%{text}</b><extra></extra>'
-                })
+            # Check if article index is valid
+            if isinstance(article_idx, (int, np.integer)) and article_idx < len(all_articles_text):
+                article_text = all_articles_text[article_idx]
+                return html.Div([
+                    html.H5(f"Article {article_idx}", style={"color": "#333"}),
+                    html.P(article_text, style={"line-height": "1.6", "text-align": "justify"})
+                ])
+            else:
+                return f"Invalid article index: {article_idx} (total articles: {len(all_articles_text)})"
         else:
-            # No highlighting, show all documents in one color
-            traces = [{
-                'x': document_2d[:, 0],
-                'y': document_2d[:, 1],
-                'mode': 'markers',
-                'type': 'scatter',
-                'name': 'All documents',
-                'marker': {
-                    'size': 8,
-                    'color': '#2196F3',  # Blue color
-                    'opacity': 0.6,
-                    'line': {'width': 0.5, 'color': 'white'}
-                },
-                'text': [f'Doc {i+1}' for i in range(len(df))],
-                'hovertemplate': '<b>%{text}</b><extra></extra>'
-            }]
-        
-        # Create title
-        if selected_keyword:
-            title = f"Documents 2D Visualization - Highlighting documents containing '{selected_keyword}'"
-        elif selected_group:
-            title = f"Documents 2D Visualization - Highlighting documents from group '{selected_group}'"
-        else:
-            title = "Documents 2D Visualization"
-        
-        fig = {
-            'data': traces,
-            'layout': {
-                'title': title,
-                'xaxis': {'title': 'TSNE Dimension 1'},
-                'yaxis': {'title': 'TSNE Dimension 2'},
-                'hovermode': 'closest',
-                'showlegend': True,
-                'plot_bgcolor': 'white',
-                'paper_bgcolor': 'white',
-                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50}
-            }
-        }
-        
-        return fig
-        
+            # Try to get index from pointIndex
+            if 'pointIndex' in point:
+                point_index = point['pointIndex']
+                # Need to calculate actual article index based on trace and pointIndex
+                trace_index = point.get('curveNumber', 0)
+                return html.Div([
+                    html.H5(f"Point Info", style={"color": "#333"}),
+                    html.P(f"Trace: {trace_index}, Point Index: {point_index}", style={"line-height": "1.6"})
+                ])
+            else:
+                return f"No article data available for this point. Available keys: {list(point.keys())}"
     except Exception as e:
-        print(f"Error creating documents 2D plot: {e}")
-        return {
-            'data': [],
-            'layout': {
-                'title': f'Error: {str(e)}',
-                'xaxis': {'title': 'X'},
-                'yaxis': {'title': 'Y'}
-            }
-        }
+        return f"Error displaying article content: {str(e)}"
 
+
+# File selection related callback functions
 @app.callback(
-    [Output("group-data", "data", allow_duplicate=True),
-     Output("selected-keyword", "data", allow_duplicate=True)],
-    Input("keywords-2d-plot", "clickData"),
-    State("selected-group", "data"),
-    State("group-data", "data"),
+    Output("selected-file", "data"),
+    [Input({"type": "view-file", "index": ALL}, "n_clicks")],
     prevent_initial_call=True
 )
-def handle_plot_click(click_data, selected_group, group_data):
-    """Handle chart click events, select keyword for highlighting documents"""
-    print(f"🔍 handle_plot_click called")
-    if not click_data:
-        print(f"🔍 handle_plot_click exit: no click_data")
+def select_file(view_clicks):
+    """Select file to display details in right panel"""
+    ctx = dash.callback_context
+    if not ctx.triggered:
         raise PreventUpdate
     
+    triggered_id = ctx.triggered[0]['prop_id']
+    
+    # If clicked view file button
+    if "view-file" in triggered_id:
+        try:
+            file_index = json.loads(triggered_id.split('.')[0])["index"]
+            return file_index  # Set selected file
+        except:
+            raise PreventUpdate
+    
+    raise PreventUpdate
+
+
+@app.callback(
+    Output("file-details-content", "children"),
+    [Input("selected-file", "data"),
+     Input("view-text-btn", "n_clicks")],
+    prevent_initial_call=True
+)
+def show_file_details(selected_file, view_text_clicks):
+    """Display file text content"""
+    if selected_file is None:
+        return html.P("Click on left files to view details", style={"color": "#666", "fontStyle": "italic"})
+    
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        raise PreventUpdate
+    
+    triggered_id = ctx.triggered[0]['prop_id']
+    
     try:
-        # Get clicked keyword
-        clicked_keyword = click_data['points'][0]['customdata']
-        print(f"🔍 Clicked keyword: {clicked_keyword}")
+        global df
+        if 'df' not in globals():
+            return html.P("Data not loaded")
         
-        # If a group is selected, add keyword to that group
-        if selected_group:
-            new_data = dict(group_data) if group_data else {}
-            if clicked_keyword in new_data and new_data[clicked_keyword]:
-                if new_data[clicked_keyword] != selected_group:
-                    print(f"Moved keyword '{clicked_keyword}' from group '{new_data[clicked_keyword]}' to group '{selected_group}'")
-                else:
-                    print(f"Keyword '{clicked_keyword}' is already in group '{selected_group}'")
-            else:
-                print(f"Added keyword '{clicked_keyword}' to group '{selected_group}'")
-            new_data[clicked_keyword] = selected_group
-            return new_data, clicked_keyword  # Return both group data and selected keyword
-        else:
-            # No group selected, just select the keyword for highlighting
-            print(f"🔍 Selected keyword for highlighting: {clicked_keyword}")
-            return group_data, clicked_keyword
+        # Get file content
+        if selected_file < len(df):
+            file_text = str(df.iloc[selected_file, 1]) if len(df.iloc[selected_file]) > 1 else ""
+            file_number = selected_file + 1
+            
+            # If just selected file, show basic info
+            if "selected-file" in triggered_id:
+                return html.Div([
+                    html.H6(f"Selected File {file_number}"),
+                    html.P(f"File content preview: {file_text[:200]}..." if len(file_text) > 200 else file_text, 
+                          style={"backgroundColor": "#f8f9fa", "padding": "10px", "borderRadius": "5px"}),
+                    html.P("Click button above to view full text", style={"color": "#666", "fontStyle": "italic", "marginTop": "10px"})
+                ])
+            
+            elif "view-text-btn" in triggered_id:
+                # Show full text
+                return html.Div([
+                    html.H6(f"Full text of File {file_number}:"),
+                    html.Div(file_text, style={
+                        "backgroundColor": "#f0f0f0", 
+                        "padding": "10px", 
+                        "borderRadius": "5px",
+                        "maxHeight": "400px",
+                        "overflowY": "auto",
+                        "whiteSpace": "pre-wrap"
+                    })
+                ])
+        
+        return html.P("File does not exist")
         
     except Exception as e:
-        print(f"Error handling plot click: {e}")
+        return html.P(f"Error displaying file details: {str(e)}")
+
+
+# Add debug callback to monitor data state
+@app.callback(
+    Output("debug-output", "children"),
+    [Input("group-data", "data"),
+     Input("group-order", "data"),
+     Input("selected-group", "data")]
+)
+def debug_data_monitor(group_data, group_order, selected_group):
+    if not callback_context.triggered:
         raise PreventUpdate
+    
+    debug_info = ""
+    
+    if group_data:
+        debug_info += "<strong>group-data content:</strong><br>"
+        for kw, grp in group_data.items():
+            if grp:  
+                debug_info += f"  {kw} → {grp}<br>"
+    
+    if group_order:
+        debug_info += "<strong>group-order content:</strong><br>"
+        for grp, kws in group_order.items():
+            if kws:  
+                debug_info += f"  {grp}: {', '.join(kws)}<br>"
+    
+    return html.Div([
+        html.Hr(),
+        html.Div(debug_info, style={"fontSize": "12px", "backgroundColor": "#f0f0f0", "padding": "10px"})
+    ])
 
 # Launch the Dash application
 if __name__ == "__main__":
-    print(" http://127.0.0.1:8053 ")
-    app.run(debug=True, dev_tools_hot_reload=False, port=8053)
+    print(" http://127.0.0.1:8050 ")
+
+    app.run(debug=True, dev_tools_hot_reload=False)

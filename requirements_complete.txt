@@ -1,0 +1,21 @@
+# BertTopic和相关依赖
+bertopic>=0.15.0
+umap-learn>=0.5.3
+hdbscan>=0.8.29
+
+# 基础依赖
+dash>=2.14.0
+plotly>=5.17.0
+pandas>=1.5.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+torch>=2.0.0
+transformers>=4.30.0
+sentence-transformers>=2.2.0
+keybert>=0.7.0
+nltk>=3.8
+rank-bm25>=0.2.2
+rapidfuzz>=3.0.0
+joblib>=1.3.0
+scipy>=1.10.0
+matplotlib>=3.7.0
