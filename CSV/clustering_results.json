@@ -1,0 +1,3100 @@
+{
+    "keyword_clusters": {},
+    "embedding_clusters": {
+        "0": {
+            "size": 3,
+            "indices": [
+                37,
+                90,
+                98
+            ],
+            "texts": [
+                "\n\n\n\n\n      \n",
+                "\n",
+                " "
+            ],
+            "top_keywords": [],
+            "representative_text": "\n\n\n\n\n      \n..."
+        },
+        "1": {
+            "size": 1,
+            "indices": [
+                99
+            ],
+            "texts": [
+                "\nYears ago when I was an intern, an obese young woman was brought into\nthe ER comatose after having been reported to have grand mal seizures\nwhy attending a \"corn festival\".  We pumped her stomach and obtained\nwhat seemed like a couple of liters of corn, much of it intact kernals.  \nAfter a few hours she woke up and was fine.  I was tempted to sign her out as\n\"acute corn intoxication.\"\n\n\n-- \n----------------------------------------------------------------------------\nGordon Banks  N3JXP      | \"Skepticism is the chastity of the intellect, and\ngeb@cadre.dsl.pitt.edu   |  it is shameful to surrender it too soon.\" "
+            ],
+            "top_keywords": [
+                [
+                    "comatose seizures corn",
+                    1
+                ],
+                [
+                    "hours corn intoxication",
+                    1
+                ],
+                [
+                    "corn intoxication banks",
+                    1
+                ],
+                [
+                    "corn intoxication",
+                    1
+                ],
+                [
+                    "seizures corn festival",
+                    1
+                ]
+            ],
+            "representative_text": "\nYears ago when I was an intern, an obese young woman was brought into\nthe ER comatose after having ..."
+        },
+        "2": {
+            "size": 1,
+            "indices": [
+                97
+            ],
+            "texts": [
+                "\nI had a similar reaction to Chinese food but came to a completly different\nconclusion. I've eaten Chinese food for ages and never had problems. I went\nwith some Chinese Malaysian friends to a swanky Chinses rest. and they ordered\nlots of stuff I had never seen before. The only thing I can remember of that\nmeal was the first course, scallops served in the shell with a soy-type sauce.\nI thought, \"Well, I've only had scallops once and I was sick after but that\ncould have been a coincidence\". That night as I sat on the bathroom floor,\nsweating and emptying my stomach the hard way, I decided I would never touch\nanother scallop. I may not be allergic but I don't want to take the chance."
+            ],
+            "top_keywords": [
+                [
+                    "sauce coincidence night",
+                    1
+                ],
+                [
+                    "food conclusion food",
+                    1
+                ],
+                [
+                    "meal course shell",
+                    1
+                ],
+                [
+                    "reaction food conclusion",
+                    1
+                ],
+                [
+                    "food ages problems",
+                    1
+                ]
+            ],
+            "representative_text": "\nI had a similar reaction to Chinese food but came to a completly different\nconclusion. I've eaten C..."
+        },
+        "3": {
+            "size": 1,
+            "indices": [
+                96
+            ],
+            "texts": [
+                "\nShe's published two books about her manic-depressive illness: \n\n_Call Me Anna: the Autobiography of Patty Duke_, Patty Duke and \nKenneth Turan, Bantam Books 1987 \n\nand\n\n_A Brilliant Madness:  Living with Manic-Depressive Illness_, Patty \nDuke and Gloria Hochman, Bantam Books 1992\n"
+            ],
+            "top_keywords": [
+                [
+                    "books illness anna",
+                    1
+                ],
+                [
+                    "illness anna autobiography",
+                    1
+                ],
+                [
+                    "autobiography patty duke_",
+                    1
+                ],
+                [
+                    "illness_ patty duke",
+                    1
+                ],
+                [
+                    "anna autobiography patty",
+                    1
+                ]
+            ],
+            "representative_text": "\nShe's published two books about her manic-depressive illness: \n\n_Call Me Anna: the Autobiography of..."
+        },
+        "4": {
+            "size": 1,
+            "indices": [
+                82
+            ],
+            "texts": [
+                "SWELL ITEMS FOR SALE - HARDLY ANY COMPUTER STUFF\n\no LOTUS 1-2-3 Student Edition for DOS ...................... $10.00\n     This does just about everything that standard 1-2-3\n     Release 2.01 could do, but not as much of it.  Worksheet \n     size is limited to 64 columns by 256 rows, there is no\n     translation facility (for importing data from other\n     packages), and the Student Edition does not write files \n     that can be accessed by Release 2.01.  Includes manual,\n     original distribution diskettes (5 1/4\" - 360K), and key\n     board templates.\n\n\no Subaru Service Manuals ................................... $10.00\n     This is not a complete set, but includes sections 4, 5 \n     & 6 which cover MECHANICAL COMPONENTS (suspension, wheels \n     & axles, steering, brakes, pedals & control cables, heater \n     & ventilator, air conditioning), BODY (body & exterior, \n     doors & windows, seats, seat belts, interior, instrument \n     panel), and ELECTRICAL (engine electrical system, body \n     electrical system, wiring diagram, and trouble-shooting). \n     These are the genuine Subaru issue manuals.  They are for \n     model year 1986, but have plenty of good information that \n     applies to other years as well.\n\n\no Miscellaneous Darkroom Equipment ........................ $75.00\n     Solar enlarger (several objective lenses) with easel and \n     timer, negative carriers for 35mm and 2 1/4 x 3 1/4, misc.\n     printing masks.  Developing tanks, thermometer, trays, \n     constant-temperature bath, ground glass, mirrors, darkroom\n     lamps, glassware, el-cheap-o tripods..... and (as they say)\n                             MUCH   MORE!\n\n\no Beautiful Antique Buffet ............................... $1500.00\n     Solid cherry (no veneer).  Handmade, with very interesting\n     dovetail corners in the drawers.  Built (we think) around \n     1880.  Not gaudy or covered with gew-gaws; a simple, elegant \n     piece of furniture, but too big (60\" long, 37\" tall, 24\" \n     deep) for our little Cape Cod house.\n\n\nWill deliver pricier items (ie, over $10) anywhere in the Rochester \narea.  (And will consider delivering the others.)  Will deliver any \nof it on (or near) UofR Campus between now and graduation."
+            ],
+            "top_keywords": [
+                [
+                    "student edition dos",
+                    1
+                ],
+                [
+                    "subaru issue manuals",
+                    1
+                ],
+                [
+                    "subaru service manuals",
+                    1
+                ],
+                [
+                    "dos release worksheet",
+                    1
+                ],
+                [
+                    "computer stuff lotus",
+                    1
+                ]
+            ],
+            "representative_text": "SWELL ITEMS FOR SALE - HARDLY ANY COMPUTER STUFF\n\no LOTUS 1-2-3 Student Edition for DOS ..............."
+        },
+        "5": {
+            "size": 1,
+            "indices": [
+                95
+            ],
+            "texts": [
+                "\n\n\tHeay bud, get a life in the real world.... Do you still play with your Atari\nwith the paddles? Geez man,  open your eyes on the technoledgy of today...\n\nI have been quoted a price from a local dealer friend of mine, that I could get a \nMotherboard (386DX/33 with 64K cache, with 1 meg base ram.) for $285 !!\n\n\tHere is some friendly advice, go to your favorite book store (Walden Book's)\nand pick up a Computer Shoppers Guide...\n\n\tYou think that was aa good price wait till you see some of the OTHER goodies they sell"
+            ],
+            "top_keywords": [
+                [
+                    "computer shoppers guide",
+                    1
+                ],
+                [
+                    "friend motherboard cache",
+                    1
+                ],
+                [
+                    "dealer friend motherboard",
+                    1
+                ],
+                [
+                    "world atari paddles",
+                    1
+                ],
+                [
+                    "ram advice book",
+                    1
+                ]
+            ],
+            "representative_text": "\n\n\tHeay bud, get a life in the real world.... Do you still play with your Atari\nwith the paddles? Ge..."
+        },
+        "6": {
+            "size": 1,
+            "indices": [
+                92
+            ],
+            "texts": [
+                "For Sale: 1987 Honda XR-100R dirt bike. Bought new from dealer in\n           1989. Ridden only 4 hours, garage kept and well cared for.\n           The bike is in MINT condition; perfect size for lady or\n           young adult. price: $600 firm. You will not be disappointed.\n           Ohio/Kentucky/Indiana inquiries preferred please.\n \n           work: (513) - 576-5986. Leave voicemail please."
+            ],
+            "top_keywords": [
+                [
+                    "hours garage bike",
+                    1
+                ],
+                [
+                    "sale honda dirt",
+                    1
+                ],
+                [
+                    "garage bike mint",
+                    1
+                ],
+                [
+                    "dirt bike dealer",
+                    1
+                ],
+                [
+                    "ridden hours garage",
+                    1
+                ]
+            ],
+            "representative_text": "For Sale: 1987 Honda XR-100R dirt bike. Bought new from dealer in\n           1989. Ridden only 4 hou..."
+        },
+        "7": {
+            "size": 1,
+            "indices": [
+                91
+            ],
+            "texts": [
+                "My roommate left me his Playboy collection which he no longer wants, so I'm\noffering them to the general public.  (THAT'S YOU!)\n\n    MAKE AN OFFER FOR THE *ENTIRE COLLECTION*\n\n    ** The Current Best Offer is $40 + shipping **\n\n    I will accept the best offer.\n    (Offer does *NOT* include cheapest method of shipping from Bethlehem, PA)\n\n1992:\n    February    (Supermodel Rachel Williams, World Tour, & POM Tanya Beyer)\n\n1991:\n    May         (Shannon & Tracy Tweed & POM Carrie Jean Yazel)\n    July        (Tall girls, Miss Bulgaria, & POM Wendy Kaye)\n    September   (Barbi twins & POM Samantha Dorman)\n    November    (La Toya Jackson & POM Tonja Marie Christensen)\n    December    (Dian Parkinson from \"The Price is Right\" & POM Wendy Hamilton)\n\n1990:\n    July        (Sharon Stone, Marilyn look-alike, & POM Jacqueline Sheen)\n    October     (Girls of the Big West, Gladiator Marisa Pare, & POM Brittany\n                 York)\n    November    (Teri Copley from \"We Got It Made\", Sex in Cinema, & POM\n                 Lorraine Olivia, stewardess)\n\n1989:\n    January     (35th Anniversary Issue - Collector's Edition)\n    February    (Year in Sex, Rio's Grand, & POM Simone Eden)\n    March       (La Toya Jackson & POM Laurie Wood)\n    August      (Women of Wall St., Diana Lee from \"License to Kill\", & POM\n                 Gianna Amore)\n    November    (Donna Mills, Sex in Cinema '89, & POM Renee Tenison)\n\n1988:\n    August      (Sunshine Girls & POM Helle Michaelsen)\n    October     (Girls of the Southwest Conference & POM Shannon Long)\n    November    (Women of Washington, Sex in Cinema '88, & POM Pia Reyes)\n    December    (Playmate Review, Sex Stars of '88, Lysette Anthony, & POM\n                 Kata Karkkainen)\n\n1987:\n    November    (Jessica Hahn, Sex in Cinema '87, & POM Pam Stein)\n\nAlso:  *** Special Edition:  \"Playboy Presents:  100 Beautiful Women\" ***\n-- "
+            ],
+            "top_keywords": [
+                [
+                    "february supermodel rachel",
+                    1
+                ],
+                [
+                    "pa february supermodel",
+                    1
+                ],
+                [
+                    "supermodel rachel williams",
+                    1
+                ],
+                [
+                    "february supermodel",
+                    1
+                ],
+                [
+                    "november women washington",
+                    1
+                ]
+            ],
+            "representative_text": "My roommate left me his Playboy collection which he no longer wants, so I'm\noffering them to the gen..."
+        },
+        "8": {
+            "size": 1,
+            "indices": [
+                94
+            ],
+            "texts": [
+                "*****************************\n   * WARRIORS TICKETS FOR SALE *\n   *****************************\n\nI have 2 tickets that I can't use (Last pair this year).\n\nSection 109, Row P, Seats 8 & 9\n\nDAY\tDATE\tOPPONENT\tTIME\t\n---\t----\t--------\t----\t\nWED     4/21    Sacremento     7:30\n\nPrice: $45.00 = MY COST\n\nCall or email if you are interested in these tickets.\n"
+            ],
+            "top_keywords": [
+                [
+                    "warriors tickets sale",
+                    1
+                ],
+                [
+                    "tickets sale tickets",
+                    1
+                ],
+                [
+                    "tickets pair year",
+                    1
+                ],
+                [
+                    "sale tickets pair",
+                    1
+                ],
+                [
+                    "date opponent",
+                    1
+                ]
+            ],
+            "representative_text": "*****************************\n   * WARRIORS TICKETS FOR SALE *\n   *****************************\n\nI h..."
+        },
+        "9": {
+            "size": 1,
+            "indices": [
+                66
+            ],
+            "texts": [
+                "/ hpcc01:comp.dcom.modems / bourman@hpcc01.corp.hp.com (Bob Bourman) /  8:59 am  Apr 27, 1993 /\n/ hpcc01:comp.dcom.modems / bourman@hpcc01.corp.hp.com (Bob Bourman) /  8:51 am  Apr 27, 1993 /\nFor Sale\n12KBps \nMicrocom MicroPorte 1042 pocket modem\nNew List Price $895\n\nRechargeable battery pack (in modem)\nAuto logon, Password security, UUCP and Kermit support, remote access\nDTLA cellular connection, MNP2-4, V.42 & MNP10 error correction\nMNP5 & V.42bis data compression\nBell 103,212A,V.22,V.22bis & Microcom Turbo Mode\n19,200 DTE & 12,000bps DCE speed\n9 & 25 pin adapter cable & AC power transformer\n\n\nMake Offer (>$200)\nBob Bourman\n(415) 857-8409\nE-Mail bourman@corp.hp.com\n\n\n----------\n"
+            ],
+            "top_keywords": [
+                [
+                    "auto logon password",
+                    1
+                ],
+                [
+                    "price battery pack",
+                    1
+                ],
+                [
+                    "password security uucp",
+                    1
+                ],
+                [
+                    "modems hpcc01 corp",
+                    1
+                ],
+                [
+                    "list price battery",
+                    1
+                ]
+            ],
+            "representative_text": "/ hpcc01:comp.dcom.modems / bourman@hpcc01.corp.hp.com (Bob Bourman) /  8:59 am  Apr 27, 1993 /\n/ hp..."
+        },
+        "10": {
+            "size": 1,
+            "indices": [
+                81
+            ],
+            "texts": [
+                "I am looking for a copy of the first World Wrestling Federation album in\nRecord format.  Will pay $10 for a good condition record and original\nalbum jacket and inserts.  The album I am looking for has a picture of\na bunch of the wrestlers ina recording studio front and back with the\ngood guy wrestlers and the bad guy wrestlers making faces at each other.\nSongs include 'Land of a thousand dances\" or something like that."
+            ],
+            "top_keywords": [
+                [
+                    "wrestling federation album",
+                    1
+                ],
+                [
+                    "guy wrestlers songs",
+                    1
+                ],
+                [
+                    "studio guy wrestlers",
+                    1
+                ],
+                [
+                    "bunch wrestlers studio",
+                    1
+                ],
+                [
+                    "wrestlers studio guy",
+                    1
+                ]
+            ],
+            "representative_text": "I am looking for a copy of the first World Wrestling Federation album in\nRecord format.  Will pay $1..."
+        },
+        "11": {
+            "size": 1,
+            "indices": [
+                85
+            ],
+            "texts": [
+                "For Sale:\n\t\t*********\n\n\t*  (1) CGA card\n\n\t*  Road & Track's Grand Prix (3.5\" disks)\n\n\t*  DOS 4.01\n\n\t*  Packard Bell .39 dot pitch VGA color monitor\n\n\t*  256K 2-the-max VGA card\n\n\tPlease make offers for the above merchandise.  What do you \n\thave to lose?  Go ahead--make an offer!  Thanks.\n\n\tEmail: bitzm@columbia.dsu.edu\n\n\t\n\n"
+            ],
+            "top_keywords": [
+                [
+                    "disks packard bell",
+                    1
+                ],
+                [
+                    "prix disks packard",
+                    1
+                ],
+                [
+                    "vga card offers",
+                    1
+                ],
+                [
+                    "packard bell 39",
+                    1
+                ],
+                [
+                    "monitor vga card",
+                    1
+                ]
+            ],
+            "representative_text": "For Sale:\n\t\t*********\n\n\t*  (1) CGA card\n\n\t*  Road & Track's Grand Prix (3.5\" disks)\n\n\t*  DOS 4.01\n\n\t..."
+        },
+        "12": {
+            "size": 1,
+            "indices": [
+                63
+            ],
+            "texts": [
+                "I have a pair of AKG 340 headphones for sale.  They are an electrostatic\ndyanmic headphone; a dynamic element for the bottom end and an electrostatic\nfor the high end.  They are very comfortable and sound very nice.  They are\nin like new condition.  I would like $220CDN for the pair.\n\nBrett Maraldo\n\n"
+            ],
+            "top_keywords": [
+                [
+                    "akg headphones sale",
+                    1
+                ],
+                [
+                    "headphones sale headphone",
+                    1
+                ],
+                [
+                    "sale headphone element",
+                    1
+                ],
+                [
+                    "headphone element end",
+                    1
+                ],
+                [
+                    "headphones sale",
+                    1
+                ]
+            ],
+            "representative_text": "I have a pair of AKG 340 headphones for sale.  They are an electrostatic\ndyanmic headphone; a dynami..."
+        },
+        "13": {
+            "size": 1,
+            "indices": [
+                88
+            ],
+            "texts": [
+                "The following cassette tapes are for sale.  $3.00 each... $2.50 each\nfor multiple orders, shipping included. Trades can be arranged.\nSome of the cases are somewhat worn, with a few cracks, but the tapes\nare all in good condition and sound fine.\n\nE-mail to the posting account. Thanks.\n\nThe Who\n\t-Who's Greatest Hits\nBachman Turner Overdrive\n\t-Best of BTO (so far)\nVan Halen\n\t-5150\n\t-OU812\nThe Doors\n\t-The Best of the Doors\nThe Cars\n\t-Door to Door\n\t-The Cars Greatest Hits\nPhil Collins\n\t-Face Value\n\t-No Jacket Required\nTears for Fears\n\t-Songs From the Big Chair"
+            ],
+            "top_keywords": [
+                [
+                    "cars greatest hits",
+                    1
+                ],
+                [
+                    "door cars greatest",
+                    1
+                ],
+                [
+                    "best doors cars",
+                    1
+                ],
+                [
+                    "best bto van",
+                    1
+                ],
+                [
+                    "cars greatest",
+                    1
+                ]
+            ],
+            "representative_text": "The following cassette tapes are for sale.  $3.00 each... $2.50 each\nfor multiple orders, shipping i..."
+        },
+        "14": {
+            "size": 1,
+            "indices": [
+                76
+            ],
+            "texts": [
+                "Time for some spring cleaning, so the following items are up\nfor sale:\n\nRoland MT-32 Multi-Timbre Sound module.  \n  LA synthesis, upto 32 simultaneous voices, 128 preset timbres,\n  20-char backlit LCD display, MIDI in/out/thru, reference card,\n  stereo output, etc\n\n  Great for games that support it (music on the MT32 is far\n  superior to any sound card), experimenting with MIDI, or\n  for adding additional sounds to your MIDI setup.\n\n  $235 + shipping\n\nCanon RC-250 Xapshot still video camera system.\n  Includes: camera, carrying pouch, battery pack, battery charger,\n  ac adapter, video cables, two 2.5\" floppies (each disk holds\n  50 pictures for 100 pics total), manuals, etc\n\n  Video output is standard NTSC composite and can be sent to any\n  NTSC device (e.g. to a television for direct viewing of your\n  pictures, to a VCR to record a slideshow, to a computer video\n  digitizer to save/manipulate the pictures on a computer system)\n\n  $295 + shipping\n\nAmbico Video Enhancer/Audio Mixer\n  Three-line stereo audio mixer with microphone input and master\n  volume slider w/video enhancer to boost & sharpen video images\n  when dubbing from VCR->VCR, camcorder->VCR, etc\n\n  $38 + shipping\n\n2400 baud PC internal modem\n\n  $25 + shipping\n\nQuantum 105MB 3.5\" internal ProDrive hard disk\n  This unit has recently turned unreliable and erratic in usage.\n  Could be a simple easily fixed problem or a major problem,\n  but at any rate I don't have the time to find out where the\n  problem lies.  If you want to take a risk on it, you can have\n  it for $45 + shipping.\n\nIf interested in any of the above items, please Email me."
+            ],
+            "top_keywords": [
+                [
+                    "card stereo output",
+                    1
+                ],
+                [
+                    "vcr slideshow computer",
+                    1
+                ],
+                [
+                    "vcr shipping pc",
+                    1
+                ],
+                [
+                    "line stereo audio",
+                    1
+                ],
+                [
+                    "stereo audio mixer",
+                    1
+                ]
+            ],
+            "representative_text": "Time for some spring cleaning, so the following items are up\nfor sale:\n\nRoland MT-32 Multi-Timbre So..."
+        },
+        "15": {
+            "size": 1,
+            "indices": [
+                89
+            ],
+            "texts": [
+                "Wanted: Summer sublet in NW DC, on red Metro line. Have own bedroom, but can\n        share common areas with others.  Apartment or room for $400 or less.\n        Move in Memorial Day weekend through end of August.  No smokers."
+            ],
+            "top_keywords": [
+                [
+                    "weekend end august",
+                    1
+                ],
+                [
+                    "room memorial day",
+                    1
+                ],
+                [
+                    "end august smokers",
+                    1
+                ],
+                [
+                    "memorial day weekend",
+                    1
+                ],
+                [
+                    "apartment room memorial",
+                    1
+                ]
+            ],
+            "representative_text": "Wanted: Summer sublet in NW DC, on red Metro line. Have own bedroom, but can\n        share common ar..."
+        },
+        "16": {
+            "size": 1,
+            "indices": [
+                84
+            ],
+            "texts": [
+                "OK.  Instead of holding an auction, I have decided to compute prices for each comic (after many suggestions).  These are the most reasonable prices I can give (not negotiable).  If you would like to purchase a comic (or group), simply email me with the title and issue #'s you want.  The price for each issue is shown beside each comic.  First come, first served!!!  There is no more bidding.  Meet my price and it is yours.  I can be reached at this email address:\n\n02106@chopin.udel.edu or\n02106@ravel.udel.edu or\n02106@bach.udel.edu or\n02106@brahms.udel.edu\n\nNO MORE HAGGLING ABOUT THE PRICE!!!!!!!!\nLOTS OF COMICS FOR $1, $2, or $3 LOOK AT LIST!!!!!\n\nShipping is $2 for 1-3 comics.  For more than 3, the price will be determined by the volume of the purchase (I may have to use a big heavy box for large orders which costs more to mail).\n\nFor all those who have bought comics from me, thanks!!!\n\nAll comics are near mint unless otherwise noted (my books were graded by\nmile high comics and other comic professional collectors, not me!)\n\nHere is the list:\n\n*reserved* means that I have made a deal with a person and I am waiting for the check to arrive.\n*reserved* comics are as good as sold (sorry!)\n\nIncredible Hulk\n156 (vs another Hulk) $3\n195 $2\n196 $2\n246 (vs Captain Marvel) $1\n248 $1\n249 $1\n250 (Double size issue vs Silver Surfer) $5\n255 (vs Thor) $1\n279 $1\n300 $2\n312 $2\n313 $1\n316 (vs Bi Coastal Avengers) $1\n347 $1 *reserved*\n348 $1\n350 (vs Thing) $2\n354 $1\n358 $1\n360 $1\n362 (vs Werewolf By Night) $2\n364 $1\n365 $1\n366 $1 *reserved*\n379 (1 copy) $5\n\n\nPunisher\n50 $1\n57 $2\n\nPunisher War Journal\n29 (Ghost Rider) $2\n30 (Ghost Rider) $2\n\nPunisher Armory\n1 $4\n2 $2\n\nOriginal Ghost Rider Rides Again (Reprint)\n1 $1\n\nGhost Rider (old series)\n37 $3 *reserved*\n43 (vs Johnny Blaze) $3 *reserved*\n77 (2 copies, origin of GR dream) $4 each\n\nGhost Rider (new series)\n15 (1st print, Green glow in dark cover, 1 copy) $5\n15 (2nd print, gold cover w/ glow cover) $3\n\nWeb of Spiderman\n56 (2 copies) $2 each\n60 $3\n69 (vs Hulk, 1 copy left!!!)  $2\n70 (SpiderHulk, 1 copy left!!!)  $2\n71 $1\n72 $1\n78 $1\n\nDeadly Foes of Spiderman\n1 (2 copies) $2 each\n2 $2\n3 $2\n\nAmazing Spiderman vs Dr. Octopus (special NACME issue) $2\n\nAmazing Spiderman \n350 (vs Dr. Doom, 1 copy LEFT!!!) $2\n\nSpiderman (1990)\n1 (silver, not bagged) $4\n6 $3\n7 $3\n8 (2 copies) $2 each\n9 (w/ Wolverine, 1 COPY LEFT!!!) $2\n10 $2\n11 $1\n13 $5\n16 $1\n\nEnemy Ace Special #1 $2\n\nNew Warriors\n1 (gold cover) $2\n8 $4\n\nSuperman Man of Steel #1 $2\n\nSuperman (new)\n53 (2 copies) $1 each\n55 $1\n56 $1\n\nAdventures of Superman \n479 $1\nAnnual #3 $1\n\nSuperman Annual #3 (Armegedon 2001 tie in) $1\n\nAction Comics #666 $1\n\nAvengers West Coast #69 (Hawkeye vs US Agent) $1\n\nBatman\n465 (Robin returns) $2\n466 $1\n467 $1\nAnnual #15 (Armegedon 2001 tie in) $3\n\nCaptain America \n230 (vs Hulk) $2\n257 (vs Hulk) $1\n\n\nArmegedon 2001 \n1 $4\n2 $2\n\n\nFoolkiller #1 $2\n\n\nInfinity Gauntlet \n1 $6\n4 $3\n5 $3\n\nDouble Dragon #1 $1\n\nDeathlok (series) \n2 $1\n\nTransformers #80 (last issue) $2 \n\nWonder Man\n1 $1\n2 $1\n\nFlaming Carrot #25 (w/ Ninja Turtles) $2\n\nThe Comet #1 $1\n\nLegend of the Shield #1 $1\n\nJustice Society of America\n1 $1\n2 $1\n3 $1\n4 $1\n\nOfficial movie mag from Turtles II movie (sealed w/ Jelloman comic) $5\n\nRobin \n1 (1 copies w/ poster) $3\n1 (3rd print) $1\n5 (6 copies) $1 each\n\nGuardians of the Galaxy \n1 $6\n2 $3\n3 $2\n4 $2\n5 $2\n6 $2\n7 $2\n8 $2\n9 (2 copies) $3 each\n10 $2\n11 $2\n12 $1\n13 $3\n14 $3\n15 $1\n16 $1\n17 $1\n18 (2 copies) $2 each\n\nSuperman vs Amazing Spiderman (oversized issue from 70's) $7 *reserved*\n\nDarkHawk\n1 (3 copies) $8 each\n2 (2 copies) $6 each\n3 $5\n4 $4\n5 $4\n6 $3\n7 $2\n8 $2\n9 $3\n10 $1\n\nThor\n246 $1\n428 $1\n429 (vs Juggernaut) $2\n430 (w/ Ghost Rider) $1\n431 $1\n432 (Thor vs Loki, 2 copies) $3 each\n433 (new Thor) $2\nAnnual #16 $1\n\nWhat if....\n13 $1\n23 $1\n25 $2\n26 $1\n\nAlpha Flight\n29 $1\n51 $6\n53 $6\n94 (vs Fant. 4) $1\n\nNew Mutants\n22 $2\n100 (last issue, 1st look at X-Force, 1st print, 2 copies) $5 each\n100 (2nd print, gold cover) $4\n\nFlash (new)\n43 $1\n48 $1\n49 $1\n50 $2\n51 $1\nAnnual #4 $1\n\n\n\nUncanny X-Men\n191 $3\n215 $2\n255 (2 copies) $2 each\n258 $6\n275 (1 COPY LEFT 1st print) $6\n275 (gold 2nd print) $3\n276 $3\n277 $3\n278 $2\n279 $2\n280 $2\n281 $3\n282 $4\n283 $6\n\nDefenders\n52 (Hulk vs Sub Mariner) $2\n\n\nFantastic Four\n347 $4\n348 $2\n349 (3 copies) $2 each\n\nWolverine\n11 $3 *reserved*\n20 $2\n41 (w/ Cable, 2 copies) $6 each\n42 $4\n43 $3\n\nSilver Surfer (1987)\n1 $6\n2 $3\n3 $3\n4 $3\n5 $2\n6 $2\n8 $2\n22 $2\n24 $2\n32 $2\n49 $2\n50 (Foil cover, only 1 copy left!!) $6\n51 $2\n52 $2\n53 $1\n54 $1\n55 $1\n56 $1\n58 $2\n59 $2\n\nAvengers\n326 $3\n328 (origin of Rage) $3\n\nX-Factor\n40 $6\n67 $3\n68 $6\n71 $3\n73 $1\n\nGreen Lantern (1990)\n3 $2\n9 (2 copies) $1 each\n10 $1\n11 $1\n12 $1\n\nToxic Avenger\n1 (3 copies) $1 each\n2 $1\n\nSleepwalker\n1 (3 copies) $2 each\n3 $1\n7 $1\n\nKool Aid Man #1 (sealed in white bag, 2 copies) $2 each\n\nX-Force\n1 (bagged w/ Cable Card) $4\n1 (bagged w/ Shatterstar Card) $3\n2 $2\n3 $1\n4 $1\n\nNFL Superpro\n1  $1\n\nDr. Strange #31 $1\n\nHawkworld Annual #2 (2nd print, Armegedon 2001 tie in) $1\n\nHawk & Dove Annual #2 (Armegedon 2001 tie in) $1\n\nJustice League of America Annual #5 (Armegedon 2001 tie in) $1\n\n\n\nSend all comments to\n\n02106@chopin.udel.edu\n\nThanks\nSam (the \"ex\"  comic book collector)\n"
+            ],
+            "top_keywords": [
+                [
+                    "auction prices comic",
+                    1
+                ],
+                [
+                    "werewolf night copy",
+                    1
+                ],
+                [
+                    "books comics collectors",
+                    1
+                ],
+                [
+                    "spiderman issue darkhawk",
+                    1
+                ],
+                [
+                    "shipping comics price",
+                    1
+                ]
+            ],
+            "representative_text": "OK.  Instead of holding an auction, I have decided to compute prices for each comic (after many sugg..."
+        },
+        "17": {
+            "size": 1,
+            "indices": [
+                93
+            ],
+            "texts": [
+                "Followup-To:kedz@wpi.wpi.edu \nDistribution: ne\nOrganization: Worcester Polytechnic Institute\nKeywords: \n\nI am looking for an inexpensive motorcycle, nothing fancy, have to be able to do all maintinence my self. looking in the <$400 range."
+            ],
+            "top_keywords": [
+                [
+                    "institute keywords motorcycle",
+                    1
+                ],
+                [
+                    "keywords motorcycle",
+                    1
+                ],
+                [
+                    "keywords motorcycle fancy",
+                    1
+                ],
+                [
+                    "motorcycle fancy self",
+                    1
+                ],
+                [
+                    "motorcycle fancy",
+                    1
+                ]
+            ],
+            "representative_text": "Followup-To:kedz@wpi.wpi.edu \nDistribution: ne\nOrganization: Worcester Polytechnic Institute\nKeyword..."
+        },
+        "18": {
+            "size": 1,
+            "indices": [
+                87
+            ],
+            "texts": [
+                "For sale:\n---------\n\nOne complete set of Lifecall Equipment, including the base unit,\nportable transmitter and pendant plus 30 days free monitering service.\n\nDescription of item:\n-------------------\n\nConvenient and secure to anyone:\n\n1. whose home is being broken into\n2. whose parents live alone.\n3. who has children or elderly parents\n4. who suffers a heart attack or stroke\n5. who is temporarily or permanently disabled.\n6. and more.\n\nSuperior features:\n\n1. Allows you to talk to the monitering center using the transmitter;\nhelp will be sent to you as soon as possible.\n2. Allows for personal freedom and independence.\n\nDeal\n----\n\nItem is worth US$2400 in open market. Asking for $2000 or best offer.\nInterested please email at kmgoh@leland.stanford.edu\nor call at (415) 497-0663. Will send the certificate of delivery and\nrelevant documents to you."
+            ],
+            "top_keywords": [
+                [
+                    "home parents children",
+                    1
+                ],
+                [
+                    "parents children parents",
+                    1
+                ],
+                [
+                    "children parents heart",
+                    1
+                ],
+                [
+                    "parents heart",
+                    1
+                ],
+                [
+                    "home parents",
+                    1
+                ]
+            ],
+            "representative_text": "For sale:\n---------\n\nOne complete set of Lifecall Equipment, including the base unit,\nportable trans..."
+        },
+        "19": {
+            "size": 1,
+            "indices": [
+                58
+            ],
+            "texts": [
+                "Note: The device has never been used (IE: still in plastic) and is 10baseT"
+            ],
+            "top_keywords": [
+                [
+                    "note device plastic",
+                    1
+                ],
+                [
+                    "device plastic",
+                    1
+                ],
+                [
+                    "plastic",
+                    1
+                ],
+                [
+                    "note device",
+                    1
+                ],
+                [
+                    "device",
+                    1
+                ]
+            ],
+            "representative_text": "Note: The device has never been used (IE: still in plastic) and is 10baseT..."
+        },
+        "20": {
+            "size": 1,
+            "indices": [
+                65
+            ],
+            "texts": [
+                "I have the following busines books/best sellers for sale.  All in excellent\norder.  If you are interested email me an offer...\n\n 1. Zapp: The Lightning of Empowerment..............William Pyham, Jeff Cox\n    Harmony Books\n\n 2. Beware the Naked Man Who Offers You His Shirt...Harvey Mackay\n    William, Morrow & Co\n\n 3. What They Still Don't Reach You at Harvard .....Mark H. McCormack\n    Bantam Books\n\n 4. Megatrends 2000: 10 New Directions for the 90's.John Nisbitt/P. Aburdene\n    William, Morrow & Co\n\n 5. Phone Power....................................George Walther\n    Putnam Books\n\n 6. What Every Supervisor Should Know..............Liester R Bittel, J.Newstrom\n    McGraw-Hill\n\n 7. MaxiMarketing: New Directions in Advertising...Stan Rapps, Tom Collins\n    McGraw-Hill\n\n 8. Outsmarting The Competition....................John McGongale, Jr\n    Sourcebooks\n\n 9. Professional Speaking..........................Lilyan Wilder\n    Simon & Schuster\n\n10. Managing Management Time......................William Ocken Jr.\n    Prentice Hall\n\n11. Getting Praised Raised and Recognized........Muriel Solomon\n    Prentice Hall\n\n12. Getting What You Want: How to Reach Agreement..Kare Anderson\n    Dutton\n\n13. Let's Talk Quality..........................Philip B. Crosby\n    McGraw Hill\n\n14. Frontal Attack, Divide and Conquer.........Richard Buskirk\n    Wiley\n\n15. Den of Thieves...........................James B. Stewart\n    Simon & Schuster\n\n16. 20/20 Vision..............................Stanley Davis, Bill Davidson\n    Fireside: Simon & Schuster\n\nIf you are intersted, email please."
+            ],
+            "top_keywords": [
+                [
+                    "mccormack bantam books",
+                    1
+                ],
+                [
+                    "zapp lightning empowerment",
+                    1
+                ],
+                [
+                    "bantam books megatrends",
+                    1
+                ],
+                [
+                    "fireside simon schuster",
+                    1
+                ],
+                [
+                    "putnam books supervisor",
+                    1
+                ]
+            ],
+            "representative_text": "I have the following busines books/best sellers for sale.  All in excellent\norder.  If you are inter..."
+        },
+        "21": {
+            "size": 1,
+            "indices": [
+                77
+            ],
+            "texts": [
+                "o Kenwood Audiophile Cassette Tape Deck\n  Asking $199.00 obo + shipping, (original price I paid - $450.00),\n  excellent condition, well maintained, rarely used.\n\n  - Model KX-900\n  - Kenwood Audiophile Series (Kenwood highend stereo component)\n  - Programmable playback with Memory System (used to program the playback\n    order if selection.  Program is stored in RAM (Random Access Memory)\n    System with digital display of the song # being played)\n  - Counter Memory Index (when this mode is selected, count '000' of the\n    Tape Counter can be stored in memory.  This function is useful when it\n    is necessary to stop of restart the tape at '000' during fast forward\n    or rewind.\n  - Search Mode (Searching for a selection, skipping a selection or\n    repeating a selection can be preformed at a touch.)\n  - Time stand by switch (this is used along with an audio timer when an\n    unattended timer-recording or timer-playback is performed.)\n  - Dolby NR with MPX filter\n  - Bias adjustment (used to obtain optimum bias that matches the type of\n    type to be played)\n  - Tape selector switch (CrO2, FeCr, Normal, Metal)\n  - REC MUTE key (When recording, press this key to delete undesired portions\n    between programs such as announcements and commercials. When this key\n    is pressed, the tape runs forwards for 5 seconds to make an unrecorded\n    section, then the PAUSE function automatically stops the tape.  To\n    restart recording, press PAUSE key once.)\n  - Flurescent PEAK PROGRAM METERS\n  - Rec level controls\n  - Phone Jack\n  - Mic Jacks\n  - Input Selector switch\n  - SPECS:"
+            ],
+            "top_keywords": [
+                [
+                    "commercials key tape",
+                    1
+                ],
+                [
+                    "timer playback dolby",
+                    1
+                ],
+                [
+                    "announcements commercials key",
+                    1
+                ],
+                [
+                    "audiophile cassette tape",
+                    1
+                ],
+                [
+                    "recording timer playback",
+                    1
+                ]
+            ],
+            "representative_text": "o Kenwood Audiophile Cassette Tape Deck\n  Asking $199.00 obo + shipping, (original price I paid - $4..."
+        },
+        "22": {
+            "size": 1,
+            "indices": [
+                71
+            ],
+            "texts": [
+                "\n: \tThese games are forsale (or trade):\n\n: \t\t\t* Sonic Hedgehog II (two copies)\n: \t\t\t  + manuals and cases ..\n: \t\t\t$25 each..\n: \t\t\t(brand new!)_\n\nHello, I am interested in Sonic II but when I send to the address below\nI get mail bounced back with \"Host unknow\" error.\n\n\n: \tPlease reply to : kwill@lunatix.UUCP \n: \t\t(subject: games)\n\n--"
+            ],
+            "top_keywords": [
+                [
+                    "trade sonic hedgehog",
+                    1
+                ],
+                [
+                    "games trade sonic",
+                    1
+                ],
+                [
+                    "sonic hedgehog ii",
+                    1
+                ],
+                [
+                    "hedgehog ii copies",
+                    1
+                ],
+                [
+                    "sonic hedgehog",
+                    1
+                ]
+            ],
+            "representative_text": "\n: \tThese games are forsale (or trade):\n\n: \t\t\t* Sonic Hedgehog II (two copies)\n: \t\t\t  + manuals and ..."
+        },
+        "23": {
+            "size": 1,
+            "indices": [
+                72
+            ],
+            "texts": [
+                "I'm trying to set up a personal studio.\n\nWhat I'm looking for are a cheap sampler(rack or with keyboard)\n\nor a cheap sound card (AudioMedia I or II or something similar)."
+            ],
+            "top_keywords": [
+                [
+                    "sampler rack keyboard",
+                    1
+                ],
+                [
+                    "keyboard sound card",
+                    1
+                ],
+                [
+                    "studio sampler rack",
+                    1
+                ],
+                [
+                    "studio sampler",
+                    1
+                ],
+                [
+                    "sound card audiomedia",
+                    1
+                ]
+            ],
+            "representative_text": "I'm trying to set up a personal studio.\n\nWhat I'm looking for are a cheap sampler(rack or with keybo..."
+        },
+        "24": {
+            "size": 1,
+            "indices": [
+                69
+            ],
+            "texts": [
+                "New plotters, 2 of 'em, straight out of the box, but docs have all been  \nlost...\n\nmake offer, COD shipping..."
+            ],
+            "top_keywords": [
+                [
+                    "offer cod shipping",
+                    1
+                ],
+                [
+                    "cod shipping",
+                    1
+                ],
+                [
+                    "offer cod",
+                    1
+                ],
+                [
+                    "make offer cod",
+                    1
+                ],
+                [
+                    "docs make offer",
+                    1
+                ]
+            ],
+            "representative_text": "New plotters, 2 of 'em, straight out of the box, but docs have all been  \nlost...\n\nmake offer, COD s..."
+        },
+        "25": {
+            "size": 1,
+            "indices": [
+                53
+            ],
+            "texts": [
+                "Eric, send me email with your address, I lost it! I've reconsidered!"
+            ],
+            "top_keywords": [
+                [
+                    "eric address",
+                    1
+                ],
+                [
+                    "eric",
+                    1
+                ],
+                [
+                    "address",
+                    1
+                ]
+            ],
+            "representative_text": "Eric, send me email with your address, I lost it! I've reconsidered!..."
+        },
+        "26": {
+            "size": 1,
+            "indices": [
+                38
+            ],
+            "texts": [
+                "For Sale:\n\nDavid Clark H10-40 Aviation Headset\n\nExcellent Condition (not even a scratch) -- original packaging.\n\n     Discover for yourself why the H10-40 continues to be the favorite headset\nof thousands of pilots.  It was the first headset to have the advanced M-4\namplified electret microphone - with a frequency response specifically\ndesigned to match the human voice.  Also includes durable universal boom\nassembly and a noise reduction rating (NRR) of 24dB.  Weighs 19 oz.\n\n** Includes Telex \"push to talk switch\"\n\nAsking $220.00 U.S.\n\nShipping negotiable.     \n\nFor more information respond to: afhetzel@netcom.com (Andrew)\n"
+            ],
+            "top_keywords": [
+                [
+                    "40 aviation headset",
+                    1
+                ],
+                [
+                    "h10 40 aviation",
+                    1
+                ],
+                [
+                    "40 aviation",
+                    1
+                ],
+                [
+                    "headset thousands pilots",
+                    1
+                ],
+                [
+                    "thousands pilots headset",
+                    1
+                ]
+            ],
+            "representative_text": "For Sale:\n\nDavid Clark H10-40 Aviation Headset\n\nExcellent Condition (not even a scratch) -- original..."
+        },
+        "27": {
+            "size": 1,
+            "indices": [
+                73
+            ],
+            "texts": [
+                "Inguiry by address:er1@eridan.chuvashia.su\n"
+            ],
+            "top_keywords": [
+                [
+                    "address eridan chuvashia",
+                    1
+                ],
+                [
+                    "eridan chuvashia su",
+                    1
+                ],
+                [
+                    "eridan chuvashia",
+                    1
+                ],
+                [
+                    "chuvashia su",
+                    1
+                ],
+                [
+                    "inguiry address eridan",
+                    1
+                ]
+            ],
+            "representative_text": "Inguiry by address:er1@eridan.chuvashia.su\n..."
+        },
+        "28": {
+            "size": 1,
+            "indices": [
+                83
+            ],
+            "texts": [
+                "o Denon DCR 5490 (high power pull out cassette deck with CD changer control)\n\n  Features:\n\n  - 18 W X 4\n  - Theft Prevention Chassis (pull out)\n  - 24 station-presets (18 FM, 6 AM)\n  - Denon Optimum Reception System IV (FM circuitry-Auto high blend and FM\n    pulse noise cancellor)\n  - Dolby B NR\n  - Key off head release\n  - Flexible fader-internal front amp to rear amp and/or internal front amp\n    to internal rear amp\n  - Auto reverse cassette mechanism\n  - Up/down manual & seek tuning\n  - Music sensor\n  - Stereo/Mono (FM), local switches\n  - Metal tape switch\n  - DIN \"E\" with easy installation lock-in sleeve\n  - Night illumination with dash light dimmer lead\n  - Preset scan\n  - CD changer control\n        Random play: all of tracks on a disc\n        Automatic/Manual search\n\n  Excellent condition with Manual.\n\n  Asking $220.00 + shipping\n\no Yamaha YPA-300 power amplifier (car audio)\n  Features:\n        - SELECTABLE 2-MODE POWER OUTPUT:\n          40W x 2-ch or 90W x 1-ch - all w/ extremely low distortion (0.1% THD)\n        - LOW RFI CIRCUIT effectively eliminates radio frequency interference\n          which might arise from DC-DC conversion\n        - FULL PROTECTION CIRCUITRY protects amplifier from potential damaged\n          caused by overload, short circuiting, DC leakage, excessive heat\n          or mis-wiring.\n        - INPUT LEVEL ADJUSTMENT allows you to complement your system with any\n          audio component\n        - GOLD-PLATED RCA JACK ensures a durable, optimum contact, even under\n          rugged road conditions.\n        - REMOTE POWER links the entire system's ON/OFF with the cassette\n          receiver's ot tuner's power switch.\n        - SCREW TERMINALS allow simple wiring connections\n        - POWER FUSE REPLACEMENT is a simple, one-step operation.\n        - ALTERNATER NOISE REDUCTION CIRCUITRY is effectively suppressed\n          during driving.\n  Specifications:\n    Continuous Power Output\n          (per channel, 4 ohms, 2 channels driven.)\n          with 0.1 % THD, 20 Hz ~ 20kHz .................35W/35W\n          with 0.1 % THD, 1 kHz .........................40W/40W\n          (per channel, 4 ohms, 1 channels driven.)\n          with 0.1 % THD, 20 Hz ~ 20kHz ................80W(BTL)\n          with 0.1 % THD, 1 kHz ........................90W(BTL)\n    Speaker Impedance................................4 to 8 ohms\n    Frequency Response (at 1W, 4 ohms)......10 Hz to 100 kHz (+0, -1.5dB)\n    Signals-to-Noise Ratio ...............................105 dB\n    Total Harmonic Distortion\n        - (at 20W + 20W, 1 kHz, 4 ohms, 24 kHz, LPF)......0.005%\n    Dimensions (W x H x D).....................200 x 50 x 156 mm\n    Weight..........................................5 lbs. 15 oz\n\n    List price: $250.00\n\n    This is one of the nicest/cleanest amp that I have even owned.\n    I am using two of these in my car, this is just an extra one that\n    I don't really need.  If you are in the bay area, and like to listen\n    to it first, let me know.\n\n    Asking $150.00 firm + shipping (brand new in box, never been installed)\n\n\no Boston Acoustic 861 seperates (car audio speakers), 6\" woofers\n  with seperate tweeters and crossovers.\n  Brand new in box, never been installed, $259.00 at Good Guys\n  Asking $199.00 firm\n\no 2 8\" MTX free air woofers, new in box, never been installed.\n  Paid $49.00 each at Good Guys\n  Asking $70.00 firm"
+            ],
+            "top_keywords": [
+                [
+                    "seperates car audio",
+                    1
+                ],
+                [
+                    "blend fm noise",
+                    1
+                ],
+                [
+                    "tuning music stereo",
+                    1
+                ],
+                [
+                    "auto blend fm",
+                    1
+                ],
+                [
+                    "amplifier car audio",
+                    1
+                ]
+            ],
+            "representative_text": "o Denon DCR 5490 (high power pull out cassette deck with CD changer control)\n\n  Features:\n\n  - 18 W ..."
+        },
+        "29": {
+            "size": 1,
+            "indices": [
+                35
+            ],
+            "texts": [
+                "I have the following Amiga software for sale:\n\nProVideo GOLD                   $50\n\nAmigaVision                     $25\n\nB.E.S.T. Plan It!               $10\nspreadsheet\n(still in shrinkwrap)\n\nSuperBack                       $10\n(hard drive backup)\n\nCertificate Maker               $10\n\n\nAdd s&h to the above and its yours...email me at the address listed below:\n"
+            ],
+            "top_keywords": [
+                [
+                    "provideo gold amigavision",
+                    1
+                ],
+                [
+                    "gold amigavision plan",
+                    1
+                ],
+                [
+                    "amigavision plan spreadsheet",
+                    1
+                ],
+                [
+                    "spreadsheet shrinkwrap superback",
+                    1
+                ],
+                [
+                    "amiga software sale",
+                    1
+                ]
+            ],
+            "representative_text": "I have the following Amiga software for sale:\n\nProVideo GOLD                   $50\n\nAmigaVision     ..."
+        },
+        "30": {
+            "size": 1,
+            "indices": [
+                57
+            ],
+            "texts": [
+                "We are representing some Chinese TV manufacturers who want to wholesale their\nproducts to Latin American countries. We are looking for brokers/agents who\ncan help us. Products include both color and black/white TVs from 11\" to 24\". If interested, please e-mail or fax to Mr Z Ho at 713-926-7953 (USA) for more information or inquiries. good commission.\n"
+            ],
+            "top_keywords": [
+                [
+                    "color tvs fax",
+                    1
+                ],
+                [
+                    "tvs fax mr",
+                    1
+                ],
+                [
+                    "products color tvs",
+                    1
+                ],
+                [
+                    "tvs fax",
+                    1
+                ],
+                [
+                    "color tvs",
+                    1
+                ]
+            ],
+            "representative_text": "We are representing some Chinese TV manufacturers who want to wholesale their\nproducts to Latin Amer..."
+        },
+        "31": {
+            "size": 1,
+            "indices": [
+                80
+            ],
+            "texts": [
+                "1988 Toyota Supra, Fully loaded automatic.\nMaroon color with leather interior.\nAlpine stereo system with CD changer.\nAlpine car alarm\n90,000 miles, great condition, one owner.\n\nHave to leave country in June.\n\nAsking $9,000 o.b.o.\n\nPlease call (310) 212 - 5376 and ask for Cary.\n\n-- \n---------------------------------------------------------------------------\nBernard Lin\t\t\t\t    Departmental Research Assistant\nComputing and Information Services\t\tColumbia Business School"
+            ],
+            "top_keywords": [
+                [
+                    "alpine car alarm",
+                    1
+                ],
+                [
+                    "toyota supra fully",
+                    1
+                ],
+                [
+                    "changer alpine car",
+                    1
+                ],
+                [
+                    "car alarm miles",
+                    1
+                ],
+                [
+                    "leather interior alpine",
+                    1
+                ]
+            ],
+            "representative_text": "1988 Toyota Supra, Fully loaded automatic.\nMaroon color with leather interior.\nAlpine stereo system ..."
+        },
+        "32": {
+            "size": 1,
+            "indices": [
+                67
+            ],
+            "texts": [
+                "I also have a pair of size 11-11.5 Raichle Flexon Comps.\nThese boots are black and yellow.  they are in good condition.\nI would like around $100 for them also but feel\nfree to make an offer.\n\nPlease reply to:  crane@coral.bucknell.edu\n\nThanks,"
+            ],
+            "top_keywords": [
+                [
+                    "boots condition offer",
+                    1
+                ],
+                [
+                    "comps boots condition",
+                    1
+                ],
+                [
+                    "flexon comps boots",
+                    1
+                ],
+                [
+                    "comps boots",
+                    1
+                ],
+                [
+                    "boots condition",
+                    1
+                ]
+            ],
+            "representative_text": "I also have a pair of size 11-11.5 Raichle Flexon Comps.\nThese boots are black and yellow.  they are..."
+        },
+        "33": {
+            "size": 1,
+            "indices": [
+                55
+            ],
+            "texts": [
+                "Hello,\n\n      While refurbishing our observatory I came across the above mentioned camera. It was manufactured\nby the Instrument Corporation of Florida  ~ 1970. Now for my questions:\n\n1) Does anyone have any knowledge of this equipement ?\n2) Does anyone know of the company (phone numbers ?) ?\n3) Are there any others out there...I need some parts.\n\n\nAny responces are greatly appreciated.\n\n                                                 take care,\n                                                         jamie"
+            ],
+            "top_keywords": [
+                [
+                    "corporation florida questions",
+                    1
+                ],
+                [
+                    "instrument corporation florida",
+                    1
+                ],
+                [
+                    "florida questions does",
+                    1
+                ],
+                [
+                    "corporation florida",
+                    1
+                ],
+                [
+                    "company phone numbers",
+                    1
+                ]
+            ],
+            "representative_text": "Hello,\n\n      While refurbishing our observatory I came across the above mentioned camera. It was ma..."
+        },
+        "34": {
+            "size": 1,
+            "indices": [
+                44
+            ],
+            "texts": [
+                "Cheap airline ticket to L.A. on April. 21 (tuesday) from Indi. or\n   Chicago and return about in 10 - 14 days wanted.  "
+            ],
+            "top_keywords": [
+                [
+                    "tuesday indi chicago",
+                    1
+                ],
+                [
+                    "airline ticket april",
+                    1
+                ],
+                [
+                    "ticket april tuesday",
+                    1
+                ],
+                [
+                    "april tuesday indi",
+                    1
+                ],
+                [
+                    "april tuesday",
+                    1
+                ]
+            ],
+            "representative_text": "Cheap airline ticket to L.A. on April. 21 (tuesday) from Indi. or\n   Chicago and return about in 10 ..."
+        },
+        "35": {
+            "size": 1,
+            "indices": [
+                78
+            ],
+            "texts": [
+                "I'm posting this for my Mom and Dad's neighbor.  Please contact her\ndirectly.\n\n\t\t\t\tFor Sale"
+            ],
+            "top_keywords": [
+                [
+                    "mom dad neighbor",
+                    1
+                ],
+                [
+                    "dad neighbor sale",
+                    1
+                ],
+                [
+                    "mom dad",
+                    1
+                ],
+                [
+                    "neighbor sale",
+                    1
+                ],
+                [
+                    "dad neighbor",
+                    1
+                ]
+            ],
+            "representative_text": "I'm posting this for my Mom and Dad's neighbor.  Please contact her\ndirectly.\n\n\t\t\t\tFor Sale..."
+        },
+        "36": {
+            "size": 1,
+            "indices": [
+                86
+            ],
+            "texts": [
+                "I'm looking to buy the annual Playboy magazine  issue featuring\ngirls from colleges around the US. Specificly, I want issues from\n1989, 1990, 1991 and 1992. One of these features a girl I went to\nhigh school with, so I'm curious to see how it turned out. All help\nis appreciated.\n"
+            ],
+            "top_keywords": [
+                [
+                    "issue girls colleges",
+                    1
+                ],
+                [
+                    "girls colleges specificly",
+                    1
+                ],
+                [
+                    "girls colleges",
+                    1
+                ],
+                [
+                    "magazine issue girls",
+                    1
+                ],
+                [
+                    "girl school help",
+                    1
+                ]
+            ],
+            "representative_text": "I'm looking to buy the annual Playboy magazine  issue featuring\ngirls from colleges around the US. S..."
+        },
+        "37": {
+            "size": 1,
+            "indices": [
+                61
+            ],
+            "texts": [
+                "The following comics are for auction.  The highest bid takes them! \n\nAll are near mint to mint condition!\n\n\nTITLE                                                   Minimum/Current \n--------------------------------------------------------------\nAlpha Flight 51 (Jim Lee's first work at Marvel)\t$ 5.00\n\nAliens 1 (1st app Aliens in comics, 1st prnt, May 1988)\t$20.00/KrisM./SOLD\n\nAmazing Spider-Man 136 (Intro new Green Goblin)         $20.00\n\nAmazing Spider-Man 238 (1st appearance Hobgoblin)\t$50.00\n\nArcher and Armstrong 1 (Frank Miller/Smith/Layton)\t$ 7.50\n\nAvengers 263 (1st appearance X-factor)                  $ 3.50\n\nBloodshot 1 (Chromium cover, BWSmith Cover/Poster)\t$ 5.00/SamE/SOLD\n\nCyberRad 1 (Reintro CyberRad, Prestige silver edition)\t$15.00\n\nDaredevil 158 (Frank Miller art begins)                 $35.00\n\nDark Horse Presents 1 (1st app Concrete, 1st printing)\t$ 7.50 \n\nDetective 657 (Azrael appears, Intro Cypher)\t\t$ 5.00\n\nDetective 658 (Azrael appears)\t\t\t\t$ 4.00\n\nHarbinger 10 (1st appearance H.A.R.D. Corps)\t\t$ 7.00/B.Matthey/SOLD\n\nH.A.R.D. Corps 1 \t\t\t\t\t$ 5.00\n\nIncredible Hulk 324 (1st app Grey Hulk since #1 1962)\t$ 7.00\n\nIncredible Hulk 330 (1st McFarlane issue)\t\t$15.00\n\nIncredible Hulk 331 (Grey Hulk series begins)\t\t$11.00\n\nIncredible Hulk 367 (1st Dale Keown art in Hulk)        $15.00\n\nIncredible Hulk 377 (1st all new hulk, 1st prnt, Keown) $15.00\n\nMarvel Comics Presents 1 (Wolverine, Silver Surfer)     $ 7.50\n\nMarvel Presents (Charleston Chew giveaway, Sam Keith)\t$ 5.00\n\nMaxx Limited Ashcan (4000 copies exist, blue cover)\t$30.00\n\nMr T. #1 (Signed Advance copy, 10,000 exist)\t\t$10.00\n\nNew Mutants 86 (McFarlane cover, 1st app Cable - cameo)\t$10.00\n\nNew Mutants 100 (1st app X-Force)                       $ 5.00\n\nNew Mutants Annual 5 (1st Liefeld art on New Mutants)\t$10.00\n\nOmega Men 3 (1st appearance Lobo)                       $ 7.50\n\nOmega Men 10 (1st full Lobo story)                      $ 7.50\n\nPower Man & Iron Fist 78 (3rd appearance Sabretooth)    $20.00\n\nPower Man & Iron Fist 84 (4th appearance Sabretooth)    $15.00\n\nSimpsons Comics and Stories 1 (Polybagged special ed.)\t$ 7.50\n\nSpectacular Spider-Man 147 (1st app New Hobgoblin)      $12.50\n\nSpider-Man Special (UNICEF giveaway, vs Venom)\t\t$10.00\n\nStar Trek the Next Generation 1 (Feb 1988, DC mini)     $ 7.50\n\nStar Trek the Next Generation 1 (Oct 1989, DC comics)   $ 7.50\n\nTrianglehead #1 (Special limited edition, autographed)\t$ 5.00\n\nWeb of Spider-Man 29 (Hobgoblin, Wolverine appear)      $10.00 \n\nWeb of Spider-Man 30 (Origin Rose, Hobgoblin appears)   $ 7.50\n\nWolverine 10 (Before claws, 1st battle with Sabretooth)\t$15.00\n\nWolverine 41 (Sabretooth claims to be Wolverine's dad)\t$ 5.00\n\nWolverine 42 (Sabretooth proven not to be his dad)\t$ 3.50\n\nWolverine 43 (Sabretooth/Wolverine saga concludes)\t$ 3.00\n\nWolverine 1 (1982 mini-series, Miller art)\t\t$20.00\n\nWonder Woman 267 (Return of Animal Man)                 $12.50\n\nX-Force 1 (Signed by Liefeld, Bagged, X-Force card)     $20.00\n\nX-Force 1 (Signed by Liefeld, Bagged, Shatterstar card) $10.00\n\nX-Force 1 (Signed by Liefeld, Bagged, Deadpool card)    $10.00\n\nX-Force 1 (Signed by Liefeld, Bagged, Sunspot/Gideon)   $10.00\n\n\nAll comics are in near mint to mint condition, are bagged in shiny \npolypropylene bags, and backed with white acid free boards.  Shipping is\n$1.50 for one book, $3.00 for more than one book, or free if you order \na large enough amount of stuff.  I am willing to haggle.\n\nI have thousands and thousands of other comics, so please let me know what \nyou've been looking for, and maybe I can help. "
+            ],
+            "top_keywords": [
+                [
+                    "app aliens comics",
+                    1
+                ],
+                [
+                    "aliens comics prnt",
+                    1
+                ],
+                [
+                    "marvel aliens app",
+                    1
+                ],
+                [
+                    "work marvel aliens",
+                    1
+                ],
+                [
+                    "aliens app aliens",
+                    1
+                ]
+            ],
+            "representative_text": "The following comics are for auction.  The highest bid takes them! \n\nAll are near mint to mint condi..."
+        },
+        "38": {
+            "size": 1,
+            "indices": [
+                36
+            ],
+            "texts": [
+                "Dragon's Lair II ($400 Complete)\n-------------------------------------\n \n \n  or \n \n   $220 Laser Disc\n   $150 Motherboard/Joystick/buttons\n   $35  Graphics (For arcade cabinet)\n   $50  Brick Power Supply +12/-12/+5\n \n  Space Ace ($430 Complete)\n--------------------------------------\n \n  or \n \n   $250 Laser Disc\n   $150 Motherboard/Joystick/buttons\n   $35  Graphics (For arcade cabinet)\n   $50  Brick Power Supply +12/-12/+5\n    \n \n   Both Space Ace and Dragon's Lair II ($750)\n-----------------------------------------------\n \n   These games require a Sony 1450 Laserdisc player.  The\nnice thing about this player is that you can also watch\nnormal Laserdisc movies on it as well.  I have one which I\nwill sell for $600 by itself, $550 with a purchase of one\ncomplete system or $500 if you buy both systems.\n \n    I currently run this into my entertainment center.  I have\nit housed in a PC computer case with with its own fan, and \npower supply.  I run the audio into my stereo system, and the\nlaserdisc runs directly into the T.V..  I have made a mount for\nthe joysticks and the buttons.  First person who buys both\ngames will get it all, otherwise you have to do it yourself.\n \n    If you would prefer to have it all housed in a normal\narcade cabinet this can be done as well.  The graphics will\ngo nicely along the sides and front of the cabinet.\n \n    Everything works perfectly.  The laserdisc player has an\nRS-232 port which you can use to develop your own multimedia\ntype applications.  The Laserdiscs have been stored in a safe\nplace and have no scratches on them.\n \n    If you are interested please email me.\n \n    Thanks,\n \n     Soren\n \n--------------------------------------------------------------\nSoren Burkhart\nPurdue University        \"Yes, well that is just the sort of\nA.I. & Robotics\t\t  blink-headed pig ignorance I have\nzoron@en.ecn.purdue.edu   come to expect from you non-creative\n\t\t\t  garbage.\""
+            ],
+            "top_keywords": [
+                [
+                    "player laserdisc movies",
+                    1
+                ],
+                [
+                    "games sony laserdisc",
+                    1
+                ],
+                [
+                    "laserdisc movies purchase",
+                    1
+                ],
+                [
+                    "laserdisc mount joysticks",
+                    1
+                ],
+                [
+                    "graphics arcade cabinet",
+                    1
+                ]
+            ],
+            "representative_text": "Dragon's Lair II ($400 Complete)\n-------------------------------------\n \n \n  or \n \n   $220 Laser Dis..."
+        },
+        "39": {
+            "size": 1,
+            "indices": [
+                51
+            ],
+            "texts": [
+                "I am looking to sell my ICOM IC-02AT and extras.  I have the  \nfollowing:\nCM-12 Battery\nHS-10 Headset\nHS-10SA VOX unit\nCigarette Adapter\nLeather Case\nBC-25V Wall Charger\nIC-BP3 Battery\t\tAlso have one that needs a new cell (i think,  \nits been a while)\n\nIt is in good condition, has a scratch on the front that is not  \nvisible when in the leather case.\n\nIf you are interested, make me an offer.\n\n--rich\n"
+            ],
+            "top_keywords": [
+                [
+                    "cigarette adapter leather",
+                    1
+                ],
+                [
+                    "unit cigarette adapter",
+                    1
+                ],
+                [
+                    "vox unit cigarette",
+                    1
+                ],
+                [
+                    "cigarette adapter",
+                    1
+                ],
+                [
+                    "ic bp3 battery",
+                    1
+                ]
+            ],
+            "representative_text": "I am looking to sell my ICOM IC-02AT and extras.  I have the  \nfollowing:\nCM-12 Battery\nHS-10 Headse..."
+        },
+        "40": {
+            "size": 1,
+            "indices": [
+                45
+            ],
+            "texts": [
+                "I have for sale teh USWEST SearchDisc CDROM Phone Directory.  This has\nthe names, phone number, address, business/residence information for\nall regions covered by US West.  States includes Oregon, Washington,\nColorado, New Mexico, Arizona, Idaho, Wyoming, Montana, Utah, \nMinnesota, Nebraska, Iowa, North Dakota, and South Dakota.\n\nHave have two CDROM disks, one for June 1992, the other for Oct. 1992.\n\nIf you are interested, make an offer, thanks."
+            ],
+            "top_keywords": [
+                [
+                    "arizona idaho wyoming",
+                    1
+                ],
+                [
+                    "mexico arizona idaho",
+                    1
+                ],
+                [
+                    "oregon washington colorado",
+                    1
+                ],
+                [
+                    "idaho wyoming montana",
+                    1
+                ],
+                [
+                    "utah minnesota nebraska",
+                    1
+                ]
+            ],
+            "representative_text": "I have for sale teh USWEST SearchDisc CDROM Phone Directory.  This has\nthe names, phone number, addr..."
+        },
+        "41": {
+            "size": 1,
+            "indices": [
+                50
+            ],
+            "texts": [
+                "I'd offer $150 for your scanner, shipping at your expense, payment to\nbe sent by personal check within 24 hours after receipt of goods -- or if\nyou live nearby and can deliver, payment in cash with 24 hour advance notice\nso I can go to the bank.  If sent by mail, I reserve the right to return\nit at my expense if when I check it out I find it to be defective in some\nway.\n\nBTW, why would you sell such a fine scanner?  Did you replace it with\nsome other instrument or find it not to be satisfactory in some way?"
+            ],
+            "top_keywords": [
+                [
+                    "payment check hours",
+                    1
+                ],
+                [
+                    "payment cash hour",
+                    1
+                ],
+                [
+                    "advance notice bank",
+                    1
+                ],
+                [
+                    "cash hour advance",
+                    1
+                ],
+                [
+                    "expense payment check",
+                    1
+                ]
+            ],
+            "representative_text": "I'd offer $150 for your scanner, shipping at your expense, payment to\nbe sent by personal check with..."
+        },
+        "42": {
+            "size": 1,
+            "indices": [
+                64
+            ],
+            "texts": [
+                "BOY OH BOY, HAVE I GOT A DEAL FOR YOU !!!!!!!!!\n\nHow does this sound.......\n\n\tI have decided to sell all of this as a package deal,\n(unless someone really wants something seperate, then I'm open\nto that as well).....\n\n\tKramer Striker 100st electric guitar\n\t\tDark metallic blue...\n\t\tFloyd Rose Tremlo...\n\t\tTuning lockers at the nut...\n\t\tGreat action, all-around great guitar!!\n\n\t\t\t-plus-\n\n\tKorg pme40x professional modular effects pedal board\n\t\tHas flanger, chorus, and graphic equilizer...\n\t\tHas a unique bonus...you can buy seperate pedal \"boxes\"\n\t\t\tthat sort of slide into any of the 4 existing slots..\n\t\tMono input, STEREO output...\n\t\tPerfect for the electric or acoustic guitars!!!\n\n\t\t\t-plus-\n\t\n\tDOD American Metal distortion pedal\n\t\tDurable, great sounding pedal...\n\t\tGoes great with the Korg pedal board!!\n\nThere you have it!  Everything you need for a great sound!!!\nYours as a package deal for only........$300 o.b.o.!!!!!!!!!!!!!!!!!!\n\nRespond by email to  dietrijj@mentor.cc.purdue.edu  or by phone at\n(317) 495-4426 and ask for Jason.  Thanks in advance!!!"
+            ],
+            "top_keywords": [
+                [
+                    "guitar korg pme40x",
+                    1
+                ],
+                [
+                    "action guitar korg",
+                    1
+                ],
+                [
+                    "guitar korg",
+                    1
+                ],
+                [
+                    "kramer striker guitar",
+                    1
+                ],
+                [
+                    "perfect guitars dod",
+                    1
+                ]
+            ],
+            "representative_text": "BOY OH BOY, HAVE I GOT A DEAL FOR YOU !!!!!!!!!\n\nHow does this sound.......\n\n\tI have decided to sell..."
+        },
+        "43": {
+            "size": 1,
+            "indices": [
+                70
+            ],
+            "texts": [
+                "Forsale\n\n1     Desktop Case, 200 Watt power supply 2 internal 5 1/4\" bays and \n      2 external 5 1/4\" origanaly Dell System 200 case. looks real good\n      all hardware included.\n      I would like $80 + shipping or best offer.\n\n1     Western Digital MFM controler, 16 bit 2 floppy 2 hard, never had a\n      problem with it. \n      I would like  $30 + shipping or best offer.\n\n1     Game card, works well nothing fancy just a joystick port. \n      I would like $10 + shipping or best offer.\n\n1     INNOVATION Game / Sound Card, Has one game port and an adlib port.\n      I never used it. ( I got a soundblaster cheep before I installed it)\n      I would like $5 + shipping\n\n All offers considered, Buyer pays shipping.\n\n\nplease resopnd to \nklwright@eos.ncsu.edu\nor\n(919) 834-3290 "
+            ],
+            "top_keywords": [
+                [
+                    "game port port",
+                    1
+                ],
+                [
+                    "game sound card",
+                    1
+                ],
+                [
+                    "shipping offer game",
+                    1
+                ],
+                [
+                    "game port",
+                    1
+                ],
+                [
+                    "card game port",
+                    1
+                ]
+            ],
+            "representative_text": "Forsale\n\n1     Desktop Case, 200 Watt power supply 2 internal 5 1/4\" bays and \n      2 external 5 1/..."
+        },
+        "44": {
+            "size": 1,
+            "indices": [
+                62
+            ],
+            "texts": [
+                "Hello.  I have the following for sale.  Most of the books are\nin perfect condition.  If interested please e-mail to chungy2@rpi.edu.\n\n----------------------------------------------------------------------\n\n\nThrough The Telescope (hard cover)\t\t\t\t$14.00              \nSurface Physics (soft cover)\t\t\t\t\t$13.00\n\nThe Physics of Structurally Disordered \n\tMatter: An Introduction\t(soft cover)\t\t\t$55.00\n\nSubatomic Physics (hard cover)\t\t\t\t\t$57.00           \nA First General Relativity (hard cover)\t\t\t\t$20.00                 \nNon-Equilibrium Thermodynamics (soft cover)\t\t\t$8.00 \n\nAdvances in Atomic and Molecular Physics.  Vol 1. (hard cover)\t$30.00 \n\nAdvances in Atomic and Molecular Physics.  Vol 3. (hard cover)\t$30.00\n\nMolecular Beams (hard cover)\t\t\t\t\t$15.00\n\nMolecular Beams and Reaction Kinetics. (hard cover)\t\t$20.00 \n\nPerturbation Methods in Applied Mathematics. (hard cover)\t$40.00\n\nElementary Differential Equations and \n\tBoundary Value Problems. (hard cover)\t\t\t$27.00\n\nVector Mechanics for Engineers: Statics \n\tand Dynamics. (hard cover)\t\t\t\t$30.00\n\nFree-Electron Lasers. (hard cover)\t\t\t\t$20.00"
+            ],
+            "top_keywords": [
+                [
+                    "physics matter introduction",
+                    1
+                ],
+                [
+                    "relativity cover thermodynamics",
+                    1
+                ],
+                [
+                    "physics cover physics",
+                    1
+                ],
+                [
+                    "atomic molecular physics",
+                    1
+                ],
+                [
+                    "subatomic physics cover",
+                    1
+                ]
+            ],
+            "representative_text": "Hello.  I have the following for sale.  Most of the books are\nin perfect condition.  If interested p..."
+        },
+        "45": {
+            "size": 1,
+            "indices": [
+                49
+            ],
+            "texts": [
+                "I have a Onkyo integrated amplifier that I am looking to get rid of.\n\t60w/ch\n\tworks great\n\tIntegra series\n\tnot a problem\n\n\tAsking $100 OBO\n\n\tIf your interested call me at 317-743-2656  or email this address.\n\tMAKE ME AN OFFER!!!\n\nTodd\n"
+            ],
+            "top_keywords": [
+                [
+                    "make offer todd",
+                    1
+                ],
+                [
+                    "offer todd",
+                    1
+                ],
+                [
+                    "problem obo address",
+                    1
+                ],
+                [
+                    "address make offer",
+                    1
+                ],
+                [
+                    "series problem obo",
+                    1
+                ]
+            ],
+            "representative_text": "I have a Onkyo integrated amplifier that I am looking to get rid of.\n\t60w/ch\n\tworks great\n\tIntegra s..."
+        },
+        "46": {
+            "size": 1,
+            "indices": [
+                68
+            ],
+            "texts": [
+                "For Sale ...:\n \n        Hewlett Packard DeskJet 500 inkjet printer.\n \n        o Perfect condition both internally and externally\n        o Comes with two FULL ink cartridges\n        o Less than six months old\n        o Comes with all original packaging, manuals, cables\n          and software\n \n        This is truly an excellent printer and is the low-cost\n        alternative to a laser printer.  It prints with the\n        quality of a laser printer, but for a fraction of both\n        the inital cost and he long term cost (that is,\n        replacement of ink cartridges as opposed to replacement\n        of toner).  The printer prints at a maximum of 300*300\n        (D)ots (P)er (I)nch (D.P.I.) on many different types\n        and sizes of paper, including envelopes and\n        transperencies.  Printer prints in both landscape and\n        portrait modes.  Printer can accept up to two\n        cartridges giving it things like more memory or\n        additional fonts.  Printer works excellently with\n        Windows and DOS and brings TrueType to its full\n        potential.\n \n        I originally purchased the printer for $375.00.  Make me\n        an offer, but I would prefer to stay in the $300.00\n        range.  I will pay the shipping to anywhere in the \n        continental U.S.A.\n \n        If you are interested, please either leave me email or\n        call Kirk Peterson at (303) 494-7951 anytime.\n \n        Thanks!\n \n"
+            ],
+            "top_keywords": [
+                [
+                    "inkjet printer perfect",
+                    1
+                ],
+                [
+                    "printer windows dos",
+                    1
+                ],
+                [
+                    "printer quality laser",
+                    1
+                ],
+                [
+                    "quality laser printer",
+                    1
+                ],
+                [
+                    "printer prints maximum",
+                    1
+                ]
+            ],
+            "representative_text": "For Sale ...:\n \n        Hewlett Packard DeskJet 500 inkjet printer.\n \n        o Perfect condition bo..."
+        },
+        "47": {
+            "size": 1,
+            "indices": [
+                23
+            ],
+            "texts": [
+                "I have a 41M IDE HD forsale or trade.  I would like to trade it if possible.\n\nHD\n- 41M\n- IDE Westren Digital\n- No errors or bad sectors\n- 13.8ms access time\n- 855 kilobytes per second transfer rate\n- working in my computer right now.\n\nLOOKING FOR IN A TRADE MAYBE\n- SEGA Genesis\n- a pair of Sub Woffers\n- Souround Sound Stereo/Reciever\n- ANY KIND OF ELECTORNIC EQUIPMENT (IF YOU HAVE ELECTORINIC EQUIPMENT I LIKE \n                                    ALMOST ANY KIND OF COMPUTRER, CAR, OR HOME\n                                    EQUIPMENT, -- IF YOU WANT TO MAKE AN OFFER\n                                    ON A TRADE LET ME KNOW. --CD PLAYER ..ect)\n\nPlease if you are interested in a trade let me know.  \n\nemail ------ rogess@sage.cc.purdue.edu\n\n"
+            ],
+            "top_keywords": [
+                [
+                    "trade maybe sega",
+                    1
+                ],
+                [
+                    "maybe sega genesis",
+                    1
+                ],
+                [
+                    "computrer car home",
+                    1
+                ],
+                [
+                    "sega genesis pair",
+                    1
+                ],
+                [
+                    "computer looking trade",
+                    1
+                ]
+            ],
+            "representative_text": "I have a 41M IDE HD forsale or trade.  I would like to trade it if possible.\n\nHD\n- 41M\n- IDE Westren..."
+        },
+        "48": {
+            "size": 1,
+            "indices": [
+                54
+            ],
+            "texts": [
+                " and  A VGA monitor..\ne-mail\n"
+            ],
+            "top_keywords": [
+                [
+                    "vga monitor mail",
+                    1
+                ],
+                [
+                    "monitor mail",
+                    1
+                ],
+                [
+                    "vga monitor",
+                    1
+                ],
+                [
+                    "vga",
+                    1
+                ],
+                [
+                    "mail",
+                    1
+                ]
+            ],
+            "representative_text": " and  A VGA monitor..\ne-mail\n..."
+        },
+        "49": {
+            "size": 1,
+            "indices": [
+                14
+            ],
+            "texts": [
+                "For Sale:\n\n1982 - 16' Hobie Cat Special, very good condition with\ntrailer, catbox, righting system, many extras.  Boat\nis currently garaged in Natick MA, 25 miles east of\nBoston."
+            ],
+            "top_keywords": [
+                [
+                    "catbox extras boat",
+                    1
+                ],
+                [
+                    "condition trailer catbox",
+                    1
+                ],
+                [
+                    "trailer catbox extras",
+                    1
+                ],
+                [
+                    "sale hobie cat",
+                    1
+                ],
+                [
+                    "hobie cat special",
+                    1
+                ]
+            ],
+            "representative_text": "For Sale:\n\n1982 - 16' Hobie Cat Special, very good condition with\ntrailer, catbox, righting system, ..."
+        },
+        "50": {
+            "size": 1,
+            "indices": [
+                42
+            ],
+            "texts": [
+                "Dear Fellow Usenet Users:\n\n\tI would like to give a formal apology for posting an advertisement \nabout my printing business.  I did not intend this to be an advertisement, \nbut rather an offer for people on the usenet, many of whom use printing\non a regular basis.  I was not aware that this is not \"legal\" on the usenet.\nI am only trying to put myself through college.  For those of you who\nrequested information, I will write to you privately.  For those of you who \nare having fun flooding my mailbox, I think you can grow up.  To offer advice\nis one thing, but to use profanity toward me is another.\n\nThank you,  "
+            ],
+            "top_keywords": [
+                [
+                    "fun mailbox advice",
+                    1
+                ],
+                [
+                    "information fun mailbox",
+                    1
+                ],
+                [
+                    "college information fun",
+                    1
+                ],
+                [
+                    "usenet users apology",
+                    1
+                ],
+                [
+                    "mailbox advice thing",
+                    1
+                ]
+            ],
+            "representative_text": "Dear Fellow Usenet Users:\n\n\tI would like to give a formal apology for posting an advertisement \nabou..."
+        },
+        "51": {
+            "size": 1,
+            "indices": [
+                34
+            ],
+            "texts": [
+                "Hey, I can't send mail to you, so....\n\nCould you please resend me your address?  I lost it (for H. in\nMoscow)"
+            ],
+            "top_keywords": [
+                [
+                    "mail address moscow",
+                    1
+                ],
+                [
+                    "address moscow",
+                    1
+                ],
+                [
+                    "moscow",
+                    1
+                ],
+                [
+                    "hey mail address",
+                    1
+                ],
+                [
+                    "hey mail",
+                    1
+                ]
+            ],
+            "representative_text": "Hey, I can't send mail to you, so....\n\nCould you please resend me your address?  I lost it (for H. i..."
+        },
+        "52": {
+            "size": 1,
+            "indices": [
+                27
+            ],
+            "texts": [
+                "Sony D-22 portable Diskman forsale\n      \n      Good condition, flawless.\n      \n      Costomer AC adapter : 6v DC power supply ( tested 9v DC)\n       \n       * The factory adapter was tested 12v DC (AC 110v input) at the \n         time I bought it three years ago. When using it, a lot of heat \n         was generated inside the CD machine. Of course I wouldn't use \n         it to risk this baby's life. Maybe that's why so many owners \n         always complain about their portable machine going kaput after \n         a short time usage. \n\n       * 9v DC factory suggested\n      \n      LED display\n"
+            ],
+            "top_keywords": [
+                [
+                    "usage dc factory",
+                    1
+                ],
+                [
+                    "dc factory adapter",
+                    1
+                ],
+                [
+                    "factory adapter dc",
+                    1
+                ],
+                [
+                    "supply dc factory",
+                    1
+                ],
+                [
+                    "heat cd machine",
+                    1
+                ]
+            ],
+            "representative_text": "Sony D-22 portable Diskman forsale\n      \n      Good condition, flawless.\n      \n      Costomer AC a..."
+        },
+        "53": {
+            "size": 1,
+            "indices": [
+                18
+            ],
+            "texts": [
+                "\nNon-smoking, normal law student needs furnished place to live in Memphis\nthis summer.  I'll be working at a firm downtown and will have\nto pass the bar character examination, so you don't have to worry about \nyour stuff being broken or stolen.  Call Chris at (804)979-2519\nor leave e-mail.\n"
+            ],
+            "top_keywords": [
+                [
+                    "law student place",
+                    1
+                ],
+                [
+                    "student place memphis",
+                    1
+                ],
+                [
+                    "memphis summer firm",
+                    1
+                ],
+                [
+                    "law student",
+                    1
+                ],
+                [
+                    "bar character examination",
+                    1
+                ]
+            ],
+            "representative_text": "\nNon-smoking, normal law student needs furnished place to live in Memphis\nthis summer.  I'll be work..."
+        },
+        "54": {
+            "size": 1,
+            "indices": [
+                16
+            ],
+            "texts": [
+                "I have the following CDs for sale for $6 each plus postage.\nAll CDs are in perfect condition.\n\n\nMichael Bolton        Time, Love & Tenderness      \nPaula Abdul          Forever Your Girl\nTaylor Dayne            Tell it to My Heart\nLionel Richie       The Composer\nElvis Presley      18 Number One Hits\nBobby Vinton       Greatest Hits\nSuper Hits of the 70's \n(includes  Yellow River, Rose Garden, For the Good Times, \nHelp Me Make it through the Night, Mr. Bojangles, Sweet Mary, \nOne Toke Over the Line, Put Your Hand in Hand, Stay Awhile,\nWoodstock, Silver Bird, I Ain't got time Anymore)"
+            ],
+            "top_keywords": [
+                [
+                    "composer elvis presley",
+                    1
+                ],
+                [
+                    "bojangles sweet mary",
+                    1
+                ],
+                [
+                    "presley number hits",
+                    1
+                ],
+                [
+                    "elvis presley number",
+                    1
+                ],
+                [
+                    "richie composer elvis",
+                    1
+                ]
+            ],
+            "representative_text": "I have the following CDs for sale for $6 each plus postage.\nAll CDs are in perfect condition.\n\n\nMich..."
+        },
+        "55": {
+            "size": 1,
+            "indices": [
+                40
+            ],
+            "texts": [
+                "I have a Tektronix T921 15Mhz scope for sale.  It is a nice, simple\nunit to learn on.  I used it while I was in school.  If you want one\nto play with at home, this is easy and inexpensive.  It has a nice\nhandle and is quite lightweight and easy to move around.\n\nI will consider selling the probes seperately for $25 ea.  They are HP\n10017A probes suitable for this type of scope.  The probes are NOT\nincluded in the price of $99 for the scope.\n\nIf you need more technical info, you will have to come look at it, as\nI am not a scope expert and what I have said is all I know."
+            ],
+            "top_keywords": [
+                [
+                    "home handle probes",
+                    1
+                ],
+                [
+                    "school home handle",
+                    1
+                ],
+                [
+                    "unit school home",
+                    1
+                ],
+                [
+                    "sale unit school",
+                    1
+                ],
+                [
+                    "tektronix t921 scope",
+                    1
+                ]
+            ],
+            "representative_text": "I have a Tektronix T921 15Mhz scope for sale.  It is a nice, simple\nunit to learn on.  I used it whi..."
+        },
+        "56": {
+            "size": 1,
+            "indices": [
+                39
+            ],
+            "texts": [
+                "\"Bare\" = case, a power supply, and a motherboard (with RAM and a coprocessor).\nEverything else is yours to add as you like.\n\nThe motherboard:\n    - US-made Micronics 8-slot motherboard with Intel 386dx/25mhz CPU\n    - 64kb SRAM cache\n    - 4mb 80us RAM using 4x1mb simms (worth $120 alone)\n    - Cyrix 83D87 math coprocessor (worth $90 alone)\n    - Norton SI 6.0 rating of 26.1\n    - Latest version Phoenix BIOS\n\nThe case/power supply:\n     - Standard desktop case. 230watt power supply with the usual connectors.\n     - Room for five floppy/hard drives (three visible, two internal).\n\n*New* Micronics CPUs often command a several-hundred dollar premium\nover clone motherboards because they are US-made, use high-quality\ncomponents, and are known to be both very reliable and compatible. They\nhave been OEMed in systems sold by both Gateway and Zeos at various\npoints in the past. (Check out the ads in the back pages of Byte or PC\nMagazine if you want to see this price differential for yourself.)\n\nPrice: $450 complete, $100 less if you don't want/need the case and\npower supply. The board is fully guaranteed. Email for further details\nor for any questions.\n\nThanks!"
+            ],
+            "top_keywords": [
+                [
+                    "micronics motherboard intel",
+                    1
+                ],
+                [
+                    "motherboard intel cpu",
+                    1
+                ],
+                [
+                    "micronics cpus dollar",
+                    1
+                ],
+                [
+                    "motherboard ram coprocessor",
+                    1
+                ],
+                [
+                    "pc magazine price",
+                    1
+                ]
+            ],
+            "representative_text": "\"Bare\" = case, a power supply, and a motherboard (with RAM and a coprocessor).\nEverything else is yo..."
+        },
+        "57": {
+            "size": 1,
+            "indices": [
+                26
+            ],
+            "texts": [
+                "For sale by owners who were also the builders\n\nContemporary Cape House located in Sandwich, Ma\n\nThree bedrooms, two baths, one car oversized garage\nlarge eat-in kitchen\nCathedral ceiling from to back living room\ndeck off of kitchen and dining room\n\n20,000 sq ft\n1,696 sq ft living space\nfull walk-out basement\n\n$139,900, creative financing a possibility"
+            ],
+            "top_keywords": [
+                [
+                    "house sandwich ma",
+                    1
+                ],
+                [
+                    "garage kitchen cathedral",
+                    1
+                ],
+                [
+                    "house sandwich",
+                    1
+                ],
+                [
+                    "car garage kitchen",
+                    1
+                ],
+                [
+                    "living room kitchen",
+                    1
+                ]
+            ],
+            "representative_text": "For sale by owners who were also the builders\n\nContemporary Cape House located in Sandwich, Ma\n\nThre..."
+        },
+        "58": {
+            "size": 1,
+            "indices": [
+                75
+            ],
+            "texts": [
+                "I have recently purchased a PB170 and have no more use for my\nRasterOps 8XL.  It has been a great card.  I should have traded it\nwith my IIci, but I forgot.  My forgetfulness si your gain.\nGreat 8 bit video that supports:\n\n640x480 (Apple 13\"/14\")\n640x870 (Apple Portrait)\n800x600 (Silly DOS monitor resolution)\n1024x768 (60hz & 75hz)\n1152x870 (Apple 21\")\n\nHas hardware Pan & Zoom and supports virtual desktops up to the size of\n2 Newspaper pages.  Includes standard Apple monitor cable or card to BNC,\nyou choose.\n\nI am asking $250 (it's still advertised in MacWorld for up to $499). \nCompletely negotiable.  I can get a monitor and sell the pair.  I will\naccept offers for software or PowerBook accessory trades.\nMake an offer.\n"
+            ],
+            "top_keywords": [
+                [
+                    "apple monitor cable",
+                    1
+                ],
+                [
+                    "resolution apple hardware",
+                    1
+                ],
+                [
+                    "apple hardware pan",
+                    1
+                ],
+                [
+                    "bit video apple",
+                    1
+                ],
+                [
+                    "card bnc macworld",
+                    1
+                ]
+            ],
+            "representative_text": "I have recently purchased a PB170 and have no more use for my\nRasterOps 8XL.  It has been a great ca..."
+        },
+        "59": {
+            "size": 1,
+            "indices": [
+                15
+            ],
+            "texts": [
+                "This is a test. Thanks.\n"
+            ],
+            "top_keywords": [
+                [
+                    "test thanks",
+                    1
+                ],
+                [
+                    "test",
+                    1
+                ],
+                [
+                    "thanks",
+                    1
+                ]
+            ],
+            "representative_text": "This is a test. Thanks.\n..."
+        },
+        "60": {
+            "size": 1,
+            "indices": [
+                31
+            ],
+            "texts": [
+                "I'm looking for a copy of \"Bela Lugosi's last film.\" If anyone has a copy\nof this stinker, please e-mail me. (Also, if anyone knows a better place to\npost this, please tell me).\n"
+            ],
+            "top_keywords": [
+                [
+                    "lugosi film copy",
+                    1
+                ],
+                [
+                    "bela lugosi film",
+                    1
+                ],
+                [
+                    "film copy stinker",
+                    1
+                ],
+                [
+                    "lugosi film",
+                    1
+                ],
+                [
+                    "copy bela lugosi",
+                    1
+                ]
+            ],
+            "representative_text": "I'm looking for a copy of \"Bela Lugosi's last film.\" If anyone has a copy\nof this stinker, please e-..."
+        },
+        "61": {
+            "size": 1,
+            "indices": [
+                48
+            ],
+            "texts": [
+                "As it says, I'm interested in buying one of the little\nlabel-makers, and I can't afford a new one.  Anybody\ntired of theirs?\n\nE-mail Maureen gt1706a@prism.gatech.edu\n\n"
+            ],
+            "top_keywords": [
+                [
+                    "mail maureen gt1706a",
+                    1
+                ],
+                [
+                    "maureen gt1706a prism",
+                    1
+                ],
+                [
+                    "theirs mail maureen",
+                    1
+                ],
+                [
+                    "maureen gt1706a",
+                    1
+                ],
+                [
+                    "mail maureen",
+                    1
+                ]
+            ],
+            "representative_text": "As it says, I'm interested in buying one of the little\nlabel-makers, and I can't afford a new one.  ..."
+        },
+        "62": {
+            "size": 1,
+            "indices": [
+                2
+            ],
+            "texts": [
+                "FOR SALE:\n\nKenwood Audio/Visual Surround sound Receiver.\n* 1.5 yrs old, perfect condition, still under 5 year warranty.\n* 75 watts x 2 front + 5x2 watts rear surround.  Dobly surround.\n* 3 video, 2 tape, 1 CD, 1 Phono input.\n* Full easy-touch button control for all functions\n* Bass/treble/balance/rear level knobs\n* Earphone input\n* Digital synthesized tuner with 20FM/10AM presets. \n* Full logic-remote control:  with volume, mute, tuner and other controls.\n* Has three outlets in the back, can connect all your equipment and turn them\n  on at the same time  \n* Includes manuals, cables, and original packaging.\n\nA great addition for anyone starting out a home theater, or stereo system.\n\nOriginally purchased at $379, Asking $150.\n\nemail:  jburgin@ralph.cs.haverford.edu\nphone:  215-645-5620"
+            ],
+            "top_keywords": [
+                [
+                    "home theater stereo",
+                    1
+                ],
+                [
+                    "theater stereo email",
+                    1
+                ],
+                [
+                    "addition home theater",
+                    1
+                ],
+                [
+                    "theater stereo",
+                    1
+                ],
+                [
+                    "home theater",
+                    1
+                ]
+            ],
+            "representative_text": "FOR SALE:\n\nKenwood Audio/Visual Surround sound Receiver.\n* 1.5 yrs old, perfect condition, still und..."
+        },
+        "63": {
+            "size": 1,
+            "indices": [
+                43
+            ],
+            "texts": [
+                "\t\t\t\t  ^^^\n\t\t           what the hell is 'ios'? \n\nFix your own typos before you blame others....\n\n"
+            ],
+            "top_keywords": [
+                [
+                    "hell fix typos",
+                    1
+                ],
+                [
+                    "fix typos",
+                    1
+                ],
+                [
+                    "hell fix",
+                    1
+                ],
+                [
+                    "typos",
+                    1
+                ],
+                [
+                    "hell",
+                    1
+                ]
+            ],
+            "representative_text": "\t\t\t\t  ^^^\n\t\t           what the hell is 'ios'? \n\nFix your own typos before you blame others....\n\n..."
+        },
+        "64": {
+            "size": 1,
+            "indices": [
+                5
+            ],
+            "texts": [
+                "**********\n\nHitachi CD player (needs cd spin motor) $30 shipped \n\n  JoYSTICKS..\n\n\tan IBM/apple joystick three fire buttons\n\tapple joy stick (//c //e)\n\tkraft track ball  make offers..\n\ncoleco vision items:\n\n\ttwo working Consoles w/ working controllers in great shape\n\tone roller ball controller\n\ttwo Super ACtion conrollers\n\tone 'standard' joystick\n\ngames:\n\tSA baseball\n\tSA rocky\n\tSA football\n\nVIc 20 and C64 with powersupplies and RF modulators... make an offer\n\nVic20 Catridges:  Raid on Fort Knox - Omega Race\n\n******\n\nEarly 80's Epiphone Acoustic guitar\nspruce top.. mohogany back, sides and neck\n\nadjustable bridge, plays very nice\n\nsmall hole in side for jack (had a pickup at one time)\n\n$175 + shipping\n\n******\n\nYamaha CS-5 ANalog synthesizer\n\nThree octave keyboard\n\nVCO - single oscillator range from 64' to 2'\n\nTone sources - Saw tooth, square, noise and external sound \n\nVCA - can be modulated\n\nVCF - Cut off, resonance, LFO MOD, envelope generator depth\n\npitch bend slider, CV in and out, trigger in and out, external\ntone source in...  the keyboard is in perfect working order and\nis colored black and white\n\n$150 + shipping\n\n**********\nDRUM stuff..\n\nNorth heavy Duty hi hat stand $45  \n\tolder stand... but definately in working shape.. could\n\tuse a little clean up.  comes with clutch and felts, etc..\n\nPearl bass drum pedal with felt beater $20 \n\nhoner cymbal stand $15 (needs some work on cymbal stem)\n\nZildjian 20\" Ride cymbal  $55 \n\tmain line zildjian... older ride cymbal\n\nLudwig snare stand $10\n\tokay snare stand.. NOT like a remo though ;) \n\n\nshipping extra.. please email\n\nif you have questions about anything, please email me\n"
+            ],
+            "top_keywords": [
+                [
+                    "zildjian ride cymbal",
+                    1
+                ],
+                [
+                    "cymbal ludwig snare",
+                    1
+                ],
+                [
+                    "football vic c64",
+                    1
+                ],
+                [
+                    "hitachi cd player",
+                    1
+                ],
+                [
+                    "ibm apple joystick",
+                    1
+                ]
+            ],
+            "representative_text": "**********\n\nHitachi CD player (needs cd spin motor) $30 shipped \n\n  JoYSTICKS..\n\n\tan IBM/apple joyst..."
+        },
+        "65": {
+            "size": 1,
+            "indices": [
+                8
+            ],
+            "texts": [
+                "Hi, everyone,\n\n\tHere are some books for sale, all prices are negotiable!!\n\t(****Shipping fee is not included!!)\n\n\t1. Signals and Systems, Alexander P. Poularik and Samuel Seely\n\t   PWS-KENT Publisher,\tOld price: $10\n\t\t\t\tNew Price: $8.50!!!!\n\n\t2. Probability: an introduction, Samuel Goldberg\n\t   Dover Publisher, \tOld price: $4\n\t\t\t\tNew Price: $2!!!!!!!\n\n\t3. Digital Image Processing and Computer Vision, R. Schalkoff\n\t   Wiley Publisher, \tOld price: $30 \n\t\t\t\tNew Price: $26!!!!!!\n\n\t4. Digital Image Processing, R. Gonzalz and P. Wintz,\n\t   Addison Wesley Publisher, Old price: $25\n\t\t\t\tNew Price: $22.50!!!\n\nSOLD!!..5. X Window System User Guide (for X11R4), O'Reilly Associate\n\t \n\t6. The Best Book of MS-DOS 5, Alan Simpson\n\t   SAMS, \t\tOld price: $12\n\t\t\t\tNew price: $8.50!!!!\n\n\t7. Elements of Modern Algebra, Hu\n\t   Holden Day Publisher, Old price: $8\n\t\t\t\tNew price: $3.00!!!!\n\n\t8. Symmetries, Asymmetries and the World of Particles, T.D. Lee\n\t   Washington Publisher, Old price: $12\n\t\t\t\tNew price: $9.50!!!!\n\n\t9. Elementary Particles and the Laws of Physics - the 1986 Dirac\t\t  Memorial Lectures, Cambridge Publisher, Old price: $8\n\t\t\t\tNew price: $6.00!!!!\n\n\t10. A Brief History of Time, Stephen W. Hawking\n\t    Bantam books (Paperback), Old price: $8 \n\t\t\t\tNew price: $4.00!!!!\n\n\n\t\n"
+            ],
+            "top_keywords": [
+                [
+                    "paperback old price",
+                    1
+                ],
+                [
+                    "wiley publisher old",
+                    1
+                ],
+                [
+                    "publisher old price",
+                    1
+                ],
+                [
+                    "bantam books paperback",
+                    1
+                ],
+                [
+                    "hawking bantam books",
+                    1
+                ]
+            ],
+            "representative_text": "Hi, everyone,\n\n\tHere are some books for sale, all prices are negotiable!!\n\t(****Shipping fee is not ..."
+        },
+        "66": {
+            "size": 1,
+            "indices": [
+                46
+            ],
+            "texts": [
+                "\n  I've got a used one for sale.  I used it in high school and just don't have \nthe occasion to get it out and play it anymore.  Email me and we can work out \nsomething on it.  I can't get email to you for some reason.  David-- \n\n---------------------------------------------------------------------\nDavid B. Snyder                     Logicon Technical Services Inc.\ndsnyder@falcon.aamrl.wpafb.af.mil   Wright-Patterson Air Force Base\n513-255-5165                        Dayton, Ohio USA\n---------------------------------------------------------------------\nIt is said that GOD doesn't subtract from ones' time on earth, those\nhours spent flying.\n---------------------------------------------------------------------\n1946 Cessna 140 N76234 \"The lady in waiting\" Owner/Operator\n---------------------------------------------------------------------\nOpinions expressed are my own and not those of Logicon or the USAF."
+            ],
+            "top_keywords": [
+                [
+                    "cessna n76234 lady",
+                    1
+                ],
+                [
+                    "hours cessna n76234",
+                    1
+                ],
+                [
+                    "earth hours cessna",
+                    1
+                ],
+                [
+                    "wright patterson air",
+                    1
+                ],
+                [
+                    "hours cessna",
+                    1
+                ]
+            ],
+            "representative_text": "\n  I've got a used one for sale.  I used it in high school and just don't have \nthe occasion to get ..."
+        },
+        "67": {
+            "size": 1,
+            "indices": [
+                4
+            ],
+            "texts": [
+                "For Sale ---\n\n        U.S.Robotics 16.8k HST external modem, including power adapter,\n        Users Guide and Quick-Reference Card.\n\n        $515.00.\n\n        Call me voice at (513) 831-0162 -- let's talk about it.\n\n        Herb..."
+            ],
+            "top_keywords": [
+                [
+                    "robotics hst modem",
+                    1
+                ],
+                [
+                    "let talk herb",
+                    1
+                ],
+                [
+                    "sale robotics hst",
+                    1
+                ],
+                [
+                    "modem power adapter",
+                    1
+                ],
+                [
+                    "talk herb",
+                    1
+                ]
+            ],
+            "representative_text": "For Sale ---\n\n        U.S.Robotics 16.8k HST external modem, including power adapter,\n        Users ..."
+        },
+        "68": {
+            "size": 1,
+            "indices": [
+                30
+            ],
+            "texts": [
+                "  ???????????????????????????????????????????????????????????????????????????\n  ?     Dear Sirs,                                                          ?\n  ?                                                                         ?\n  ?     The  private  agricultural  firm  \"DINA\",  is  breeding  pedigree   ?\n  ?horses of \"sportmodel\"  class,  mainly  trakenensky,  gannoversky  and   ?\n  ?thoroughbred horses. We have 17 heads of dams, getters of  trakeninsky   ?\n  ?and thoroughbread breeds, colts of 1-2 years old, sport live-stock  of   ?\n  ?horses of concour class (for passing the route  with  obstacles).  The   ?\n  ?firm has a warm stable made of brick, arranged to place 60 horses.       ?\n  ?     We  have  possibility  to  expand  the  field  of  activity   and   ?\n  ?systematically prepare our horses of concour class for sale  for  hard   ?\n  ?currency. The experienced  staff  of  the  firm  (internetional  class   ?\n  ?master)  workes  for  breeding  and  training  of  horses.  Additional   ?\n  ?investments are  necessary  to  purchase  of  larger  dam  live-stock,   ?\n  ?construction of the riding-house for training, extra stables.            ?\n  ?     For two years our firm has been  organizing  hunting  tourism  of   ?\n  ?the territory of the national park not far from Moscow (about 100 km).   ?\n  ?     We are also concerned in the development of  trading connections    ?\n  ?on delivering food products, clothes, foot-wear etc. to Russia.          ?\n  ?                                                                         ?\n  ?                                                Our address:             ?\n  ?                                                Russia, Obninsk,         ?\n  ?                                                pr. Marksa, 34-130.      ?\n  ?                                                phone:(08439)3-49-42,    ?\n  ?                                                      (08439)3-42-30     ?\n  ?                                                fax:  (095)255-22-25     ?\n  ?                                                Electronic Mail:         ?\n  ?                                                dina@litana.obninsk.su   ?\n  ?                                                                         ?\n  ?                                                Vyacheslav Chereshnev.   ?\n  ???????????????????????????????????????????????????????????????????????????\n"
+            ],
+            "top_keywords": [
+                [
+                    "horses sportmodel class",
+                    1
+                ],
+                [
+                    "dina horses sportmodel",
+                    1
+                ],
+                [
+                    "horses class sale",
+                    1
+                ],
+                [
+                    "stock horses class",
+                    1
+                ],
+                [
+                    "horses sportmodel",
+                    1
+                ]
+            ],
+            "representative_text": "  ???????????????????????????????????????????????????????????????????????????\n  ?     Dear Sirs,    ..."
+        },
+        "69": {
+            "size": 1,
+            "indices": [
+                29
+            ],
+            "texts": [
+                "I  am  cleaning  out  the coffers.  I have a virtually \n          MINT collection of HEAVY METAL magazine.  This is  NOT \n          a  music  mag  but the really neato mag with Giger and \n          Moebius  artwork,  et  al.  Jam  packed  with  amazing \n          sci-fi  and  fantasy artwork by many masters.  All are \n          mint with the exception of the 3 that have split  seam \n          on  the  cover  only but are otherwise perfect, no cut \n          outs or missing pages.  I have Sep, Nov and Dec issues \n          for 1978, ALL issues for 1979, 1980, 1981, 1982,  1983 \n          and  Jan  thru  Sep  for  1984  (72  issues  in  all i \n          believe).  I will not break  them  up.  They  will  be \n          sold  as  a  single  lot.  Send  your  offers  to  me. \n          Shipping not included,  these  are  pretty  heavy.  Of \n          course  if  you are local (Mass, USA) you can come get \n          'em in person. "
+            ],
+            "top_keywords": [
+                [
+                    "heavy metal magazine",
+                    1
+                ],
+                [
+                    "metal magazine music",
+                    1
+                ],
+                [
+                    "masters mint exception",
+                    1
+                ],
+                [
+                    "magazine music mag",
+                    1
+                ],
+                [
+                    "jam sci fi",
+                    1
+                ]
+            ],
+            "representative_text": "I  am  cleaning  out  the coffers.  I have a virtually \n          MINT collection of HEAVY METAL mag..."
+        },
+        "70": {
+            "size": 1,
+            "indices": [
+                28
+            ],
+            "texts": [
+                "FOR SALE:\n\n\t1 ST4766E Seagate ESDI drive.  760 meg\t\t$500\n\t  unformatted.  Without controller.  A\n\t  friend has tested this on his controller\n\t  and says that it works.  As is.\n\n\n\t2 meg 256kx4 70ns DRAM.\t\t\t\t$ 3 each or $48\n\n\n\nPlease call (908) 219-5935 or email.\n"
+            ],
+            "top_keywords": [
+                [
+                    "controller dram email",
+                    1
+                ],
+                [
+                    "email",
+                    1
+                ],
+                [
+                    "dram email",
+                    1
+                ],
+                [
+                    "drive controller friend",
+                    1
+                ],
+                [
+                    "friend controller dram",
+                    1
+                ]
+            ],
+            "representative_text": "FOR SALE:\n\n\t1 ST4766E Seagate ESDI drive.  760 meg\t\t$500\n\t  unformatted.  Without controller.  A\n\t  ..."
+        },
+        "71": {
+            "size": 1,
+            "indices": [
+                19
+            ],
+            "texts": [
+                "\n\nOh no!  Someone is provided useful information AND mentioned that they\nmade money in the field.  Don't they know that usenet is reserved for\nuninformed speculation by people trying to sell their personal stuff\n(from houses to dead pcs) at a huge markup/trying to unload stuff they\nbought from their company at just under retail, and other\n\"non-commercial\" activities.\n\n\nThe net is not \"supposed\" to be a dumping ground for free ads, but\nreserving it for tripe doesn't seem to be a significant improvement.\n\n\nSo?  Either they target it well enough to pay for it, in other words,\nthey manage to send it to people who want the stuff (in which case it\nis junk only for the \"rest\" and the transaction costs are borne\nappropriately in this case) or they go bankrupt.  Seems fair to me.\n\n\nYou could hold your breath.  You could kill offending messages as\nthey come onto your machine and refuse to send them any further,\nbut not until you turn blue.\n\n-andy"
+            ],
+            "top_keywords": [
+                [
+                    "usenet speculation people",
+                    1
+                ],
+                [
+                    "usenet speculation",
+                    1
+                ],
+                [
+                    "dumping ground ads",
+                    1
+                ],
+                [
+                    "junk rest transaction",
+                    1
+                ],
+                [
+                    "pcs markup trying",
+                    1
+                ]
+            ],
+            "representative_text": "\n\nOh no!  Someone is provided useful information AND mentioned that they\nmade money in the field.  D..."
+        },
+        "72": {
+            "size": 1,
+            "indices": [
+                74
+            ],
+            "texts": [
+                "I have a stack of records LP 33 that are from the early sixtys to mid seventys\nwith groups like the Beatles, Cream, Woodstock (triple album) etc etc. that I\nwould like to get rid of.  I would be willing to sell one or all for whatever\nresonable offer.  Some albums still have the original wrapper and price tag.\nI would like to get around $5 for each or you can call and make offer on the\nlot.  I could list them all but I'd be typing forever.\n           call (408) 296-4444\n\n\n"
+            ],
+            "top_keywords": [
+                [
+                    "beatles cream woodstock",
+                    1
+                ],
+                [
+                    "sixtys groups beatles",
+                    1
+                ],
+                [
+                    "groups beatles cream",
+                    1
+                ],
+                [
+                    "cream woodstock album",
+                    1
+                ],
+                [
+                    "beatles cream",
+                    1
+                ]
+            ],
+            "representative_text": "I have a stack of records LP 33 that are from the early sixtys to mid seventys\nwith groups like the ..."
+        },
+        "73": {
+            "size": 1,
+            "indices": [
+                6
+            ],
+            "texts": [
+                "Available for Weekly/bi-weekly/weekend Rental :\n\nA brand new chalet in a private resort community located in the heart\nof the Pocono Mountains. The chalet has 3 bedrooms and 2 bathrooms and\nfeatures full carpeting, cathedral ceiling in living/dining room, an\noverlooking loft, stone fireplace, wraparound deck, country kitchen\nwith all appliances and many other features too numerous to list them\nall. Its custom designed and built and tastefully furnished for the\ncomfort of 8 adults.\n\nThe community has 24 hour security and offers 2 large lakes, 4 sandy\nbeaches, 2 swimming pools, 9 tennis courts, many picnic areas,\n4 playgrounds, miniature golf, trout stream/lake fishing, team softball,\nshuffleboard, ice skating/tobagun run, teen dances, club house etc. etc.\n\nThere are many recreational facilities within easy reach of the\nvacation home. Ski resorts, luxury hotels with nitely entertaiment,\nPocono international raceway, golf courses, parks, gamelands,\nwhitewater rafting, horseback riding, scenic trails, waterfalls,\ntrain rides, historical places, all kinds of restaurants,\nfactory outlet malls, tourist attractions, just to name a few.\n\nThis is an ideal place for a family/group vacation or a weekend\ngetaway. There is no traffic congestion and air or water pollution\nand its only 2 hours from New York, Northern New Jersey and\nPhiladelphia.\n\nFor further information call :"
+            ],
+            "top_keywords": [
+                [
+                    "vacation home ski",
+                    1
+                ],
+                [
+                    "home ski luxury",
+                    1
+                ],
+                [
+                    "ski luxury hotels",
+                    1
+                ],
+                [
+                    "golf stream lake",
+                    1
+                ],
+                [
+                    "home ski",
+                    1
+                ]
+            ],
+            "representative_text": "Available for Weekly/bi-weekly/weekend Rental :\n\nA brand new chalet in a private resort community lo..."
+        },
+        "74": {
+            "size": 1,
+            "indices": [
+                79
+            ],
+            "texts": [
+                "Cambridge  Audio  Integrated  Amp  P70  -  60W stereo solid \n     state, w/box  List $600 want $340 \n\n     Cambridge Audio Tuner T50 - 8 presets list $350 want $200 \n\n     Cambridge  Audio  PreAmp  C70  - list $500 want $290 \n\n     Klipschorns  -  The Klipschorns Speakers...legends in there \n     own  time  list   ~$3k   want   $950...very   big,   corner \n     loaded..will play to unbelieveable volumes with very little \n     power. "
+            ],
+            "top_keywords": [
+                [
+                    "audio preamp c70",
+                    1
+                ],
+                [
+                    "amp p70 stereo",
+                    1
+                ],
+                [
+                    "tuner t50 presets",
+                    1
+                ],
+                [
+                    "audio tuner t50",
+                    1
+                ],
+                [
+                    "p70 stereo",
+                    1
+                ]
+            ],
+            "representative_text": "Cambridge  Audio  Integrated  Amp  P70  -  60W stereo solid \n     state, w/box  List $600 want $340 ..."
+        },
+        "75": {
+            "size": 1,
+            "indices": [
+                33
+            ],
+            "texts": [
+                "Forsale:\n SONY MHC-3600 HI-FI Bookshelf stereo system\n -9 months old\n -CD player\n -2 tape decks\n -Digital graphic equilizer\n -Tuner\n -4 speakers 60watts/channel\n -TOP OF THE LINE SONY BOOKSHELF SYSTEM\n\n Includes amazing remote that actually splits into two! Everything\n can be done from the remote (remote has digital display!).\n Has the highest quality sound-amazing bass!\n Not one scratch on system. VERY WELL TAKEN CARE OF.\n\n Originally purchased for $1299 + tax.\n I need cash, and I am looking to get around $750 for it.\n Since I really need the money, I will sell it to the person who gives me\n the highest offer, and I WILL ACCEPT THE BEST OFFER if not $750.\n Buyer pays insured shipping.\n\n Reply soon if intereseted."
+            ],
+            "top_keywords": [
+                [
+                    "bookshelf stereo months",
+                    1
+                ],
+                [
+                    "stereo months cd",
+                    1
+                ],
+                [
+                    "tuner line sony",
+                    1
+                ],
+                [
+                    "sony bookshelf includes",
+                    1
+                ],
+                [
+                    "fi bookshelf stereo",
+                    1
+                ]
+            ],
+            "representative_text": "Forsale:\n SONY MHC-3600 HI-FI Bookshelf stereo system\n -9 months old\n -CD player\n -2 tape decks\n -Di..."
+        },
+        "76": {
+            "size": 1,
+            "indices": [
+                32
+            ],
+            "texts": [
+                "I have the following LDs for sale 20 for 1st 15 each additional,\npostage (3rd class) paid.\n\nProject A-ko (Japanese - NO ENGLISH)\nDominion Act-I (Japanese - NO ENGLISH)\nDominion Act-II (Japanese - NO ENGLISH)\n\nFar From the Madding Crowd (LBX)\nWest Side Story (LBX)\nBen Hur (P&S)\nThe Dirty Dozen (P&S)\nStar Trek V (P&S)\nThe Fabuluos Fleischer Folio Vol 1\nTom and Jerry Classics\nBugs Bunny Classics\n\n-- \nbrian\noplinger@ra.crd.ge.com"
+            ],
+            "top_keywords": [
+                [
+                    "classics bugs bunny",
+                    1
+                ],
+                [
+                    "jerry classics bugs",
+                    1
+                ],
+                [
+                    "bugs bunny classics",
+                    1
+                ],
+                [
+                    "classics bugs",
+                    1
+                ],
+                [
+                    "bugs bunny",
+                    1
+                ]
+            ],
+            "representative_text": "I have the following LDs for sale 20 for 1st 15 each additional,\npostage (3rd class) paid.\n\nProject ..."
+        },
+        "77": {
+            "size": 1,
+            "indices": [
+                11
+            ],
+            "texts": [
+                "\n: Men Without Hats - \"Folk of the 80's (Part III)\" - vinyl\n\nAnyone out there who is willing to part with their copy of\n\nMen without Hats, \"Pop goes the world!\" album on vinyl...or perhaps CD...\n\nplease contact me, we wish to purchase it!\n"
+            ],
+            "top_keywords": [
+                [
+                    "vinyl copy men",
+                    1
+                ],
+                [
+                    "folk iii vinyl",
+                    1
+                ],
+                [
+                    "album vinyl cd",
+                    1
+                ],
+                [
+                    "iii vinyl copy",
+                    1
+                ],
+                [
+                    "vinyl cd",
+                    1
+                ]
+            ],
+            "representative_text": "\n: Men Without Hats - \"Folk of the 80's (Part III)\" - vinyl\n\nAnyone out there who is willing to part..."
+        },
+        "78": {
+            "size": 1,
+            "indices": [
+                9
+            ],
+            "texts": [
+                "F O R   S A L E\n\t\t\t================\n\n\t\tTriumph Spitfire '76, 1500\n                - Convertible\n\t        - 54,000k original miles\n\t\t- Burgandy Color\n\t\t- Wooden Dashboard\n                - No rust\n\t\t- Garage kept\n\t\t- Heater\n\t\t- Chrome bumpers(not the black plastic crap)\n\t\t- Brand new top\n\t\t- Asking $3,000 --negotiable\n\t\n\t* Mechanically the car is in a very good shape and it is running\n          very-very strong(if you know what I mean)...:)\n\t* Plenty of catalogs and manuals are coming with the car \n\n\tIf you are interested in the car please reply to this message.\n\n\n\t\tI AM NOT INTERESTED OR WILLING TO SELL ANY PARTS.\n\t\tThe car is in a very good condition to strip it.\n"
+            ],
+            "top_keywords": [
+                [
+                    "catalogs manuals car",
+                    1
+                ],
+                [
+                    "manuals car car",
+                    1
+                ],
+                [
+                    "sell parts car",
+                    1
+                ],
+                [
+                    "car car message",
+                    1
+                ],
+                [
+                    "brand car shape",
+                    1
+                ]
+            ],
+            "representative_text": "F O R   S A L E\n\t\t\t================\n\n\t\tTriumph Spitfire '76, 1500\n                - Convertible\n\t   ..."
+        },
+        "79": {
+            "size": 1,
+            "indices": [
+                47
+            ],
+            "texts": [
+                "10 month old stereo system for sale. Luxman R-351 receiver, Onkyo TA-RW404\ntape deck, and Polk Monitor M4.6 book shelf speakers are for sale. Receiver\nhas 5 year warranty, and all equipment is in excellent condition. Paid $950\nfor the system and willing to consider the best offer. Will sell seperate\npieces also if desired. Please send best offer to suraj@cs.jhu.edu.\n\nSpeakers: Polk Monitor M4.6 bookshelf speakers\n\t  Paid $250 pair. Willing to consider best offer.\n\nReceiver: Luxman R-351 receiver with 5 year (yes 5 years) warranty.\n\t  Paid $475. Willing to consider best offer.\n\t  Full remote, 2 pairs of speaker connections,\n\t  60 watts per channel, but drives like a 150 watts per channel\n\t  Has all the standard features, and more.\n\nTape Deck: Onkyo TA-RW404 tape deck\n\t   Paid $275. Willing to consider best offer.\n\t   Dual cassette, Dolby B, C, and HX Pro.\n\t   Input level control for recording, auto reverse both sides.\n           Has all standard features.\n\nSend E-mail with best offer to suraj@cs.jhu.edu"
+            ],
+            "top_keywords": [
+                [
+                    "stereo sale luxman",
+                    1
+                ],
+                [
+                    "month stereo sale",
+                    1
+                ],
+                [
+                    "cassette dolby hx",
+                    1
+                ],
+                [
+                    "stereo sale",
+                    1
+                ],
+                [
+                    "shelf speakers sale",
+                    1
+                ]
+            ],
+            "representative_text": "10 month old stereo system for sale. Luxman R-351 receiver, Onkyo TA-RW404\ntape deck, and Polk Monit..."
+        },
+        "80": {
+            "size": 1,
+            "indices": [
+                7
+            ],
+            "texts": [
+                "I have a basic Apple IIgs system that I need to sell.  Everything comes with\noriginal boxes and documentation, and is in excellent condition.  Make an\noffer; I'll consider anything:\n\nApple IIgs 1 meg\n3.5\" drive\n13\" AppleColor RGB monitor\nkeyboard/mouse/mousepad/dustcovers/1200 baud Applemodem/random other worthless\n    stuff.\n\nHere's a list of the games/apps:\n\n   Games:\t\t\t\t   Applications:\n\nBattleChess\t\t\t\tSystem Disk\nDefender of the Crown\t\t\tSystem Tools IIGS\nArkanoid II\t\t\t\tWordPerfect\nBubble Ghost\t\t\t\tAppleworks\nShadowgate\t\t\t\tWriter's Choice elite\nBalance of Power\t\t\tDraw Plus\nMarble Madness\t\t\t\tCopy II Plus\nZany Golf\t\t\t\tProTERM communications software\nChessmaster 2100\n\nIf interested, contact:\n\nsunshine@cco.caltech.edu"
+            ],
+            "top_keywords": [
+                [
+                    "drive applecolor rgb",
+                    1
+                ],
+                [
+                    "communications software chessmaster",
+                    1
+                ],
+                [
+                    "software chessmaster",
+                    1
+                ],
+                [
+                    "apple iigs boxes",
+                    1
+                ],
+                [
+                    "software chessmaster contact",
+                    1
+                ]
+            ],
+            "representative_text": "I have a basic Apple IIgs system that I need to sell.  Everything comes with\noriginal boxes and docu..."
+        },
+        "81": {
+            "size": 1,
+            "indices": [
+                13
+            ],
+            "texts": [
+                "LOCATION:       Corona del Mar, CA  (Orange County)\n\nFOR SALE:       contemporary custom couch\n                7' long ( 3 cushions)\n                solid Black\n                raw silk-like material\n                rolled armrests\n                clean design\n                excellent condition (left behind @ parents when moved\n                                     out of state)\n                $450. or best offer\n\nFOR SALE:       Wurlitzer Console Piano w/bench\n                Cherry wood\n                great condition\n                $600. or best offer"
+            ],
+            "top_keywords": [
+                [
+                    "piano bench cherry",
+                    1
+                ],
+                [
+                    "wurlitzer console piano",
+                    1
+                ],
+                [
+                    "bench cherry wood",
+                    1
+                ],
+                [
+                    "console piano bench",
+                    1
+                ],
+                [
+                    "console piano",
+                    1
+                ]
+            ],
+            "representative_text": "LOCATION:       Corona del Mar, CA  (Orange County)\n\nFOR SALE:       contemporary custom couch\n     ..."
+        },
+        "82": {
+            "size": 1,
+            "indices": [
+                10
+            ],
+            "texts": [
+                "I would like to buy a cheap modem for my Mac. Did I mention that I would\nprefer it to be cheap?  2400 baud preferred, but when you're looking for\ncheap (and I do mean cheap) beggars can't be choosers.  E-mail me."
+            ],
+            "top_keywords": [
+                [
+                    "cheap beggars choosers",
+                    1
+                ],
+                [
+                    "cheap cheap beggars",
+                    1
+                ],
+                [
+                    "cheap beggars",
+                    1
+                ],
+                [
+                    "baud cheap cheap",
+                    1
+                ],
+                [
+                    "baud cheap",
+                    1
+                ]
+            ],
+            "representative_text": "I would like to buy a cheap modem for my Mac. Did I mention that I would\nprefer it to be cheap?  240..."
+        },
+        "83": {
+            "size": 1,
+            "indices": [
+                41
+            ],
+            "texts": [
+                "I have two pairs of headphones I'd like to sell.  These are excellent, and both in great condition:\n\nDenon AH-D350\nJVC HA-D590\n\nAny reasonable offer accepted."
+            ],
+            "top_keywords": [
+                [
+                    "headphones condition denon",
+                    1
+                ],
+                [
+                    "pairs headphones condition",
+                    1
+                ],
+                [
+                    "headphones condition",
+                    1
+                ],
+                [
+                    "pairs headphones",
+                    1
+                ],
+                [
+                    "ah d350 jvc",
+                    1
+                ]
+            ],
+            "representative_text": "I have two pairs of headphones I'd like to sell.  These are excellent, and both in great condition:\n..."
+        },
+        "84": {
+            "size": 1,
+            "indices": [
+                20
+            ],
+            "texts": [
+                "Greetings netters,\n\tI have the following items for IMMEDIATE sale.  I need the money and\nif you need the stuff, we can work out a deal.  :)\n\nSharp single disk cd player\n\tOriginally paid oodles, but that was a couple of years ago.  It works\n\twell, has all the standards...(remote sensor[remote not included];\n\t20 track pragrammable memory; etc.)  I got a new one and need to sell\n\tthis one.  Please email me an offer!!  (it's the standard black \n\tcomponent style cd player)\n\n3.5\" 1.44 meg floppy drive\n\tA real IBM floppy drive with cable and mounting case.  I paid $40\n\ta couple of months ago.  The drive works (as last time in).  I\n\twould like to get the $40 back for it, but OBO applies.\n\n5.25\" 360K floppy drive\n\tI'm sure someone out there needs an extra 360K.  It works great and\n\tis nice and quiet.  Again, please email offer.\n\nRC10 remote control car\n\t4 time world leader design.  It was just overhauled.  It runs great,\n\teven though the body if not all that pretty.  Has new engine in it \n\tas well as racing pinion.  The chassis is nicked up from hard running,\n\tbut it's still a great car.  Does not include electronics.  Comes \n\twith monster truck conversion kit (wheel arms already installed)-virgin\n\ttruck body and bumper etc.  Car+kit=$100+20=$120 OBO...make an offer!\n\nD&D stuff...you name it, I probably have it.  Please send email regarding what\n\tyou want...or a request for sale list.  I hate to part with any of it, \n\tbut needs are needs, eh?  \n\nMisc CD's\n\tAlice in Chains - Facelift    $8\n\tSkid Row (self titled)  $8  both obo...really.\n\nBox of computer printer paper...paid $20 for it, make offer.\n\nI might have 4 1*9 meg **60** ns SIMMS forsale if I get a new motherboard...\n\tif you interested, the price is $40 a piece sold as a set.\n"
+            ],
+            "top_keywords": [
+                [
+                    "applies drive email",
+                    1
+                ],
+                [
+                    "meg drive ibm",
+                    1
+                ],
+                [
+                    "drive email offer",
+                    1
+                ],
+                [
+                    "drive ibm",
+                    1
+                ],
+                [
+                    "simms motherboard price",
+                    1
+                ]
+            ],
+            "representative_text": "Greetings netters,\n\tI have the following items for IMMEDIATE sale.  I need the money and\nif you need..."
+        },
+        "85": {
+            "size": 1,
+            "indices": [
+                3
+            ],
+            "texts": [
+                "Finally a fax service to all Internet users in the continental U.S. without\nprepayment of any kind. This service is provided by Information System\nInternational based in Fishers, Indiana at isifisher@aol.com. As an Internet\nuser, your credit has been automatically approved. So you can start sending\nfaxes RIGHT NOW.\n\n1. How to send a fax\n\nTo use this service, e-mail to: isifisher@aol.com in the following format:\n\n-Your name\n-Your phone number\n-Your mailing address\n- the number you send fax to\n- the recipient's name and company \n- the address and phone number of the recipient (optional)\n=====================================\n- fax content\n\nYour fax will be sent out within 24 hours. Every fax will include a standard\ncover sheet free of charge which contains: (1) your name; (2) your phone\nnumber; (3) your address; (4) the recipient's name and company.\n\nUpon sending out your fax, a receipt will be sent for your record.\n\nIMPORTANT: If this is your first time to use the fax service, you MUST\ninclude the following paragraph at the beginning of your e-mail:\n\n\tI hereby authorize Information System International to open a fax account\nfor me. I agree to pay all charges incurred upon receiving my monthly bill..\n\n2. What format is acceptable\n\n\tOnly plain ASCII format and Rich Text Format (RTF) are acceptable. \n\t(1) For plain ASCII format, Times New Roman fonts of 12-point size will be\nused. \n\t(2) For RTF format, your fax document will appear exactly the same as it\nwould appear on your local laser printer. In almost all word processing\nsoftware on PC, Mackintosh, Sun workstation, etc., you can save your document\nin RTF format. \n\n\n3. How to pay\n\n\tThe first time you use our fax service, we will open an account for you\nunder your name. You will be billed each month if you have a balance or when\nyour balance has been over $50.00 - whichever comes first. \n\n4. Cost\n\n\tThe cost for continental U.S (excluding Hawaii & Alaska) is only $1.50 for\nthe first page, $0.75 for each additional page. Each fax will include a cover\nsheet which is free."
+            ],
+            "top_keywords": [
+                [
+                    "fax hours fax",
+                    1
+                ],
+                [
+                    "fax fax hours",
+                    1
+                ],
+                [
+                    "credit faxes fax",
+                    1
+                ],
+                [
+                    "fax service internet",
+                    1
+                ],
+                [
+                    "international fax account",
+                    1
+                ]
+            ],
+            "representative_text": "Finally a fax service to all Internet users in the continental U.S. without\nprepayment of any kind. ..."
+        },
+        "86": {
+            "size": 1,
+            "indices": [
+                0
+            ],
+            "texts": [
+                "I'm looking to buy a 100% working keyboard for a 286 system (preferably \na 101 layout.)  I'm looking to spend about $20.\n\n\n-- "
+            ],
+            "top_keywords": [
+                [
+                    "keyboard layout",
+                    1
+                ],
+                [
+                    "keyboard",
+                    1
+                ],
+                [
+                    "layout",
+                    1
+                ]
+            ],
+            "representative_text": "I'm looking to buy a 100% working keyboard for a 286 system (preferably \na 101 layout.)  I'm looking..."
+        },
+        "87": {
+            "size": 1,
+            "indices": [
+                59
+            ],
+            "texts": [
+                "FOR SALE\n\n                 1945 King Feature Syndicate\n                 Jaymar Specialty Company\n                 200 Fifth Avenue New York, NY\n\n                 Cardboard puzzle - NO BOX\n                 Pieces worn from use\n                 NO MISSING PIECES\n                 Size: 13 3/4 inches by 21 1/2 inches\n                 60 Puzzle Pieces\n\n   Puzzle depicts Dagwood, Blondie, the kids, and dog Daisey with her\n   puppies on a picnic with Dagwood and Alexander trying to get\n   a fishing line out of a tree."
+            ],
+            "top_keywords": [
+                [
+                    "puppies picnic dagwood",
+                    1
+                ],
+                [
+                    "daisey puppies picnic",
+                    1
+                ],
+                [
+                    "puppies picnic",
+                    1
+                ],
+                [
+                    "dog daisey puppies",
+                    1
+                ],
+                [
+                    "daisey puppies",
+                    1
+                ]
+            ],
+            "representative_text": "FOR SALE\n\n                 1945 King Feature Syndicate\n                 Jaymar Specialty Company\n   ..."
+        },
+        "88": {
+            "size": 1,
+            "indices": [
+                1
+            ],
+            "texts": [
+                "Reduced Prices! \nI have a list of things forsale on behalf of my brother, who's moving (moved\nalready)\n\n\t\t\t\t\t\t\t\tOffer:\n1) Black and Decker Duster Plus (Portable Hand Vaccum)\t\n \tpurchased for $32, \t\t\t\t\t  $12\n\n2) SR-1000 Dual Cassette Portable Player, AM/FM\n5-Band graphics Equalizer, high speed dubing, Duo \nTape.Tape deck A, seems to have lost treble sound. \nBut, I bet  it's fixable.\n\tpurchased for $80\t\t\t\t\t  $25\n\n3)Monolux Zoom MicroScope, up to 1200X magnification\nMade in Japan, includes case and accessories\n\tpurchased for $50\t\t\t\t\t  $20\n\n4)Sunbeam 1400 Hair Dryer, the dryer you put your \nhead under/into. You know, the ones you see in the salons.\n(Don't ask me why my bro had it)\n\tpurchased for $60\t\t\t\t          $24\n\n5)Everylast Speed Bag, all leather. Brand new, never \nused\t\t\t\t\t\t\t\t  $10\n\n6)Osterizer Pusle Matic Blender, with 10 speeds \nand a cookbook, 5 years old\t\t\t\t\t  $10\n\tpurchased for $50\n\n8)Binolux Binoculars . 7x35, extra wide angle\n525ft. at 1000yds. with case. very new.\t\t                  $20\n\n9)Proctor and Silex Spray,Steam and Dry Iron.\nvery new.\t\t\t\t\t\t\t  $10\n\n\nAny questions, contact me thru e-mail and I will reply expeditously\nAnd always, S+H are not included, so please consider this.\n\nAnd lastly, I'm a very reasonable.Very Reasonable."
+            ],
+            "top_keywords": [
+                [
+                    "blender speeds cookbook",
+                    1
+                ],
+                [
+                    "brand osterizer pusle",
+                    1
+                ],
+                [
+                    "pusle matic blender",
+                    1
+                ],
+                [
+                    "cookbook years binolux",
+                    1
+                ],
+                [
+                    "leather brand osterizer",
+                    1
+                ]
+            ],
+            "representative_text": "Reduced Prices! \nI have a list of things forsale on behalf of my brother, who's moving (moved\nalread..."
+        },
+        "89": {
+            "size": 1,
+            "indices": [
+                25
+            ],
+            "texts": [
+                "For Sale: A Thule Car rack with 2 bike holder accessories.\nComes with Nissan Pathfinder brackets but you can buy the\nappropriate ones for your car cheap.\nLooking for $100.00 for everything. I live in the Bethesda area.\nThanks for your interest.\n"
+            ],
+            "top_keywords": [
+                [
+                    "car cheap bethesda",
+                    1
+                ],
+                [
+                    "car cheap",
+                    1
+                ],
+                [
+                    "ones car cheap",
+                    1
+                ],
+                [
+                    "sale thule car",
+                    1
+                ],
+                [
+                    "nissan pathfinder",
+                    1
+                ]
+            ],
+            "representative_text": "For Sale: A Thule Car rack with 2 bike holder accessories.\nComes with Nissan Pathfinder brackets but..."
+        },
+        "90": {
+            "size": 1,
+            "indices": [
+                56
+            ],
+            "texts": [
+                "For Sale:\n\nMinolta Master Series-C50 VHS-C Camcorder Forsale\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\n Multidimensional Autofocus System\n 6x power zoom\n Charge coupled device\n Dual-area autoexposure system (for backlit subjects)\n High-speed digital shutter 1/1000 sec\n Dual Mode Self Timer\n Date/time insert\n Linear tape counter\n Power focus\n Advanced Auto white balance system\n MIC jack, DC OUT, REMOTE connector, earphone minijack\n\n Excellent condition, used several times in two years\n Original box and packing\n AC Adapter/Charger  VAC-500U\n One standard VBP-500 (60 min)\n One extra VBP-501 (80 min)\n Cassette Adapter AD-2 (for full size VHS viewing)\n bunch of miscellaneous extras (RF adapter,cords, etc)\n\n Available immediately\n\n Price $550.00 US firm\n\n Shipping extra\n\nPlease email responses to:"
+            ],
+            "top_keywords": [
+                [
+                    "c50 vhs camcorder",
+                    1
+                ],
+                [
+                    "vhs camcorder forsale",
+                    1
+                ],
+                [
+                    "charger vac 500u",
+                    1
+                ],
+                [
+                    "adapter charger vac",
+                    1
+                ],
+                [
+                    "autofocus power zoom",
+                    1
+                ]
+            ],
+            "representative_text": "For Sale:\n\nMinolta Master Series-C50 VHS-C Camcorder Forsale\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-..."
+        },
+        "91": {
+            "size": 1,
+            "indices": [
+                12
+            ],
+            "texts": [
+                "=============================================================================\nNOTE: This is being posted for a friend. DO NOT REPLY to my account. Please \n      direct all replies to Scott Burke at scott@sparcom.com\n=============================================================================\n\nAlpine 5959S 6-CD Shuttle.  Paid $600, want $420/OBO.\nAlpine 1203 Remote CD Changer Control.  Paid $250, want $175/OBO.\nBoston ProSeries 10.0 Subwoofers (2) + Box.  Paid $545, want $380/OBO.\n\nAll equipment is under 6 months old and includes a full-replacement 5-year\nwarranty from original point of purchase.  The subwoofer box was custom\ndesigned to fit in the back of a Bronco II and is 14\" by 21\" by 27\".\n\nSend replies to: scott@sparcom.com\n\n-----\nScott Burke - Project Leader - Sparcom Corporation - Corvallis OR\nscott@sparcom.com - Telephone (503) 757-8416 - FAX (503) 753-7821\n\n\n-- \n------------------------------------------------------------------------------\n                     \"Just waiting for the nuts...\"\n             Brett Barksdale        brett@porky.oce.orst.edu"
+            ],
+            "top_keywords": [
+                [
+                    "paid remote cd",
+                    1
+                ],
+                [
+                    "sparcom com scott",
+                    1
+                ],
+                [
+                    "scott sparcom com",
+                    1
+                ],
+                [
+                    "alpine shuttle paid",
+                    1
+                ],
+                [
+                    "shuttle paid remote",
+                    1
+                ]
+            ],
+            "representative_text": "=============================================================================\nNOTE: This is being po..."
+        },
+        "92": {
+            "size": 1,
+            "indices": [
+                24
+            ],
+            "texts": [
+                "My girlfriend switched to gas-permeable hard lenses and no longer\nneeds a one year old soft contact lens cleaning unit.  It's one of\nthose where you pop in the lens case filled with solution and the\nlenses, press the lighted timer button and let it cook.  No stains\n(of course -- if you've owned one of these, you understand), maybe\na little dust on the cover.\n\nBest cash offer, or equivalent worth in used CD's or Betamax tapes\n(some blanks or a couple of pre-recorded movies/concerts).\n\ngld"
+            ],
+            "top_keywords": [
+                [
+                    "girlfriend lenses year",
+                    1
+                ],
+                [
+                    "cd betamax tapes",
+                    1
+                ],
+                [
+                    "worth cd betamax",
+                    1
+                ],
+                [
+                    "movies concerts gld",
+                    1
+                ],
+                [
+                    "couple movies concerts",
+                    1
+                ]
+            ],
+            "representative_text": "My girlfriend switched to gas-permeable hard lenses and no longer\nneeds a one year old soft contact ..."
+        },
+        "93": {
+            "size": 1,
+            "indices": [
+                17
+            ],
+            "texts": [
+                "Does is include raquetball?  Is it good at Espree?  What is the annual fee?"
+            ],
+            "top_keywords": [
+                [
+                    "raquetball espree fee",
+                    1
+                ],
+                [
+                    "does raquetball espree",
+                    1
+                ],
+                [
+                    "does raquetball",
+                    1
+                ],
+                [
+                    "raquetball espree",
+                    1
+                ],
+                [
+                    "raquetball",
+                    1
+                ]
+            ],
+            "representative_text": "Does is include raquetball?  Is it good at Espree?  What is the annual fee?..."
+        },
+        "94": {
+            "size": 1,
+            "indices": [
+                60
+            ],
+            "texts": [
+                "Large bedroom for rent from June 1-Aug 15 in row house near JHU (Homewood).\nNo smokers or pets.  Share house with 2 or 3 F law students.  F professional/\nstudent wanted. 2 bath,large kitchen - remodeled last summer, hardwood floors,\nlr,dr, washer and dryer.  Beautiful details.  Rent $325 + 1/4 utilities.\nLocated on bus lines."
+            ],
+            "top_keywords": [
+                [
+                    "homewood smokers pets",
+                    1
+                ],
+                [
+                    "pets share house",
+                    1
+                ],
+                [
+                    "bedroom rent june",
+                    1
+                ],
+                [
+                    "student bath summer",
+                    1
+                ],
+                [
+                    "house law students",
+                    1
+                ]
+            ],
+            "representative_text": "Large bedroom for rent from June 1-Aug 15 in row house near JHU (Homewood).\nNo smokers or pets.  Sha..."
+        },
+        "95": {
+            "size": 1,
+            "indices": [
+                22
+            ],
+            "texts": [
+                "For sale :\n\n\n\n\n\tBose A5 subwoofer 1 month old\n\n\t2 Advent minis    4 months old\n\n\n\n\n\n\n\nemail offers to               "
+            ],
+            "top_keywords": [
+                [
+                    "bose a5 month",
+                    1
+                ],
+                [
+                    "months email offers",
+                    1
+                ],
+                [
+                    "minis months email",
+                    1
+                ],
+                [
+                    "a5 month advent",
+                    1
+                ],
+                [
+                    "a5 month",
+                    1
+                ]
+            ],
+            "representative_text": "For sale :\n\n\n\n\n\tBose A5 subwoofer 1 month old\n\n\t2 Advent minis    4 months old\n\n\n\n\n\n\n\nemail offers t..."
+        },
+        "96": {
+            "size": 1,
+            "indices": [
+                21
+            ],
+            "texts": [
+                "Panasonic KX-T3000H, Combo black cordless & speaker phone all in one.\n new- $160, now- $100 + shipping OBO.\n \nCurtis Mathes VHS VCR Remote included and it works with universal remotes.\n Works great but I replaced it with a Stereo VCR.\n paid $300 years ago, will sell for $125 delivered OBO.\n \nRadio Shack stereo amp.  2 inputs, tone, and left and right volume.  Speakers\n not included.  $20 plus shipping.\n \nIf you are interested in either of the above mail me at\n radley@gibbs.oit.unc.edu or call me, Keith, at 919-968-7779.\n \nPS- I made a type on my email address the first posting.  It is now correct."
+            ],
+            "top_keywords": [
+                [
+                    "radio shack stereo",
+                    1
+                ],
+                [
+                    "vhs vcr remote",
+                    1
+                ],
+                [
+                    "remotes stereo vcr",
+                    1
+                ],
+                [
+                    "remote remotes stereo",
+                    1
+                ],
+                [
+                    "vcr remote remotes",
+                    1
+                ]
+            ],
+            "representative_text": "Panasonic KX-T3000H, Combo black cordless & speaker phone all in one.\n new- $160, now- $100 + shippi..."
+        },
+        "97": {
+            "size": 1,
+            "indices": [
+                52
+            ],
+            "texts": [
+                "I am auctioning off the following comics.  These minimum bids are set\nbelow what I would normally sell them for.  Make an offer, and I will\naccept the highest bid after the auction has been completed.\n\nTITLE                                                   Minimum/Current \n--------------------------------------------------------------\nAlpha Flight 51 (Jim Lee's first work at Marvel)\t$ 5.00\nAliens 1 (1st app Aliens in comics, 1st prnt, May 1988)\t$20.00\nAmazing Spider-Man 136 (Intro new Green Goblin)         $20.00\nAmazing Spider-Man 238 (1st appearance Hobgoblin)\t$50.00\nArcher and Armstrong 1 (Frank Miller/Smith/Layton)\t$ 7.50\nAvengers 263 (1st appearance X-factor)                  $ 3.50\nBloodshot 1 (Chromium cover, BWSmith Cover/Poster)\t$ 5.00\nDaredevil 158 (Frank Miller art begins)                 $35.00\nDark Horse Presents 1 (1st app Concrete, 1st printing)\t$ 7.50 \nH.A.R.D. Corps 1 \t\t\t\t\t$ 5.00\nIncredible Hulk 324 (1st app Grey Hulk since #1, 1962)\t$ 7.50\nIncredible Hulk 330 (1st McFarlane issue)\t\t$15.00\nIncredible Hulk 331 (Grey Hulk series begins)\t\t$11.20\t\nIncredible Hulk 367 (1st Dale Keown art in Hulk)        $15.00\nIncredible Hulk 377 (1st all new hulk, 1st prnt, Keown) $15.00\nMarvel Comics Presents 1 (Wolverine, Silver Surfer)     $ 7.50\nMaxx Limited Ashcan (4000 copies exist, blue cover)\t$30.00\nNew Mutants 86 (McFarlane cover, 1st app Cable - cameo)\t$10.00\nNew Mutants 100 (1st app X-Force)                       $ 5.00\nNew Mutants Annual 5 (1st Liefeld art on New Mutants)\t$10.00\nOmega Men 3 (1st appearance Lobo)                       $ 7.50\nOmega Men 10 (1st full Lobo story)                      $ 7.50\nPower Man & Iron Fist 78 (3rd appearance Sabretooth)    $25.00\n                      84 (4th appearance Sabretooth)    $20.00\nSimpsons Comics and Stories 1 (Polybagged special ed.)\t$ 7.50\nSpectacular Spider-Man 147 (1st app New Hobgoblin)      $12.50\nStar Trek the Next Generation 1 (Feb 1988, DC mini)     $ 7.50\nStar Trek the Next Generation 1 (Oct 1989, DC comics)   $ 7.50\nWeb of Spider-Man 29 (Hobgoblin, Wolverine appear)      $10.00 \nWeb of Spider-Man 30 (Origin Rose, Hobgoblin appears)   $ 7.50\nWolverine 10 (Before claws, 1st battle with Sabretooth)\t$15.00\nWolverine 41 (Sabretooth claims to be Wolverine's dad)\t$ 5.00\nWolverine 42 (Sabretooth proven not to be his dad)\t$ 3.50\nWolverine 43 (Sabretooth/Wolverine saga concludes)\t$ 3.00\nWolverine 1 (1982 mini-series, Miller art)\t\t$20.00\nWonder Woman 267 (Return of Animal Man)                 $12.50\nX-Force 1 (Signed by Liefeld, Bagged, X-Force card)     $20.00\nX-Force 1 (Signed by Liefeld, Bagged, Shatterstar card) $10.00\nX-Force 1 (Signed by Liefeld, Bagged, Deadpool card)    $10.00\nX-Force 1 (Signed by Liefeld, Bagged, Sunspot/Gideon)   $10.00\n\nAll comics are in near mint to mint condition, are bagged in shiny \npolypropylene bags, and backed with white acid free boards.  Shipping is\n$1.50 for one book, $3.00 for more than one book, or free if you order \na large enough amount of stuff.  I am willing to haggle.\n\nI have thousands and thousands of other comics, so please let me know what \nyou've been looking for, and maybe I can help.  Some titles I have posted\nhere don't list every issue I have of that title, I tried to save space."
+            ],
+            "top_keywords": [
+                [
+                    "marvel aliens app",
+                    1
+                ],
+                [
+                    "app aliens comics",
+                    1
+                ],
+                [
+                    "work marvel aliens",
+                    1
+                ],
+                [
+                    "aliens comics prnt",
+                    1
+                ],
+                [
+                    "aliens app aliens",
+                    1
+                ]
+            ],
+            "representative_text": "I am auctioning off the following comics.  These minimum bids are set\nbelow what I would normally se..."
+        }
+    }
+}

@@ -1,0 +1,7392 @@
+{
+  "statistics": {
+    "total_articles": 497,
+    "articles_with_keywords": 472,
+    "avg_quality": 0.9293371339145988,
+    "avg_keywords_per_article": 4.730382293762576,
+    "quality_distribution": {
+      "excellent": 470,
+      "good": 1,
+      "fair": 1,
+      "poor": 25
+    },
+    "label_stats": {
+      "Marketplace": {
+        "count": 99,
+        "avg_quality": 0.8983838383838385,
+        "total_quality": 88.94000000000001
+      },
+      "Medical": {
+        "count": 100,
+        "avg_quality": 0.9618833333333332,
+        "total_quality": 96.18833333333332
+      },
+      "Politics": {
+        "count": 100,
+        "avg_quality": 0.9470333333333336,
+        "total_quality": 94.70333333333336
+      },
+      "Recreation": {
+        "count": 100,
+        "avg_quality": 0.9068222222222222,
+        "total_quality": 90.68222222222222
+      },
+      "Technology": {
+        "count": 98,
+        "avg_quality": 0.9323129251700679,
+        "total_quality": 91.36666666666666
+      }
+    },
+    "top_keywords": {
+      "looking": 7,
+      "sale": 6,
+      "seems": 5,
+      "think": 4,
+      "hello": 3,
+      "need": 3,
+      "banks n3jxp skepticism": 3,
+      "heard": 3,
+      "know": 3,
+      "baseball": 3,
+      "article": 3,
+      "like": 2,
+      "note": 2,
+      "live": 2,
+      "copy": 2,
+      "forsale": 2,
+      "lost": 2,
+      "dad 50 wolverine": 2,
+      "chinese": 2,
+      "years": 2,
+      "interested": 2,
+      "possible": 2,
+      "friend": 2,
+      "mine": 2,
+      "electricity surprise surprise": 2,
+      "frank": 2,
+      "white house office": 2,
+      "immediate release april": 2,
+      "mustang": 2,
+      "germany": 2,
+      "spend 20": 1,
+      "100 working keyboard": 1,
+      "buy": 1,
+      "working keyboard": 1,
+      "binoculars 7x35 extra": 1,
+      "50 binolux binoculars": 1,
+      "speeds cookbook years": 1,
+      "vaccum purchased 32": 1,
+      "reduced prices": 1,
+      "asking 150 email": 1,
+      "dobly surround video": 1,
+      "tuner 20fm 10am": 1,
+      "stereo originally purchased": 1,
+      "home theater stereo": 1,
+      "company sending fax": 1,
+      "credit automatically approved": 1,
+      "recipient optional fax": 1,
+      "aol com internet": 1,
+      "indiana isifisher aol": 1,
+      "adapter users guide": 1
+    }
+  },
+  "detailed_results": [
+    {
+      "index": 0,
+      "label": "Marketplace",
+      "text_length": 126,
+      "keywords": [
+        "spend 20",
+        "100 working keyboard",
+        "looking",
+        "buy",
+        "working keyboard"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9199999999999999,
+      "avg_keyword_length": 10.8
+    },
+    {
+      "index": 1,
+      "label": "Marketplace",
+      "text_length": 1261,
+      "keywords": [
+        "binoculars 7x35 extra",
+        "50 binolux binoculars",
+        "speeds cookbook years",
+        "vaccum purchased 32",
+        "reduced prices"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 2,
+      "label": "Marketplace",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 3,
+      "label": "Marketplace",
+      "text_length": 794,
+      "keywords": [
+        "asking 150 email",
+        "dobly surround video",
+        "tuner 20fm 10am",
+        "stereo originally purchased",
+        "home theater stereo"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 4,
+      "label": "Marketplace",
+      "text_length": 2051,
+      "keywords": [
+        "company sending fax",
+        "credit automatically approved",
+        "recipient optional fax",
+        "aol com internet",
+        "indiana isifisher aol"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.4
+    },
+    {
+      "index": 5,
+      "label": "Marketplace",
+      "text_length": 231,
+      "keywords": [
+        "adapter users guide",
+        "8k hst",
+        "modem including power",
+        "robotics 16",
+        "sale"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9333333333333332,
+      "avg_keyword_length": 12.2
+    },
+    {
+      "index": 6,
+      "label": "Marketplace",
+      "text_length": 1647,
+      "keywords": [
+        "apple joystick",
+        "hitachi cd player",
+        "c64 powersupplies rf",
+        "cymbal ludwig snare",
+        "30 shipped joysticks"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 7,
+      "label": "Marketplace",
+      "text_length": 1383,
+      "keywords": [
+        "chalet private resort",
+        "weekly bi weekly",
+        "weekly weekend",
+        "brand new chalet",
+        "ski resorts luxury"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 8,
+      "label": "Marketplace",
+      "text_length": 725,
+      "keywords": [
+        "zany golf proterm",
+        "ghost appleworks shadowgate",
+        "games applications battlechess",
+        "applecolor rgb monitor",
+        "basic apple iigs system"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.8
+    },
+    {
+      "index": 9,
+      "label": "Marketplace",
+      "text_length": 1283,
+      "keywords": [
+        "price 00 symmetries",
+        "bantam books paperback",
+        "prices negotiable shipping",
+        "books paperback old",
+        "price 12 new"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 10,
+      "label": "Marketplace",
+      "text_length": 673,
+      "keywords": [
+        "kept heater chrome",
+        "car reply message",
+        "triumph spitfire 76",
+        "convertible 54 000k",
+        "mechanically car good"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.8
+    },
+    {
+      "index": 11,
+      "label": "Marketplace",
+      "text_length": 212,
+      "keywords": [
+        "baud preferred looking",
+        "modem mac did",
+        "beggars choosers mail",
+        "looking cheap mean",
+        "like"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 15.6
+    },
+    {
+      "index": 12,
+      "label": "Marketplace",
+      "text_length": 239,
+      "keywords": [
+        "pop goes world",
+        "hats folk 80",
+        "iii vinyl",
+        "album vinyl cd",
+        "men"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 10.4
+    },
+    {
+      "index": 13,
+      "label": "Marketplace",
+      "text_length": 1075,
+      "keywords": [
+        "420 obo alpine",
+        "paid 250 want",
+        "shuttle paid 600",
+        "note",
+        "posted"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9333333333333332,
+      "avg_keyword_length": 10.6
+    },
+    {
+      "index": 14,
+      "label": "Marketplace",
+      "text_length": 562,
+      "keywords": [
+        "console piano bench",
+        "cushions solid black",
+        "state 450 best",
+        "couch long cushions",
+        "cherry wood great"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 15,
+      "label": "Marketplace",
+      "text_length": 178,
+      "keywords": [
+        "25 miles",
+        "cat special good",
+        "miles east boston",
+        "trailer catbox",
+        "boat currently garaged"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 16,
+      "label": "Marketplace",
+      "text_length": 24,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 17,
+      "label": "Marketplace",
+      "text_length": 590,
+      "keywords": [
+        "cds sale plus",
+        "bojangles sweet",
+        "bobby vinton greatest",
+        "abdul forever girl",
+        "elvis presley"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.0
+    },
+    {
+      "index": 18,
+      "label": "Marketplace",
+      "text_length": 75,
+      "keywords": [
+        "raquetball good",
+        "espree annual",
+        "include raquetball",
+        "annual fee",
+        "good"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 12.0
+    },
+    {
+      "index": 19,
+      "label": "Marketplace",
+      "text_length": 291,
+      "keywords": [
+        "downtown pass bar",
+        "smoking normal law",
+        "non-smoking",
+        "normal law student needs furnished place",
+        "live"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 20,
+      "label": "Marketplace",
+      "text_length": 950,
+      "keywords": [
+        "ads reserving tripe",
+        "houses dead pcs",
+        "information mentioned money",
+        "don know usenet",
+        "people trying sell"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.8
+    },
+    {
+      "index": 21,
+      "label": "Marketplace",
+      "text_length": 1753,
+      "keywords": [
+        "pretty new engine",
+        "case paid 40",
+        "originally paid oodles",
+        "sell email offer",
+        "disk cd player"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.2
+    },
+    {
+      "index": 22,
+      "label": "Marketplace",
+      "text_length": 604,
+      "keywords": [
+        "paid 300",
+        "paid 300 years",
+        "160 100 shipping",
+        "radio shack stereo",
+        "combo black cordless speaker phone"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 23,
+      "label": "Marketplace",
+      "text_length": 116,
+      "keywords": [
+        "advent minis",
+        "month old",
+        "old email",
+        "email offers",
+        "sale bose a5"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 10.8
+    },
+    {
+      "index": 24,
+      "label": "Marketplace",
+      "text_length": 748,
+      "keywords": [
+        "sound stereo reciever",
+        "kind electornic equipment",
+        "time 855 kilobytes",
+        "computrer car home",
+        "maybe sega genesis"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 25,
+      "label": "Marketplace",
+      "text_length": 492,
+      "keywords": [
+        "press lighted timer",
+        "betamax tapes blanks",
+        "girlfriend switched gas",
+        "girlfriend switched",
+        "gas-permeable hard lenses"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 26,
+      "label": "Marketplace",
+      "text_length": 245,
+      "keywords": [
+        "100 00 live",
+        "car rack",
+        "pathfinder brackets buy",
+        "cheap looking 100",
+        "nissan pathfinder brackets"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 27,
+      "label": "Marketplace",
+      "text_length": 353,
+      "keywords": [
+        "sale owners builders",
+        "oversized garage large",
+        "ceiling living room",
+        "dining room 20",
+        "house located sandwich"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 28,
+      "label": "Marketplace",
+      "text_length": 601,
+      "keywords": [
+        "sony d-22 portable diskman forsale good condition",
+        "flawless",
+        "costomer",
+        "portable",
+        "adapter"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9400000000000001,
+      "avg_keyword_length": 16.0
+    },
+    {
+      "index": 29,
+      "label": "Marketplace",
+      "text_length": 262,
+      "keywords": [
+        "meg 256kx4",
+        "friend tested controller",
+        "500 unformatted",
+        "sale",
+        "meg"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9133333333333334,
+      "avg_keyword_length": 11.2
+    },
+    {
+      "index": 30,
+      "label": "Marketplace",
+      "text_length": 939,
+      "keywords": [
+        "mint collection heavy",
+        "amazing sci fi",
+        "break sold single",
+        "metal magazine music",
+        "cleaning"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 16.0
+    },
+    {
+      "index": 31,
+      "label": "Marketplace",
+      "text_length": 2418,
+      "keywords": [
+        "horses sportmodel",
+        "breeds colts years",
+        "thoroughbread breeds colts",
+        "horses 17 heads",
+        "dina breeding pedigree"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 32,
+      "label": "Marketplace",
+      "text_length": 178,
+      "keywords": [
+        "bela lugosi",
+        "film copy",
+        "copy bela lugosi",
+        "looking",
+        "copy"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9333333333333332,
+      "avg_keyword_length": 9.4
+    },
+    {
+      "index": 33,
+      "label": "Marketplace",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 34,
+      "label": "Marketplace",
+      "text_length": 429,
+      "keywords": [
+        "15 additional postage",
+        "bugs bunny",
+        "following lds",
+        "sale",
+        "additional"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 11.6
+    },
+    {
+      "index": 35,
+      "label": "Marketplace",
+      "text_length": 723,
+      "keywords": [
+        "fi bookshelf stereo",
+        "750 really need",
+        "offer 750 buyer",
+        "forsale",
+        "months old -cd player"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 36,
+      "label": "Marketplace",
+      "text_length": 109,
+      "keywords": [
+        "mail resend address",
+        "hey send mail",
+        "lost",
+        "lost moscow",
+        "hey"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9133333333333334,
+      "avg_keyword_length": 10.0
+    },
+    {
+      "index": 37,
+      "label": "Marketplace",
+      "text_length": 362,
+      "keywords": [
+        "gold 50",
+        "provideo gold 50",
+        "spreadsheet shrinkwrap superback",
+        "10 add email",
+        "amiga software sale"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 38,
+      "label": "Marketplace",
+      "text_length": 1918,
+      "keywords": [
+        "50 brick power",
+        "space ace dragon",
+        "buttons 35 graphics",
+        "motherboard joystick buttons",
+        "movies sell 600"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.4
+    },
+    {
+      "index": 39,
+      "label": "Marketplace",
+      "text_length": 12,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 40,
+      "label": "Marketplace",
+      "text_length": 631,
+      "keywords": [
+        "00 shipping negotiable",
+        "pilots headset",
+        "discover h10 40",
+        "thousands pilots",
+        "favorite headset"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.6
+    },
+    {
+      "index": 41,
+      "label": "Marketplace",
+      "text_length": 1169,
+      "keywords": [
+        "motherboard micronics slot",
+        "desktop case 230watt",
+        "sram cache 4mb",
+        "4mb 80us ram",
+        "cyrix 83d87 math"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 42,
+      "label": "Marketplace",
+      "text_length": 574,
+      "keywords": [
+        "quite lightweight easy",
+        "school want play",
+        "learn used school",
+        "easy inexpensive nice",
+        "tektronix t921"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 43,
+      "label": "Marketplace",
+      "text_length": 158,
+      "keywords": [
+        "offer accepted",
+        "pairs headphones",
+        "excellent great condition",
+        "ha d590 reasonable",
+        "headphones like sell"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 44,
+      "label": "Marketplace",
+      "text_length": 616,
+      "keywords": [
+        "flooding mailbox",
+        "information write privately",
+        "legal usenet trying",
+        "fun flooding mailbox",
+        "trying college"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 45,
+      "label": "Marketplace",
+      "text_length": 97,
+      "keywords": [
+        "ios",
+        "typos blame",
+        "fix typos",
+        "ios fix typos",
+        "hell"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 8.0
+    },
+    {
+      "index": 46,
+      "label": "Marketplace",
+      "text_length": 119,
+      "keywords": [
+        "chicago return",
+        "10 14 days",
+        "21 tuesday",
+        "airline ticket",
+        "cheap airline"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 12.2
+    },
+    {
+      "index": 47,
+      "label": "Marketplace",
+      "text_length": 449,
+      "keywords": [
+        "wyoming montana utah",
+        "minnesota nebraska iowa",
+        "phone directory names",
+        "searchdisc cdrom phone",
+        "sale teh uswest searchdisc cdrom phone directory"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 26.8
+    },
+    {
+      "index": 48,
+      "label": "Marketplace",
+      "text_length": 915,
+      "keywords": [
+        "high school",
+        "email work email",
+        "waiting owner operator",
+        "play anymore email",
+        "school just don"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.4
+    },
+    {
+      "index": 49,
+      "label": "Marketplace",
+      "text_length": 1017,
+      "keywords": [
+        "bookshelf speakers paid",
+        "250 pair willing",
+        "10 month",
+        "old stereo sale",
+        "warranty paid 475"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 15.8
+    },
+    {
+      "index": 50,
+      "label": "Marketplace",
+      "text_length": 167,
+      "keywords": [
+        "label makers afford",
+        "tired theirs mail",
+        "afford new anybody",
+        "buying little label",
+        "says"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 51,
+      "label": "Marketplace",
+      "text_length": 235,
+      "keywords": [
+        "60w ch",
+        "onkyo integrated amplifier",
+        "amplifier looking rid",
+        "100 obo interested",
+        "onkyo integrated"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 17.4
+    },
+    {
+      "index": 52,
+      "label": "Marketplace",
+      "text_length": 512,
+      "keywords": [
+        "personal check 24",
+        "expense check defective",
+        "deliver payment cash",
+        "offer 150 scanner",
+        "bank sent mail"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.2
+    },
+    {
+      "index": 53,
+      "label": "Marketplace",
+      "text_length": 403,
+      "keywords": [
+        "cell think good",
+        "25v wall charger",
+        "looking sell icom",
+        "battery needs new",
+        "cigarette adapter leather"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 54,
+      "label": "Marketplace",
+      "text_length": 3244,
+      "keywords": [
+        "1st app aliens",
+        "comics minimum bids",
+        "50 star trek",
+        "dad 50 wolverine",
+        "auctioning following comics"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 55,
+      "label": "Marketplace",
+      "text_length": 68,
+      "keywords": [
+        "eric",
+        "lost",
+        "send email address",
+        "eric send email",
+        "send"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.8799999999999999,
+      "avg_keyword_length": 9.0
+    },
+    {
+      "index": 56,
+      "label": "Marketplace",
+      "text_length": 29,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 57,
+      "label": "Marketplace",
+      "text_length": 513,
+      "keywords": [
+        "company phone numbers",
+        "florida",
+        "refurbishing observatory",
+        "hello",
+        "refurbishing"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 58,
+      "label": "Marketplace",
+      "text_length": 811,
+      "keywords": [
+        "earphone minijack excellent",
+        "series c50 vhs",
+        "speed digital shutter",
+        "vhs viewing bunch",
+        "autofocus 6x power"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 59,
+      "label": "Marketplace",
+      "text_length": 353,
+      "keywords": [
+        "mail fax mr",
+        "chinese tv",
+        "representing",
+        "chinese",
+        "manufacturers"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 10.6
+    },
+    {
+      "index": 60,
+      "label": "Marketplace",
+      "text_length": 74,
+      "keywords": [
+        "device used plastic",
+        "10baset",
+        "plastic 10baset",
+        "note",
+        "device"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9133333333333334,
+      "avg_keyword_length": 10.2
+    },
+    {
+      "index": 61,
+      "label": "Marketplace",
+      "text_length": 516,
+      "keywords": [
+        "sale",
+        "king feature syndicate jaymar specialty company",
+        "fifth avenue new york",
+        "puzzle",
+        "pieces"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 62,
+      "label": "Marketplace",
+      "text_length": 327,
+      "keywords": [
+        "rent 325 utilities",
+        "june aug 15",
+        "large bedroom",
+        "rent",
+        "june 1-aug"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 11.2
+    },
+    {
+      "index": 63,
+      "label": "Marketplace",
+      "text_length": 3574,
+      "keywords": [
+        "simpsons comics stories",
+        "spider man 136",
+        "aliens 1st app",
+        "dad 50 wolverine",
+        "comics auction highest"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 64,
+      "label": "Marketplace",
+      "text_length": 1093,
+      "keywords": [
+        "subatomic physics hard",
+        "books perfect condition",
+        "telescope hard cover",
+        "13 00 physics",
+        "sale books perfect"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 65,
+      "label": "Marketplace",
+      "text_length": 301,
+      "keywords": [
+        "220cdn pair brett",
+        "electrostatic high",
+        "comfortable sound nice",
+        "headphones sale",
+        "akg 340 headphones"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 66,
+      "label": "Marketplace",
+      "text_length": 1067,
+      "keywords": [
+        "buy seperate pedal",
+        "perfect electric acoustic",
+        "guitar dark metallic",
+        "striker 100st electric",
+        "american metal distortion"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.0
+    },
+    {
+      "index": 67,
+      "label": "Marketplace",
+      "text_length": 1582,
+      "keywords": [
+        "reach harvard mark",
+        "best sellers",
+        "putnam books supervisor",
+        "hill outsmarting competition",
+        "following busines books best sellers"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.4
+    },
+    {
+      "index": 68,
+      "label": "Marketplace",
+      "text_length": 689,
+      "keywords": [
+        "hp com bob",
+        "list price 895",
+        "battery pack modem",
+        "pocket modem new",
+        "hpcc01"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 12.8
+    },
+    {
+      "index": 69,
+      "label": "Marketplace",
+      "text_length": 243,
+      "keywords": [
+        "comps boots black",
+        "boots black yellow",
+        "pair",
+        "size 11-11.5 raichle flexon comps",
+        "boots"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 70,
+      "label": "Marketplace",
+      "text_length": 1435,
+      "keywords": [
+        "excellently windows dos",
+        "laser printer prints",
+        "purchased printer 375",
+        "packard deskjet 500",
+        "printer low cost"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.8
+    },
+    {
+      "index": 71,
+      "label": "Marketplace",
+      "text_length": 110,
+      "keywords": [
+        "box docs",
+        "new plotters",
+        "offer cod shipping",
+        "docs lost make",
+        "straight"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 12.0
+    },
+    {
+      "index": 72,
+      "label": "Marketplace",
+      "text_length": 781,
+      "keywords": [
+        "fancy just joystick",
+        "16 bit floppy",
+        "200 watt power",
+        "10 shipping best",
+        "desktop case 200"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.6
+    },
+    {
+      "index": 73,
+      "label": "Marketplace",
+      "text_length": 334,
+      "keywords": [
+        "25 brand",
+        "mail bounced host",
+        "sonic hedgehog ii",
+        "games",
+        "forsale"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9333333333333332,
+      "avg_keyword_length": 10.8
+    },
+    {
+      "index": 74,
+      "label": "Marketplace",
+      "text_length": 170,
+      "keywords": [
+        "looking cheap",
+        "sound card audiomedia",
+        "trying set personal",
+        "sampler rack keyboard",
+        "set personal studio"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 75,
+      "label": "Marketplace",
+      "text_length": 43,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 76,
+      "label": "Marketplace",
+      "text_length": 477,
+      "keywords": [
+        "beatles cream woodstock",
+        "stack",
+        "records",
+        "early sixtys",
+        "like"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 10.2
+    },
+    {
+      "index": 77,
+      "label": "Marketplace",
+      "text_length": 729,
+      "keywords": [
+        "portrait 800x600 silly",
+        "8xl great card",
+        "macworld 499 completely",
+        "250 advertised macworld",
+        "apple monitor cable"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 78,
+      "label": "Marketplace",
+      "text_length": 1623,
+      "keywords": [
+        "pc internal modem",
+        "vcr record slideshow",
+        "card experimenting midi",
+        "stereo output great",
+        "250 xapshot video"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 79,
+      "label": "Marketplace",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 80,
+      "label": "Marketplace",
+      "text_length": 1596,
+      "keywords": [
+        "cassette tape deck",
+        "ram random access",
+        "memory function useful",
+        "900 kenwood audiophile",
+        "paid 450 00"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 81,
+      "label": "Marketplace",
+      "text_length": 91,
+      "keywords": [
+        "dad neighbor contact",
+        "mom dad neighbor",
+        "posting",
+        "mom",
+        "dad"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.8866666666666667,
+      "avg_keyword_length": 9.8
+    },
+    {
+      "index": 82,
+      "label": "Marketplace",
+      "text_length": 437,
+      "keywords": [
+        "want 200 cambridge",
+        "p70 60w stereo",
+        "want 950 big",
+        "60w stereo solid",
+        "presets list 350"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.2
+    },
+    {
+      "index": 83,
+      "label": "Marketplace",
+      "text_length": 470,
+      "keywords": [
+        "country june asking",
+        "000 miles great",
+        "interior alpine stereo",
+        "car alarm",
+        "toyota supra"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 84,
+      "label": "Marketplace",
+      "text_length": 422,
+      "keywords": [
+        "pay 10",
+        "looking",
+        "copy",
+        "first world wrestling federation album",
+        "album"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.8799999999999999,
+      "avg_keyword_length": 12.0
+    },
+    {
+      "index": 85,
+      "label": "Marketplace",
+      "text_length": 2233,
+      "keywords": [
+        "edition dos 10",
+        "student edition dos",
+        "limited 64 columns",
+        "solid cherry veneer",
+        "sale hardly computer"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 86,
+      "label": "Marketplace",
+      "text_length": 3388,
+      "keywords": [
+        "car audio features",
+        "rca jack ensures",
+        "cassette deck cd",
+        "iv fm circuitry",
+        "music sensor stereo"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 87,
+      "label": "Marketplace",
+      "text_length": 5232,
+      "keywords": [
+        "sealed jelloman comic",
+        "price lots comics",
+        "copy left spiderman",
+        "comic professional collectors",
+        "mail bought comics"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.8
+    },
+    {
+      "index": 88,
+      "label": "Marketplace",
+      "text_length": 325,
+      "keywords": [
+        "vga color monitor",
+        "256k max",
+        "bitzm columbia dsu",
+        "01 packard bell",
+        "grand prix disks"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 89,
+      "label": "Marketplace",
+      "text_length": 280,
+      "keywords": [
+        "colleges specificly want",
+        "girl went high",
+        "went high school",
+        "playboy magazine",
+        "looking"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 90,
+      "label": "Marketplace",
+      "text_length": 853,
+      "keywords": [
+        "plus 30 days",
+        "convenient secure home",
+        "home broken parents",
+        "free monitering service",
+        "complete set lifecall"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 91,
+      "label": "Marketplace",
+      "text_length": 561,
+      "keywords": [
+        "fine mail posting",
+        "ou812 doors best",
+        "cassette tapes sale",
+        "greatest hits bachman",
+        "cars greatest hits"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.2
+    },
+    {
+      "index": 92,
+      "label": "Marketplace",
+      "text_length": 226,
+      "keywords": [
+        "wanted summer sublet",
+        "metro line bedroom",
+        "memorial day weekend",
+        "wanted",
+        "summer sublet"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 93,
+      "label": "Marketplace",
+      "text_length": 1,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 94,
+      "label": "Marketplace",
+      "text_length": 1884,
+      "keywords": [
+        "playmate review sex",
+        "special edition playboy",
+        "offer 40 shipping",
+        "july tall girls",
+        "girls miss bulgaria"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 95,
+      "label": "Marketplace",
+      "text_length": 396,
+      "keywords": [
+        "mint condition perfect",
+        "bought new dealer",
+        "indiana inquiries preferred",
+        "100r dirt bike",
+        "sale"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 96,
+      "label": "Marketplace",
+      "text_length": 238,
+      "keywords": [
+        "looking 400 range",
+        "inexpensive motorcycle fancy",
+        "followup-to",
+        "kedz wpi.wpi.edu distribution",
+        "organization"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 97,
+      "label": "Marketplace",
+      "text_length": 352,
+      "keywords": [
+        "email interested tickets",
+        "pair year section",
+        "price 45",
+        "warriors tickets sale",
+        "warriors tickets"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 98,
+      "label": "Marketplace",
+      "text_length": 519,
+      "keywords": [
+        "friend motherboard",
+        "33 64k cache",
+        "computer shoppers",
+        "advice favorite book",
+        "play atari paddles"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 99,
+      "label": "Medical",
+      "text_length": 282,
+      "keywords": [
+        "patty duke_ patty",
+        "manic depressive illness",
+        "books manic depressive",
+        "anna autobiography patty",
+        "published"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 100,
+      "label": "Medical",
+      "text_length": 690,
+      "keywords": [
+        "chinese malaysian friends",
+        "similar reaction",
+        "chinese food",
+        "came",
+        "chinese"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.94,
+      "avg_keyword_length": 12.8
+    },
+    {
+      "index": 101,
+      "label": "Medical",
+      "text_length": 1,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 102,
+      "label": "Medical",
+      "text_length": 619,
+      "keywords": [
+        "grand mal seizures",
+        "liters corn intact",
+        "attending corn festival",
+        "years",
+        "intern"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.94,
+      "avg_keyword_length": 14.0
+    },
+    {
+      "index": 103,
+      "label": "Medical",
+      "text_length": 260,
+      "keywords": [
+        "papain msg seasonings",
+        "meat",
+        "tenderizing beef involves",
+        "works",
+        "different mechanism"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 104,
+      "label": "Medical",
+      "text_length": 410,
+      "keywords": [
+        "pharmacies quite",
+        "skins chose thanks",
+        "hints reply email",
+        "dry general",
+        "supermarkets pharmacies"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 105,
+      "label": "Medical",
+      "text_length": 205,
+      "keywords": [
+        "culture negative worry",
+        "cultured having throat",
+        "neiseria meningococcus given",
+        "assuming",
+        "cultured"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 106,
+      "label": "Medical",
+      "text_length": 421,
+      "keywords": [
+        "drugs",
+        "stopping pain severe",
+        "county hospital",
+        "morphine demerol effective",
+        "morphine"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 107,
+      "label": "Medical",
+      "text_length": 880,
+      "keywords": [
+        "successfully carried pregnancy",
+        "immune blocking prevents",
+        "miscarriage white cells",
+        "wife given transfusion",
+        "following"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 21.6
+    },
+    {
+      "index": 108,
+      "label": "Medical",
+      "text_length": 921,
+      "keywords": [
+        "cause trouble later",
+        "brie cheese msg",
+        "eat bad bad",
+        "eating mushrooms soya",
+        "avoid stress worrying"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.4
+    },
+    {
+      "index": 109,
+      "label": "Medical",
+      "text_length": 1270,
+      "keywords": [
+        "ago university arizona",
+        "major league players",
+        "softball class cross",
+        "part",
+        "study"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 14.2
+    },
+    {
+      "index": 110,
+      "label": "Medical",
+      "text_length": 13969,
+      "keywords": [
+        "infection worked vitamin",
+        "prescription doctors newsgroup",
+        "americans die vitamin",
+        "retinol diet headache",
+        "new nutrition textbook"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.6
+    },
+    {
+      "index": 111,
+      "label": "Medical",
+      "text_length": 582,
+      "keywords": [
+        "ask daughter eating",
+        "diabetes sought direct",
+        "getting",
+        "original question",
+        "thread"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 14.2
+    },
+    {
+      "index": 112,
+      "label": "Medical",
+      "text_length": 109,
+      "keywords": [
+        "need information",
+        "cortisone shots seasonal",
+        "allergic condition",
+        "receiving cortisone shots",
+        "need"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 17.4
+    },
+    {
+      "index": 113,
+      "label": "Medical",
+      "text_length": 470,
+      "keywords": [
+        "people developed measles",
+        "attended high school",
+        "san jose",
+        "california area",
+        "recall"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 14.6
+    },
+    {
+      "index": 114,
+      "label": "Medical",
+      "text_length": 32767,
+      "keywords": [
+        "hospital charges cesarean",
+        "worldwide aids statistics",
+        "information hicnet medical",
+        "aids daily summary",
+        "cut"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 115,
+      "label": "Medical",
+      "text_length": 917,
+      "keywords": [
+        "adrenal boys surely",
+        "relatives recessive genes",
+        "nerves affected diseases",
+        "step biopsies help",
+        "university pediatric"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 116,
+      "label": "Medical",
+      "text_length": 377,
+      "keywords": [
+        "old breast fed",
+        "wife hives",
+        "medicines visit trial",
+        "wife",
+        "hives"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 10.8
+    },
+    {
+      "index": 117,
+      "label": "Medical",
+      "text_length": 1222,
+      "keywords": [
+        "times restaurant people",
+        "soup unless restaurant",
+        "restaurant cooks msg",
+        "love chinese food",
+        "eat lots chinese"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 118,
+      "label": "Medical",
+      "text_length": 657,
+      "keywords": [
+        "lack belief conceptions",
+        "god merely reason",
+        "conceptions god inconsistent",
+        "god believe agnostic",
+        "self proclaimed atheist"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.2
+    },
+    {
+      "index": 119,
+      "label": "Medical",
+      "text_length": 1452,
+      "keywords": [
+        "recommend using bathtub",
+        "penile cancer",
+        "urinary tract infections",
+        "infection hope tips",
+        "class nursing school"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.8
+    },
+    {
+      "index": 120,
+      "label": "Medical",
+      "text_length": 2467,
+      "keywords": [
+        "similar cries september",
+        "just entered daycare",
+        "doctor diagnosed ear",
+        "kids cold virus",
+        "fight sickness everytime"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.4
+    },
+    {
+      "index": 121,
+      "label": "Medical",
+      "text_length": 2015,
+      "keywords": [
+        "imagine weeks poisoner",
+        "physics fusion shortly",
+        "sick die",
+        "doctors alarmed confused",
+        "experimental mice showed"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 122,
+      "label": "Medical",
+      "text_length": 388,
+      "keywords": [
+        "skepticism chastity intellect",
+        "edu shameful surrender",
+        "vaginal",
+        "females gynecologists familiar",
+        "females gynecologists"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 21.8
+    },
+    {
+      "index": 123,
+      "label": "Medical",
+      "text_length": 2555,
+      "keywords": [
+        "dozen victims fouled",
+        "great grandfathers wives",
+        "trouble free births",
+        "domestic horses cows",
+        "farmers nonetheless lost"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.4
+    },
+    {
+      "index": 124,
+      "label": "Medical",
+      "text_length": 272,
+      "keywords": [
+        "just wanted say",
+        "dsl pitt",
+        "chastity",
+        "shameful",
+        "banks n3jxp skepticism"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 12.2
+    },
+    {
+      "index": 125,
+      "label": "Medical",
+      "text_length": 6121,
+      "keywords": [
+        "doctors compensated americans",
+        "poll doctors salaries",
+        "permission cure stupidity",
+        "medical profession villain",
+        "following article"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.6
+    },
+    {
+      "index": 126,
+      "label": "Medical",
+      "text_length": 1178,
+      "keywords": [
+        "science successful hypothesis",
+        "wasn daydream special",
+        "snakes biting",
+        "snakes biting tails",
+        "non rational mystical"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 127,
+      "label": "Medical",
+      "text_length": 208,
+      "keywords": [
+        "physical therapy students",
+        "contact email address",
+        "interested",
+        "finding"
+      ],
+      "keyword_count": 4,
+      "quality_score": 0.9083333333333333,
+      "avg_keyword_length": 15.75
+    },
+    {
+      "index": 128,
+      "label": "Medical",
+      "text_length": 1039,
+      "keywords": [
+        "regular sleep",
+        "starting patients worked",
+        "150 mo depending",
+        "cost usually 150",
+        "amitriptyline daily aerobic"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 129,
+      "label": "Medical",
+      "text_length": 368,
+      "keywords": [
+        "chastity intellect geb",
+        "banks n3jxp skepticism",
+        "shameful surrender soon",
+        "contrary original respondent",
+        "color sensitive"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.0
+    },
+    {
+      "index": 130,
+      "label": "Medical",
+      "text_length": 729,
+      "keywords": [
+        "device connect 120kvolt",
+        "particle physics",
+        "cern european laboratory",
+        "skeptics sp nice",
+        "switzerland generally accepted"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.8
+    },
+    {
+      "index": 131,
+      "label": "Medical",
+      "text_length": 4147,
+      "keywords": [
+        "msg flinches waste",
+        "man habits complain",
+        "learn cook scratch",
+        "thinks prejudice chinese",
+        "bother chicken bouillon"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.4
+    },
+    {
+      "index": 132,
+      "label": "Medical",
+      "text_length": 432,
+      "keywords": [
+        "fevers elevated blood",
+        "new miracle drug",
+        "stimulate brown fat",
+        "creating eat opposed",
+        "burn food creating"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.8
+    },
+    {
+      "index": 133,
+      "label": "Medical",
+      "text_length": 109,
+      "keywords": [
+        "med people",
+        "people sell tens",
+        "sci med people",
+        "sell",
+        "tens unit"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 10.6
+    },
+    {
+      "index": 134,
+      "label": "Medical",
+      "text_length": 1157,
+      "keywords": [
+        "phone caller selling",
+        "years possible disassemble",
+        "genetically engineered tomatoes",
+        "years",
+        "possible"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 135,
+      "label": "Medical",
+      "text_length": 787,
+      "keywords": [
+        "release steroids",
+        "brain barrier circumventricular",
+        "adult rats",
+        "blood levels somatostatin",
+        "somatostatin significantly reduced"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.2
+    },
+    {
+      "index": 136,
+      "label": "Medical",
+      "text_length": 146,
+      "keywords": [
+        "listen possibilities transmission",
+        "chlorination isn par",
+        "especially chlorination",
+        "swimming pool",
+        "swimming pool water"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.6
+    },
+    {
+      "index": 137,
+      "label": "Medical",
+      "text_length": 909,
+      "keywords": [
+        "dieting helps avoid",
+        "medium apple probably",
+        "eating fat people",
+        "rare cows",
+        "butterfat milk pregnant"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 138,
+      "label": "Medical",
+      "text_length": 308,
+      "keywords": [
+        "people march washington",
+        "35 000 people",
+        "heard",
+        "studies",
+        "speculation"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 11.8
+    },
+    {
+      "index": 139,
+      "label": "Medical",
+      "text_length": 309,
+      "keywords": [
+        "area prevents patient",
+        "reduce pain",
+        "nasoparynx carcenoma chances",
+        "eating excessive pain",
+        "patient eating excessive"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.0
+    },
+    {
+      "index": 140,
+      "label": "Medical",
+      "text_length": 4867,
+      "keywords": [
+        "med doctors better",
+        "specialized jargon necessary",
+        "disagreements yeast issue",
+        "causing significant miscommunication",
+        "practicing doctors really"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 26.4
+    },
+    {
+      "index": 141,
+      "label": "Medical",
+      "text_length": 249,
+      "keywords": [
+        "close mother",
+        "summer attack guaranteed",
+        "border claim chigger",
+        "mother comes",
+        "gainesville tex"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.6
+    },
+    {
+      "index": 142,
+      "label": "Medical",
+      "text_length": 1063,
+      "keywords": [
+        "yeast hypothesis evidence",
+        "evidence requires jury",
+        "worthless help",
+        "viewpoint anecdotal medical",
+        "clinical trials good"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.6
+    },
+    {
+      "index": 143,
+      "label": "Medical",
+      "text_length": 1314,
+      "keywords": [
+        "_other_ fas patients",
+        "studies discussed inflammatory",
+        "fas consumed epa",
+        "inflammatory bowel disease",
+        "got hospital read"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.8
+    },
+    {
+      "index": 144,
+      "label": "Medical",
+      "text_length": 697,
+      "keywords": [
+        "rate high abortion",
+        "stupid healthy sexuality",
+        "masturbate need desire",
+        "hung sex tv",
+        "american frightened sex"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 145,
+      "label": "Medical",
+      "text_length": 219,
+      "keywords": [
+        "neuroticism",
+        "extraversion neuroticism dimensions",
+        "map sanguine choleric",
+        "phlegmatic division",
+        "sanguine choleric melencholic"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.0
+    },
+    {
+      "index": 146,
+      "label": "Medical",
+      "text_length": 1710,
+      "keywords": [
+        "food boy computer",
+        "enjoy chinese food",
+        "double blind test",
+        "preach ban pepper",
+        "food poisoning"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.6
+    },
+    {
+      "index": 147,
+      "label": "Medical",
+      "text_length": 297,
+      "keywords": [
+        "based loss lactase",
+        "sapiens asian descent",
+        "state adults mammals",
+        "normalized weaned state",
+        "lactose tolerance unusual"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.4
+    },
+    {
+      "index": 148,
+      "label": "Medical",
+      "text_length": 442,
+      "keywords": [
+        "eye tends cut",
+        "rearing ugly",
+        "short sighted",
+        "head longer",
+        "right eye tends"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 12.8
+    },
+    {
+      "index": 149,
+      "label": "Medical",
+      "text_length": 567,
+      "keywords": [
+        "sterile wife enjoy",
+        "man vasectomy",
+        "anyone know",
+        "studies done",
+        "long-term health effects"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.6
+    },
+    {
+      "index": 150,
+      "label": "Medical",
+      "text_length": 1387,
+      "keywords": [
+        "treatable drugs surgery",
+        "modality estimated 20",
+        "mds amused alternative",
+        "ninety percent diseases",
+        "20 magic placebo"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.0
+    },
+    {
+      "index": 151,
+      "label": "Medical",
+      "text_length": 1388,
+      "keywords": [
+        "fevers nightsweats wrong",
+        "newly discovered herpes",
+        "antibodies ebv virus",
+        "viruses environmental toxins",
+        "outbreaks"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 20.8
+    },
+    {
+      "index": 152,
+      "label": "Medical",
+      "text_length": 357,
+      "keywords": [
+        "unusual strain boy",
+        "psychiatrist",
+        "boy causing difficulty",
+        "practice second opinion",
+        "medic parent"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.4
+    },
+    {
+      "index": 153,
+      "label": "Medical",
+      "text_length": 126,
+      "keywords": [
+        "stone worse",
+        "baby kidney stone",
+        "baby",
+        "kidney stone",
+        "according"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 10.6
+    },
+    {
+      "index": 154,
+      "label": "Medical",
+      "text_length": 2263,
+      "keywords": [
+        "food cooking dinner",
+        "ice cream pizza",
+        "health food fact",
+        "try 42oz steaks",
+        "enjoy steak resent"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.6
+    },
+    {
+      "index": 155,
+      "label": "Medical",
+      "text_length": 3021,
+      "keywords": [
+        "patients good bacteria",
+        "patients fungal infection",
+        "trials focused drugs",
+        "ineffective cancer physician",
+        "money clinical trials"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.2
+    },
+    {
+      "index": 156,
+      "label": "Medical",
+      "text_length": 141,
+      "keywords": [
+        "infectious diseases",
+        "arthritis persistant",
+        "experimental lyme disease",
+        "dogs produces",
+        "dogs produces arthritis"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 157,
+      "label": "Medical",
+      "text_length": 1247,
+      "keywords": [
+        "psychoactive drugs antidepressents",
+        "discuss prescription",
+        "psychoactives group originally",
+        "group discuss prescription",
+        "prozac lithium antipsychotics"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 27.8
+    },
+    {
+      "index": 158,
+      "label": "Medical",
+      "text_length": 750,
+      "keywords": [
+        "question commercial fisherman",
+        "fell weeks",
+        "rib wrenched bruised",
+        "commercial fisherman fell",
+        "hello"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 159,
+      "label": "Medical",
+      "text_length": 636,
+      "keywords": [
+        "cancer patients access",
+        "burzynski method cancer",
+        "toxic interested cancer",
+        "cancer industry pulitzer",
+        "therapies endorsed cancer"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.4
+    },
+    {
+      "index": 160,
+      "label": "Medical",
+      "text_length": 550,
+      "keywords": [
+        "hospital lot money",
+        "heart failure friends",
+        "electrical heart failure",
+        "know",
+        "anyone knows"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 15.8
+    },
+    {
+      "index": 161,
+      "label": "Medical",
+      "text_length": 691,
+      "keywords": [
+        "montreal nasal",
+        "know manufactured montreal",
+        "herbal remedies thanks",
+        "environmental influences dry",
+        "secaris"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 162,
+      "label": "Medical",
+      "text_length": 404,
+      "keywords": [
+        "shopping gp good",
+        "physicals age 42",
+        "biannual physicals",
+        "email suspect topic",
+        "company encourages annual"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.8
+    },
+    {
+      "index": 163,
+      "label": "Medical",
+      "text_length": 274,
+      "keywords": [
+        "problems sensitive stomach",
+        "new doctor gave",
+        "antibiotic good suggestions",
+        "gave prescription today",
+        "new doctor"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 164,
+      "label": "Medical",
+      "text_length": 948,
+      "keywords": [
+        "tb weak didn",
+        "tb need develop",
+        "drug addicts harboring",
+        "tb resistant chicago",
+        "new"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 14.4
+    },
+    {
+      "index": 165,
+      "label": "Medical",
+      "text_length": 845,
+      "keywords": [
+        "days feel lightheaded",
+        "water away dehydrating",
+        "live",
+        "sea-level",
+        "called-upon"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 13.4
+    },
+    {
+      "index": 166,
+      "label": "Medical",
+      "text_length": 127,
+      "keywords": [
+        "seeing acupuncturist",
+        "aids needles thanks",
+        "getting aids needles",
+        "friend",
+        "mine"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9333333333333332,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 167,
+      "label": "Medical",
+      "text_length": 1806,
+      "keywords": [
+        "ear canal inserting",
+        "nurses complained company",
+        "company inaccurate readings",
+        "reading infrared emissions",
+        "drum hotter ear"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.4
+    },
+    {
+      "index": 168,
+      "label": "Medical",
+      "text_length": 497,
+      "keywords": [
+        "subject duplicated placebo",
+        "changes taste food",
+        "easily disguise flavor",
+        "minus msg",
+        "study double blind"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 169,
+      "label": "Medical",
+      "text_length": 1360,
+      "keywords": [
+        "hoped limited psychoactive",
+        "dad lawyer grew",
+        "standard recreational drugs",
+        "dad lawyer",
+        "drugs pihkah psychoactive"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 170,
+      "label": "Medical",
+      "text_length": 511,
+      "keywords": [
+        "friend just diagnosed",
+        "friend",
+        "diagnosed",
+        "lupus",
+        "disease"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9133333333333334,
+      "avg_keyword_length": 9.6
+    },
+    {
+      "index": 171,
+      "label": "Medical",
+      "text_length": 2054,
+      "keywords": [
+        "severe complaining doctors",
+        "arm decreased doctors",
+        "ago mother diagnosed",
+        "cancer lymph nodes",
+        "cancer removed tumor"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.0
+    },
+    {
+      "index": 172,
+      "label": "Medical",
+      "text_length": 3045,
+      "keywords": [
+        "personal jealousies crazy",
+        "lysenko creationists fail",
+        "theory explains better",
+        "experiments pursue arguments",
+        "lie forever experiment"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 24.4
+    },
+    {
+      "index": 173,
+      "label": "Medical",
+      "text_length": 206,
+      "keywords": [
+        "month 15",
+        "15 drops times",
+        "homeopathic remedies",
+        "tried",
+        "dander one"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 11.4
+    },
+    {
+      "index": 174,
+      "label": "Medical",
+      "text_length": 2016,
+      "keywords": [
+        "beginning quibble surprising",
+        "lack better neutral",
+        "previously existing theories",
+        "rejected hypotheses theory",
+        "experimental test surprising"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.8
+    },
+    {
+      "index": 175,
+      "label": "Medical",
+      "text_length": 464,
+      "keywords": [
+        "asleep",
+        "really bizarre dreams",
+        "antihistamines cause",
+        "rest doctor said",
+        "antihistamines cause weight"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 176,
+      "label": "Medical",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 177,
+      "label": "Medical",
+      "text_length": 2798,
+      "keywords": [
+        "dangerous cyanide release",
+        "treat cancer patients",
+        "uncovered medicare fraud",
+        "prescribing thyroid preps",
+        "alternative medicine lack"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 24.0
+    },
+    {
+      "index": 178,
+      "label": "Medical",
+      "text_length": 1108,
+      "keywords": [
+        "quite removed algorithms",
+        "hypotheses solutions everyday",
+        "skills worms wiggling",
+        "loose soil garden",
+        "son regards ted"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 179,
+      "label": "Medical",
+      "text_length": 1087,
+      "keywords": [
+        "clean plates photographs",
+        "electricity surprise surprise",
+        "taking photographs corona",
+        "greg",
+        "flame"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 17.4
+    },
+    {
+      "index": 180,
+      "label": "Medical",
+      "text_length": 1002,
+      "keywords": [
+        "antibiotic therapy don",
+        "yeast infections try",
+        "reducing vaginal candidiasis",
+        "yogurt daily",
+        "ounces yogurt daily"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 181,
+      "label": "Medical",
+      "text_length": 155,
+      "keywords": [
+        "people try break",
+        "massage",
+        "sore tight spots",
+        "knots really helpful",
+        "kinds massage people"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 15.8
+    },
+    {
+      "index": 182,
+      "label": "Medical",
+      "text_length": 1007,
+      "keywords": [
+        "electricity surprise surprise",
+        "clean plates",
+        "replicated phantom leaf",
+        "photograph cut leaf",
+        "trouble clean plates"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 183,
+      "label": "Medical",
+      "text_length": 178,
+      "keywords": [
+        "pierced needles",
+        "protested euclid",
+        "needles probably protested",
+        "describe",
+        "detail"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 14.2
+    },
+    {
+      "index": 184,
+      "label": "Medical",
+      "text_length": 2686,
+      "keywords": [
+        "cell divide drugs",
+        "cancer cells growing",
+        "spelling crazy medical",
+        "spell destroy cancer",
+        "chemotherapy don worry"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 185,
+      "label": "Medical",
+      "text_length": 795,
+      "keywords": [
+        "human starvation health",
+        "hospitals medical centers",
+        "scientific contacts colleagues",
+        "young russian reseacher",
+        "starvation improving health"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.6
+    },
+    {
+      "index": 186,
+      "label": "Medical",
+      "text_length": 3061,
+      "keywords": [
+        "attack treatment worldwide",
+        "coronary arteries trial",
+        "friday morning minibus",
+        "largest heart attack",
+        "research meeting friday"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.8
+    },
+    {
+      "index": 187,
+      "label": "Medical",
+      "text_length": 840,
+      "keywords": [
+        "patients revealing interesting",
+        "exhibited observable clinical",
+        "root cause allergy",
+        "inhalant allergy scratch",
+        "testing scratch tests"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 24.4
+    },
+    {
+      "index": 188,
+      "label": "Medical",
+      "text_length": 112,
+      "keywords": [
+        "started days",
+        "formation new pox",
+        "probably speeds recovery",
+        "yes",
+        "acyclovir started"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 14.6
+    },
+    {
+      "index": 189,
+      "label": "Medical",
+      "text_length": 341,
+      "keywords": [
+        "news evidence ex",
+        "maybe science",
+        "science times",
+        "lung cancer returns",
+        "seems"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 13.2
+    },
+    {
+      "index": 190,
+      "label": "Medical",
+      "text_length": 1228,
+      "keywords": [
+        "meningitis huge topic",
+        "influenzae common cause",
+        "bacterial meningitis groups",
+        "children hemophilus influenzae",
+        "bacterial meningitis vary"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.2
+    },
+    {
+      "index": 191,
+      "label": "Medical",
+      "text_length": 483,
+      "keywords": [
+        "husband woke",
+        "days",
+        "small sore spot",
+        "spot",
+        "sore"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.8799999999999999,
+      "avg_keyword_length": 7.8
+    },
+    {
+      "index": 192,
+      "label": "Medical",
+      "text_length": 227,
+      "keywords": [
+        "allows visualise small",
+        "hypertension diabetes example",
+        "diseases hypertension diabetes",
+        "eyes",
+        "looking"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.94,
+      "avg_keyword_length": 18.4
+    },
+    {
+      "index": 193,
+      "label": "Medical",
+      "text_length": 1665,
+      "keywords": [
+        "fruit _synsephalum dulcificum_",
+        "taste receptors _miracle",
+        "experimenting miracle berries",
+        "lemon juice sauerkraut",
+        "sauerkraut juice vinegar"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.8
+    },
+    {
+      "index": 194,
+      "label": "Medical",
+      "text_length": 415,
+      "keywords": [
+        "needed blood",
+        "punishing red cross",
+        "banks n3jxp skepticism",
+        "useful isn punishing",
+        "nagging probably won"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 195,
+      "label": "Medical",
+      "text_length": 565,
+      "keywords": [
+        "end bio chemistry",
+        "discussing 10 days",
+        "thinking pharmaceutical",
+        "biochemistry probably",
+        "medical health newsgroup"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 196,
+      "label": "Medical",
+      "text_length": 2902,
+      "keywords": [
+        "use disposable needles",
+        "acupuncturist aids unlikely",
+        "risk hepatitis hiv",
+        "injecting fluid medicine",
+        "new needles sterilized"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.6
+    },
+    {
+      "index": 197,
+      "label": "Medical",
+      "text_length": 1528,
+      "keywords": [
+        "seeing fetus uterus",
+        "dna causes hydroxyl",
+        "factors cause cancer",
+        "kidney stones radiologists",
+        "good picking tumors"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 198,
+      "label": "Medical",
+      "text_length": 492,
+      "keywords": [
+        "looked balanced 100",
+        "physician posting theraputic",
+        "100 mg",
+        "newsgroup physician posting",
+        "vitamin b6"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 199,
+      "label": "Politics",
+      "text_length": 596,
+      "keywords": [
+        "bush burn consumed",
+        "acts blasphemy",
+        "god role religious",
+        "science removing props",
+        "god caused bush"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.4
+    },
+    {
+      "index": 200,
+      "label": "Politics",
+      "text_length": 144,
+      "keywords": [
+        "ref rev 12",
+        "12 12 deleted",
+        "deleted read",
+        "lucifer later satan",
+        "satan beautiful grant"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.0
+    },
+    {
+      "index": 201,
+      "label": "Politics",
+      "text_length": 427,
+      "keywords": [
+        "knock 200lb drill",
+        "ufology",
+        "vehicles discussing military",
+        "idiots criminals",
+        "criminals confirm paranoids"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 19.0
+    },
+    {
+      "index": 202,
+      "label": "Politics",
+      "text_length": 304,
+      "keywords": [
+        "earmarks",
+        "true condemn",
+        "fabrication posters",
+        "despised tpm",
+        "morals despised tpm"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 14.0
+    },
+    {
+      "index": 203,
+      "label": "Politics",
+      "text_length": 1052,
+      "keywords": [
+        "hoards devoted government",
+        "worshipers believe government",
+        "evil",
+        "officials really don",
+        "koresh devil incarnate"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 204,
+      "label": "Politics",
+      "text_length": 921,
+      "keywords": [
+        "crossover gamers science",
+        "fiction fantasy",
+        "christianity gaming",
+        "fanzine christian magazine",
+        "fiction science fiction"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.4
+    },
+    {
+      "index": 205,
+      "label": "Politics",
+      "text_length": 3102,
+      "keywords": [
+        "anti discrimination laws",
+        "excellent engage discourse",
+        "schmucks try elected",
+        "wholeheartedly paul handled",
+        "kilimanjaro jpl nasa"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.4
+    },
+    {
+      "index": 206,
+      "label": "Politics",
+      "text_length": 2844,
+      "keywords": [
+        "bible try hear",
+        "bible actually practice",
+        "problem arise christians",
+        "bible claimants don",
+        "fundamentalists conservative christian"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.6
+    },
+    {
+      "index": 207,
+      "label": "Politics",
+      "text_length": 1273,
+      "keywords": [
+        "stall negotiations loose",
+        "oranges simply unacceptable",
+        "israeli voices negotiations",
+        "blaming israelis result",
+        "palestineans refused refuse"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.6
+    },
+    {
+      "index": 208,
+      "label": "Politics",
+      "text_length": 454,
+      "keywords": [
+        "read couple times",
+        "sold week second",
+        "christiandom needed book",
+        "15 times harvest",
+        "frank"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 15.6
+    },
+    {
+      "index": 209,
+      "label": "Politics",
+      "text_length": 171,
+      "keywords": [
+        "risen",
+        "dead",
+        "dead dont know",
+        "true told guys",
+        "remark heard david"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 11.0
+    },
+    {
+      "index": 210,
+      "label": "Politics",
+      "text_length": 2506,
+      "keywords": [
+        "white house office",
+        "havel holocaust museum",
+        "decisions president clinton",
+        "toured museum night",
+        "immediate release april"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.8
+    },
+    {
+      "index": 211,
+      "label": "Politics",
+      "text_length": 8360,
+      "keywords": [
+        "teenaged robbers armed",
+        "shot fired prevents",
+        "vegas deputy police",
+        "citizen defending police",
+        "shooting usually justified"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.0
+    },
+    {
+      "index": 212,
+      "label": "Politics",
+      "text_length": 721,
+      "keywords": [
+        "governments childish propaganda",
+        "thousands islamic banks",
+        "regard banking explicitly",
+        "rules islam",
+        "robbed american banks"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.2
+    },
+    {
+      "index": 213,
+      "label": "Politics",
+      "text_length": 213,
+      "keywords": [
+        "messenger got killed",
+        "seems",
+        "koresh",
+        "messenger"
+      ],
+      "keyword_count": 4,
+      "quality_score": 0.85,
+      "avg_keyword_length": 10.0
+    },
+    {
+      "index": 214,
+      "label": "Politics",
+      "text_length": 2148,
+      "keywords": [
+        "biblical commentary njbc",
+        "bible commentary slight",
+        "good bibligraphies reading",
+        "authors tend books",
+        "undergraduate bible courses"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.6
+    },
+    {
+      "index": 215,
+      "label": "Politics",
+      "text_length": 134,
+      "keywords": [
+        "starowl a2i rahul",
+        "champaign il southeast",
+        "net champaign il",
+        "life difficult",
+        "difficult actuaries"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 216,
+      "label": "Politics",
+      "text_length": 195,
+      "keywords": [
+        "floor doesn discordant",
+        "beast neighbor",
+        "6th floor",
+        "beast neighbor rest",
+        "apartment 667 hall"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 16.4
+    },
+    {
+      "index": 217,
+      "label": "Politics",
+      "text_length": 395,
+      "keywords": [
+        "fighter shot",
+        "airliner navy",
+        "sp massacre suggesting",
+        "remember iranian airliner",
+        "navy mistook"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 218,
+      "label": "Politics",
+      "text_length": 726,
+      "keywords": [
+        "law biggest disservice",
+        "italy know brasil",
+        "syrian joke",
+        "maybe saudi arabia",
+        "saudis wonder secure"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 219,
+      "label": "Politics",
+      "text_length": 400,
+      "keywords": [
+        "serbia serbia exempted",
+        "hungarians serbia serbia",
+        "croatia bosnia hercegovina",
+        "muslims divided 200",
+        "croats divided 70"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.6
+    },
+    {
+      "index": 220,
+      "label": "Politics",
+      "text_length": 10658,
+      "keywords": [
+        "domination jewish agriculture",
+        "mufti jerusalem gloating",
+        "following quotations zionist",
+        "ed jewish ethics",
+        "jew rabid bigot"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.4
+    },
+    {
+      "index": 221,
+      "label": "Politics",
+      "text_length": 1624,
+      "keywords": [
+        "true virtue vords",
+        "moral judgements",
+        "world sadists rejected",
+        "moral truths remain",
+        "sadists rejected contention"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 222,
+      "label": "Politics",
+      "text_length": 774,
+      "keywords": [
+        "like apostles creed",
+        "churches use symbol",
+        "dab delinieates orthodox",
+        "lutheran dab anglican",
+        "use catholic church"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.4
+    },
+    {
+      "index": 223,
+      "label": "Politics",
+      "text_length": 258,
+      "keywords": [
+        "making rude",
+        "false person making",
+        "holocaust insulting",
+        "holocaust insulting completely",
+        "ignorant holocaust ignorant"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 224,
+      "label": "Politics",
+      "text_length": 687,
+      "keywords": [
+        "petroglyphs dated 800",
+        "navajo reservation",
+        "family doesn rifle",
+        "lived",
+        "played"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.94,
+      "avg_keyword_length": 13.6
+    },
+    {
+      "index": 225,
+      "label": "Politics",
+      "text_length": 928,
+      "keywords": [
+        "lead flying cops",
+        "gun control",
+        "stuff deleted good",
+        "bigger bullets better",
+        "cops gangs innocent"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 226,
+      "label": "Politics",
+      "text_length": 4090,
+      "keywords": [
+        "senate april 13",
+        "dear mr president",
+        "white house office",
+        "immediate release april",
+        "aircraft"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 16.2
+    },
+    {
+      "index": 227,
+      "label": "Politics",
+      "text_length": 9505,
+      "keywords": [
+        "god falsify atheism",
+        "agreement deleted complicated",
+        "falsify unfair coin",
+        "hg necessarily complicated",
+        "paper deadline panic"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.6
+    },
+    {
+      "index": 228,
+      "label": "Politics",
+      "text_length": 91,
+      "keywords": [
+        "searching",
+        "pro lifer",
+        "mire pro lifer",
+        "irrelevant",
+        "slimy tactic"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 10.8
+    },
+    {
+      "index": 229,
+      "label": "Politics",
+      "text_length": 6744,
+      "keywords": [
+        "ahmadi muslims opposed",
+        "november 92 false",
+        "religious persecution rise",
+        "religion newsgroup creation",
+        "opponent voting canceled"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.2
+    },
+    {
+      "index": 230,
+      "label": "Politics",
+      "text_length": 5638,
+      "keywords": [
+        "aaron confessing sinfulness",
+        "birth hyperbole bible",
+        "mother conceived aaron",
+        "bible inspired god",
+        "dead aaron baptism"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 231,
+      "label": "Politics",
+      "text_length": 37,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 232,
+      "label": "Politics",
+      "text_length": 3664,
+      "keywords": [
+        "love sinner account",
+        "sin consistent christianity",
+        "rejected hate sin",
+        "jesus loved sinners",
+        "hypocrisy hate evil"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 233,
+      "label": "Politics",
+      "text_length": 382,
+      "keywords": [
+        "hammer coffee pot",
+        "lives line cheaper",
+        "american soldiers lives",
+        "tried buy mil",
+        "israel dirty work"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 234,
+      "label": "Politics",
+      "text_length": 578,
+      "keywords": [
+        "don want spend",
+        "stop dancing graves",
+        "sarcasm burned right",
+        "insanity survive world",
+        "crazy fanatic cultists"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 235,
+      "label": "Politics",
+      "text_length": 4449,
+      "keywords": [
+        "pro censorship arguments",
+        "legal definition fraud",
+        "british law censorship",
+        "advocating murder trivial",
+        "freedom speech irrelevant"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.6
+    },
+    {
+      "index": 236,
+      "label": "Politics",
+      "text_length": 462,
+      "keywords": [
+        "released fbi",
+        "waco standoff",
+        "incident waco texas",
+        "fbi press office",
+        "newsgroups want fbi"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.8
+    },
+    {
+      "index": 237,
+      "label": "Politics",
+      "text_length": 277,
+      "keywords": [
+        "think winchester",
+        "92 oversized loop",
+        "44 40 model",
+        "special 357 magnum",
+        "winchester makes rifle"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 238,
+      "label": "Politics",
+      "text_length": 1205,
+      "keywords": [
+        "contradictory manifestation god",
+        "personified christian god",
+        "gods potential quantum",
+        "inflationary creation god",
+        "god existed necessary"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 24.8
+    },
+    {
+      "index": 239,
+      "label": "Politics",
+      "text_length": 3178,
+      "keywords": [
+        "opinion god uses",
+        "war unrelated",
+        "peace stop atrocities",
+        "school student catholic",
+        "margarine spreads needed"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 240,
+      "label": "Politics",
+      "text_length": 2230,
+      "keywords": [
+        "religion require ignore",
+        "does religion require",
+        "read groups email",
+        "class meant interesting",
+        "stanford university email"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.8
+    },
+    {
+      "index": 241,
+      "label": "Politics",
+      "text_length": 3118,
+      "keywords": [
+        "men supported financially",
+        "terrorist camp",
+        "israelis",
+        "view",
+        "civilians"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.94,
+      "avg_keyword_length": 12.0
+    },
+    {
+      "index": 242,
+      "label": "Politics",
+      "text_length": 722,
+      "keywords": [
+        "maybe working secret",
+        "pisssssssssed offfffff ottoman",
+        "messengers usually killed",
+        "don worry turks",
+        "armenians sure killed"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.2
+    },
+    {
+      "index": 243,
+      "label": "Politics",
+      "text_length": 4829,
+      "keywords": [
+        "better envoking whore",
+        "pagan gods christians",
+        "envoking whore goddess",
+        "does question easter",
+        "celebration easter objection"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.4
+    },
+    {
+      "index": 244,
+      "label": "Politics",
+      "text_length": 990,
+      "keywords": [
+        "proposing public defence",
+        "criminal government day",
+        "deterrant future offenders",
+        "openly defying government",
+        "bugging potential criminals"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.0
+    },
+    {
+      "index": 245,
+      "label": "Politics",
+      "text_length": 1994,
+      "keywords": [
+        "reader went business",
+        "sunday raise hell",
+        "trashed mail improperly",
+        "atheism earlier week",
+        "reading mail said"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 246,
+      "label": "Politics",
+      "text_length": 209,
+      "keywords": [
+        "fundamentalists ultra",
+        "definitely jewish",
+        "karta definitely jewish",
+        "saying",
+        "naturei karta"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 16.0
+    },
+    {
+      "index": 247,
+      "label": "Politics",
+      "text_length": 2341,
+      "keywords": [
+        "away jewish refugees",
+        "risked jews",
+        "president veto supreme",
+        "court ruled genocide",
+        "hitler imperialist ambitions"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 248,
+      "label": "Politics",
+      "text_length": 49,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 249,
+      "label": "Politics",
+      "text_length": 84,
+      "keywords": [
+        "frank",
+        "feelings",
+        "important",
+        "book feelings",
+        "read important book"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 10.8
+    },
+    {
+      "index": 250,
+      "label": "Politics",
+      "text_length": 636,
+      "keywords": [
+        "saying lust men",
+        "sodomites lust flesh",
+        "gay christians",
+        "case homosexuality rape",
+        "angels application homosexual"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 251,
+      "label": "Politics",
+      "text_length": 340,
+      "keywords": [
+        "hell prevail church",
+        "parables nonsense matthew",
+        "gaves apostles keys",
+        "teaching sin corruption",
+        "jesus gaves apostles"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 252,
+      "label": "Politics",
+      "text_length": 1541,
+      "keywords": [
+        "voice does contradict",
+        "uncontroverted",
+        "view principle exclude",
+        "teach doctrines contrary",
+        "exclude _ecclesiastes_"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 253,
+      "label": "Politics",
+      "text_length": 32767,
+      "keywords": [
+        "american bolsheviks russia",
+        "books texas corporation",
+        "government war bunkers",
+        "license granted audio",
+        "war music ears"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 254,
+      "label": "Politics",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 255,
+      "label": "Politics",
+      "text_length": 146,
+      "keywords": [
+        "myth make religion",
+        "read friendly christian",
+        "need",
+        "counterfeit athiest",
+        "myth"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9199999999999999,
+      "avg_keyword_length": 13.6
+    },
+    {
+      "index": 256,
+      "label": "Politics",
+      "text_length": 3054,
+      "keywords": [
+        "jews wanted barabbas",
+        "politicians cared ideals",
+        "caesar killing madman",
+        "sophomore american doesn",
+        "liberating chant sophomore"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.0
+    },
+    {
+      "index": 257,
+      "label": "Politics",
+      "text_length": 151,
+      "keywords": [
+        "charge automatically detonate",
+        "thirty years",
+        "thirty years la",
+        "algor",
+        "insistance"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 14.2
+    },
+    {
+      "index": 258,
+      "label": "Politics",
+      "text_length": 1159,
+      "keywords": [
+        "atheists presented simply",
+        "descriptions atheists presented",
+        "god presented contradictory",
+        "mean bicycle",
+        "doubting strongly bicycle"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 24.0
+    },
+    {
+      "index": 259,
+      "label": "Politics",
+      "text_length": 3683,
+      "keywords": [
+        "guns detroit people",
+        "sixties riots instead",
+        "riots instead tanks",
+        "tanks shelled american",
+        "wrote"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 260,
+      "label": "Politics",
+      "text_length": 568,
+      "keywords": [
+        "bank signature merely",
+        "thoughts bio weapons",
+        "banning need vast",
+        "use rob bank",
+        "poor mans bomb"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 261,
+      "label": "Politics",
+      "text_length": 431,
+      "keywords": [
+        "trying wives children",
+        "civilians rest government",
+        "horrible people",
+        "armenian fighters serdar",
+        "soldiers killed 200"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.8
+    },
+    {
+      "index": 262,
+      "label": "Politics",
+      "text_length": 2872,
+      "keywords": [
+        "ego superego freud",
+        "jesus makes plato",
+        "amazing missed studied",
+        "romans think benjamin",
+        "men screw bible"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 263,
+      "label": "Politics",
+      "text_length": 3949,
+      "keywords": [
+        "congress 1st session",
+        "code rifle defined",
+        "afford adopt attorney",
+        "committee judiciary establish",
+        "contact gun owners"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 264,
+      "label": "Politics",
+      "text_length": 585,
+      "keywords": [
+        "values newtonian physic",
+        "false science",
+        "science value true",
+        "computer science value",
+        "different quantum mechanics"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 265,
+      "label": "Politics",
+      "text_length": 1003,
+      "keywords": [
+        "wait interesting studying",
+        "divinity schools seminaries",
+        "students ancient language",
+        "hebrew compare german",
+        "theology germany fact"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.8
+    },
+    {
+      "index": 266,
+      "label": "Politics",
+      "text_length": 1141,
+      "keywords": [
+        "watt pentacostal christian",
+        "redwoods record",
+        "saw problem deforestation",
+        "washington post friday",
+        "realize"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 19.0
+    },
+    {
+      "index": 267,
+      "label": "Politics",
+      "text_length": 679,
+      "keywords": [
+        "editor daily published",
+        "written making liberal",
+        "thanks responded letter",
+        "letter editor daily",
+        "email relevant information"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.4
+    },
+    {
+      "index": 268,
+      "label": "Politics",
+      "text_length": 2406,
+      "keywords": [
+        "ecclesisatical advisor catholic",
+        "christian coalition poll",
+        "conservatives coming open",
+        "republican party lose",
+        "catholics head corporations"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.6
+    },
+    {
+      "index": 269,
+      "label": "Politics",
+      "text_length": 209,
+      "keywords": [
+        "scriptures better did",
+        "jews know hebrew",
+        "anti semitism",
+        "mass rejecting christian",
+        "christian anti-semitism comes"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 270,
+      "label": "Politics",
+      "text_length": 1841,
+      "keywords": [
+        "firearms claim vast",
+        "neighbors notice strangers",
+        "arrested good neighbors",
+        "legality non issue",
+        "walks free bs"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.8
+    },
+    {
+      "index": 271,
+      "label": "Politics",
+      "text_length": 59,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 272,
+      "label": "Politics",
+      "text_length": 1430,
+      "keywords": [
+        "tie ratings deliberately",
+        "feds sides interested",
+        "interested arresting vernon",
+        "jesus persecuted authorities",
+        "cult members disillusioned"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.2
+    },
+    {
+      "index": 273,
+      "label": "Politics",
+      "text_length": 2490,
+      "keywords": [
+        "won care fever",
+        "marriage wife worry",
+        "sneeze meant worse",
+        "liked dropping cid",
+        "hold candle pain"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 274,
+      "label": "Politics",
+      "text_length": 119,
+      "keywords": [
+        "just mistakes",
+        "does mean president",
+        "president lied",
+        "david koresh",
+        "listen"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 12.8
+    },
+    {
+      "index": 275,
+      "label": "Politics",
+      "text_length": 3391,
+      "keywords": [
+        "christian concept spiritual",
+        "christians dismayed",
+        "difficult discuss faiths",
+        "believe christianity true",
+        "people believe christianity"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 24.4
+    },
+    {
+      "index": 276,
+      "label": "Politics",
+      "text_length": 1322,
+      "keywords": [
+        "let great chuckmeister",
+        "worried gubnint run",
+        "canada people",
+        "tomorrow rush bash",
+        "tells canada people"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.2
+    },
+    {
+      "index": 277,
+      "label": "Politics",
+      "text_length": 408,
+      "keywords": [
+        "place intelligence animals",
+        "moral bahavior beings",
+        "intelligent beings moral",
+        "example instinctive murder",
+        "animals species kill"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.4
+    },
+    {
+      "index": 278,
+      "label": "Politics",
+      "text_length": 133,
+      "keywords": [
+        "half intifada",
+        "isralis shot killed",
+        "shot killed observer",
+        "many cases",
+        "remeber names"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.0
+    },
+    {
+      "index": 279,
+      "label": "Politics",
+      "text_length": 263,
+      "keywords": [
+        "requesting refusing wp5",
+        "theological implications requesting",
+        "mormons",
+        "heard asked fbi",
+        "heard"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 280,
+      "label": "Politics",
+      "text_length": 503,
+      "keywords": [
+        "crucis ruby",
+        "rosicrucian enjoy",
+        "rose gold cross",
+        "order roseae rubeae",
+        "rough translation rosicrucian"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.2
+    },
+    {
+      "index": 281,
+      "label": "Politics",
+      "text_length": 2964,
+      "keywords": [
+        "remember gulf war",
+        "jews worship holiest",
+        "women rights saudi",
+        "yasser arafat renounced",
+        "suggest"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 282,
+      "label": "Politics",
+      "text_length": 457,
+      "keywords": [
+        "heterosexuals",
+        "implicitly explicitly wrong",
+        "knowledge information sexuality",
+        "information sexuality relationships",
+        "difficult young person"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.6
+    },
+    {
+      "index": 283,
+      "label": "Politics",
+      "text_length": 323,
+      "keywords": [
+        "bad people",
+        "mortals aren begging",
+        "true god tolerated",
+        "just crank business",
+        "god tolerated rest"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 284,
+      "label": "Politics",
+      "text_length": 594,
+      "keywords": [
+        "100 17s require",
+        "aviation week march",
+        "cheaper california",
+        "california voted overwhelmingly",
+        "wasting billions taxes"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.0
+    },
+    {
+      "index": 285,
+      "label": "Politics",
+      "text_length": 434,
+      "keywords": [
+        "frigging dime tax",
+        "parent parents",
+        "allready immunize children",
+        "sticking",
+        "nose"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 286,
+      "label": "Politics",
+      "text_length": 4271,
+      "keywords": [
+        "atheists weak atheist",
+        "evidence theory successful",
+        "puzzles need faith",
+        "scientific work weeks",
+        "disbelievers punished puzzles"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.0
+    },
+    {
+      "index": 287,
+      "label": "Politics",
+      "text_length": 113,
+      "keywords": [
+        "wars guns",
+        "flame wars guns",
+        "calm",
+        "tweaked",
+        "fount"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9,
+      "avg_keyword_length": 8.0
+    },
+    {
+      "index": 288,
+      "label": "Politics",
+      "text_length": 233,
+      "keywords": [
+        "hoping kent state",
+        "murder",
+        "government murder",
+        "seems",
+        "learn"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 10.0
+    },
+    {
+      "index": 289,
+      "label": "Politics",
+      "text_length": 1107,
+      "keywords": [
+        "lobbyists conspirators zog",
+        "arabs unable 45",
+        "jews _really_",
+        "love israel disguised",
+        "paid israeli lobbyists"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 290,
+      "label": "Politics",
+      "text_length": 143,
+      "keywords": [
+        "completely voluntary",
+        "people cases race",
+        "race information sought",
+        "trying mislead people",
+        "completely voluntary census"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.6
+    },
+    {
+      "index": 291,
+      "label": "Politics",
+      "text_length": 1394,
+      "keywords": [
+        "unnesessary opponents posessa",
+        "ask fbi ve",
+        "million firearms",
+        "dangerous thinking criminal",
+        "firearms deter criminals"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.2
+    },
+    {
+      "index": 292,
+      "label": "Politics",
+      "text_length": 176,
+      "keywords": [
+        "don believe god",
+        "gay",
+        "confused going hell",
+        "think",
+        "confused"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 10.0
+    },
+    {
+      "index": 293,
+      "label": "Politics",
+      "text_length": 635,
+      "keywords": [
+        "think read joe",
+        "teach self control",
+        "anger ref galatians",
+        "paul write timothy",
+        "emotions controlled god"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.4
+    },
+    {
+      "index": 294,
+      "label": "Politics",
+      "text_length": 282,
+      "keywords": [
+        "civil rights beat",
+        "lambs say",
+        "guilty",
+        "aiding abetting deprival",
+        "beat king watched"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 14.6
+    },
+    {
+      "index": 295,
+      "label": "Politics",
+      "text_length": 97,
+      "keywords": [
+        "house deserve",
+        "burn house",
+        "come burn house",
+        "god",
+        "made"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9133333333333334,
+      "avg_keyword_length": 9.0
+    },
+    {
+      "index": 296,
+      "label": "Politics",
+      "text_length": 6982,
+      "keywords": [
+        "nazi pro russia",
+        "snows killed thirty",
+        "nazis wholly opportunistic",
+        "fell armenians officially",
+        "drove turks"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 297,
+      "label": "Politics",
+      "text_length": 261,
+      "keywords": [
+        "said queens",
+        "ideas bob beauchaine",
+        "queens stay blew",
+        "manhattan sea",
+        "away sank manhattan"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.8
+    },
+    {
+      "index": 298,
+      "label": "Politics",
+      "text_length": 145,
+      "keywords": [
+        "night man",
+        "man considered important",
+        "wonder women reactions",
+        "women reactions recorded",
+        "frustrating night man"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 299,
+      "label": "Recreation",
+      "text_length": 771,
+      "keywords": [
+        "record stay 500",
+        "sox start better",
+        "espn pointed night",
+        "500 rest year",
+        "red sox negativism"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.0
+    },
+    {
+      "index": 300,
+      "label": "Recreation",
+      "text_length": 248,
+      "keywords": [
+        "castrol 20w50 exclusively",
+        "rabbit 78 scirocco",
+        "75 rabbit",
+        "exclusively following cars",
+        "additional data point"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 19.8
+    },
+    {
+      "index": 301,
+      "label": "Recreation",
+      "text_length": 220,
+      "keywords": [
+        "20 taurus sables",
+        "get",
+        "taurus sables",
+        "fleet cars",
+        "cars"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9133333333333334,
+      "avg_keyword_length": 9.2
+    },
+    {
+      "index": 302,
+      "label": "Recreation",
+      "text_length": 1339,
+      "keywords": [
+        "usually somewhat ignorant",
+        "trash assuredly intolerant",
+        "math skills important",
+        "lazy just work",
+        "dishonest white people"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.6
+    },
+    {
+      "index": 303,
+      "label": "Recreation",
+      "text_length": 310,
+      "keywords": [
+        "try dew asbestos",
+        "steering power brakes",
+        "email 708 864",
+        "needs work 400",
+        "sale"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 13.6
+    },
+    {
+      "index": 304,
+      "label": "Recreation",
+      "text_length": 395,
+      "keywords": [
+        "minivan outsellin",
+        "commercial introduction campaign",
+        "vans true stupid",
+        "theirs implying nissan",
+        "villager selling chrysler"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.4
+    },
+    {
+      "index": 305,
+      "label": "Recreation",
+      "text_length": 968,
+      "keywords": [
+        "worse sportschannel coverage",
+        "urp kind hockey",
+        "penguins devils day",
+        "buffalo phoned complain",
+        "cba basketball night"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.0
+    },
+    {
+      "index": 306,
+      "label": "Recreation",
+      "text_length": 725,
+      "keywords": [
+        "lot games pitches",
+        "lost 18 detroit",
+        "mongoose torolab ibm",
+        "toronto finish 3rd",
+        "pitches good teams"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 307,
+      "label": "Recreation",
+      "text_length": 380,
+      "keywords": [
+        "rules goalies equipment",
+        "jerseys dreaming watch",
+        "pads goalies wearing",
+        "bigger bigger",
+        "bigger bigger time"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 308,
+      "label": "Recreation",
+      "text_length": 188,
+      "keywords": [
+        "sox thanks",
+        "red sox",
+        "yankees numbers",
+        "babe ruth",
+        "complete pitching stats"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 12.8
+    },
+    {
+      "index": 309,
+      "label": "Recreation",
+      "text_length": 180,
+      "keywords": [
+        "faith actually affected",
+        "season world series",
+        "world series games",
+        "jewish faith",
+        "hank greenberg"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 310,
+      "label": "Recreation",
+      "text_length": 1088,
+      "keywords": [
+        "defenseman clearly great",
+        "pretty allowed kings",
+        "thugs toronto decided",
+        "sandstrom fault thugs",
+        "goaltender better choice"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.0
+    },
+    {
+      "index": 311,
+      "label": "Recreation",
+      "text_length": 48,
+      "keywords": [
+        "know",
+        "know know",
+        "harley",
+        "afford harley",
+        "know afford harley"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 10.0
+    },
+    {
+      "index": 312,
+      "label": "Recreation",
+      "text_length": 93,
+      "keywords": [
+        "hmmmmmmm",
+        "won",
+        "accident",
+        "accident won need",
+        "unless accident"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 10.2
+    },
+    {
+      "index": 313,
+      "label": "Recreation",
+      "text_length": 202,
+      "keywords": [
+        "just buy ballpoint",
+        "bmw mechanic idiot",
+        "cash bmw",
+        "save",
+        "cash"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 10.4
+    },
+    {
+      "index": 314,
+      "label": "Recreation",
+      "text_length": 105,
+      "keywords": [
+        "storm davis warned",
+        "mesa vs storm",
+        "oakland california",
+        "25th 05 pm",
+        "sunday"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 13.0
+    },
+    {
+      "index": 315,
+      "label": "Recreation",
+      "text_length": 65,
+      "keywords": [
+        "code",
+        "quite simple",
+        "week year",
+        "quite simple code",
+        "week year manufacture"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 12.6
+    },
+    {
+      "index": 316,
+      "label": "Recreation",
+      "text_length": 1093,
+      "keywords": [
+        "car fail stop",
+        "bike figure likely",
+        "concentrate avoiding situations",
+        "annoying habbit racing",
+        "time needed bike"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 317,
+      "label": "Recreation",
+      "text_length": 538,
+      "keywords": [
+        "buying guide new",
+        "motorcycle camping idiots",
+        "cross country motorcycle",
+        "motorcycles blue book",
+        "country motorcycle camping"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.4
+    },
+    {
+      "index": 318,
+      "label": "Recreation",
+      "text_length": 76,
+      "keywords": [
+        "really john neuharth",
+        "bad really",
+        "white sox",
+        "ask white sox",
+        "kidding"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 11.8
+    },
+    {
+      "index": 319,
+      "label": "Recreation",
+      "text_length": 331,
+      "keywords": [
+        "calls waited overtime",
+        "baseball",
+        "respond calls night",
+        "cutting baseball couldn",
+        "overtime buffalo game"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 18.4
+    },
+    {
+      "index": 320,
+      "label": "Recreation",
+      "text_length": 468,
+      "keywords": [
+        "damaged bike property",
+        "bike waited week",
+        "least",
+        "damaged",
+        "bike"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 10.6
+    },
+    {
+      "index": 321,
+      "label": "Recreation",
+      "text_length": 281,
+      "keywords": [
+        "game counts remaining",
+        "city quebec",
+        "breaker count games",
+        "quebec means boston",
+        "pierre"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 15.2
+    },
+    {
+      "index": 322,
+      "label": "Recreation",
+      "text_length": 3740,
+      "keywords": [
+        "johnson mickey mantle",
+        "40 willie",
+        "players haphazardly misspelled",
+        "rest players year",
+        "last week"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 323,
+      "label": "Recreation",
+      "text_length": 60,
+      "keywords": [
+        "say"
+      ],
+      "keyword_count": 1,
+      "quality_score": 0.5,
+      "avg_keyword_length": 3.0
+    },
+    {
+      "index": 324,
+      "label": "Recreation",
+      "text_length": 199,
+      "keywords": [
+        "tricky boulder guy",
+        "dog wearing wwii",
+        "back",
+        "tricky",
+        "boulder"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9133333333333334,
+      "avg_keyword_length": 10.2
+    },
+    {
+      "index": 325,
+      "label": "Recreation",
+      "text_length": 323,
+      "keywords": [
+        "december",
+        "lemieux gretzky bure",
+        "lemieux diagnosed hodgkin",
+        "designated point-getter remarks",
+        "meant"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 326,
+      "label": "Recreation",
+      "text_length": 591,
+      "keywords": [
+        "keys gunpoint hand",
+        "thug comes demands",
+        "saab installed gearshift",
+        "locks popular saab",
+        "car reverse remove"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 327,
+      "label": "Recreation",
+      "text_length": 339,
+      "keywords": [
+        "itch sportscasters wrong",
+        "league ballgame",
+        "jewish polish",
+        "major league ballgame",
+        "stankiewicz"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 328,
+      "label": "Recreation",
+      "text_length": 407,
+      "keywords": [
+        "veiw course sport",
+        "yes yes motorcycling",
+        "motorcycling slightly different",
+        "single rider cruiser",
+        "rider cruiser bikes"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.4
+    },
+    {
+      "index": 329,
+      "label": "Recreation",
+      "text_length": 214,
+      "keywords": [
+        "leaf play like",
+        "did game going",
+        "watching game",
+        "_really_ hurt",
+        "_really_ hurt cheers"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 330,
+      "label": "Recreation",
+      "text_length": 494,
+      "keywords": [
+        "oil quart need",
+        "oil stuff drain",
+        "throw car",
+        "nissan maxima se",
+        "car 89 nissan"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 13.4
+    },
+    {
+      "index": 331,
+      "label": "Recreation",
+      "text_length": 401,
+      "keywords": [
+        "redesigning uniforms",
+        "uniforms remembered reason",
+        "new road green",
+        "enjoy trend classic",
+        "marketing money sales"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 332,
+      "label": "Recreation",
+      "text_length": 200,
+      "keywords": [
+        "ve seen octopus",
+        "octopus aud year",
+        "game knew detroit",
+        "bruins sabres game",
+        "passed"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 14.4
+    },
+    {
+      "index": 333,
+      "label": "Recreation",
+      "text_length": 301,
+      "keywords": [
+        "requires player defect",
+        "teams mlb",
+        "teams mlb won",
+        "linares",
+        "defected"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 11.8
+    },
+    {
+      "index": 334,
+      "label": "Recreation",
+      "text_length": 341,
+      "keywords": [
+        "rangers let quakers",
+        "league champs",
+        "edu ivy league",
+        "tomorrow",
+        "scoring playoff pool"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 335,
+      "label": "Recreation",
+      "text_length": 252,
+      "keywords": [
+        "computer science",
+        "want dr bart",
+        "childs professor texas",
+        "model corolla father",
+        "single data point"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.4
+    },
+    {
+      "index": 336,
+      "label": "Recreation",
+      "text_length": 623,
+      "keywords": [
+        "50r15 tires",
+        "dealer finally hr",
+        "looking buy new",
+        "hardly drive 80",
+        "tires threadwear strictly"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.6
+    },
+    {
+      "index": 337,
+      "label": "Recreation",
+      "text_length": 563,
+      "keywords": [
+        "happy bought wheel",
+        "went toyota nissan",
+        "friends trucks talked",
+        "article",
+        "cronkite.cisco.com"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 16.4
+    },
+    {
+      "index": 338,
+      "label": "Recreation",
+      "text_length": 273,
+      "keywords": [
+        "people feel need",
+        "expound issue days",
+        "discussion feel need",
+        "days days end",
+        "cease discussion"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.6
+    },
+    {
+      "index": 339,
+      "label": "Recreation",
+      "text_length": 103,
+      "keywords": [
+        "spark plug wires",
+        "changing spark plug",
+        "sparking problem",
+        "mustang",
+        "changing"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 13.2
+    },
+    {
+      "index": 340,
+      "label": "Recreation",
+      "text_length": 506,
+      "keywords": [
+        "music ears complaining",
+        "ride ex girlfriend",
+        "sigh",
+        "music",
+        "ears"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.8866666666666667,
+      "avg_keyword_length": 10.6
+    },
+    {
+      "index": 341,
+      "label": "Recreation",
+      "text_length": 249,
+      "keywords": [
+        "bike headers metal",
+        "200 miles trailering",
+        "coating repaint pipes",
+        "need sand rust",
+        "seems"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 15.6
+    },
+    {
+      "index": 342,
+      "label": "Recreation",
+      "text_length": 892,
+      "keywords": [
+        "300 steals",
+        "achieved 100",
+        "easily reaching 100",
+        "louis collect 700",
+        "300 steals career"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.0
+    },
+    {
+      "index": 343,
+      "label": "Recreation",
+      "text_length": 250,
+      "keywords": [
+        "season trade clemens",
+        "problem analysis ignores",
+        "major problem",
+        "analysis",
+        "ignores age"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 15.2
+    },
+    {
+      "index": 344,
+      "label": "Recreation",
+      "text_length": 114,
+      "keywords": [
+        "game winner",
+        "500th",
+        "inning game",
+        "9th inning game",
+        "mike schmidt"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 10.8
+    },
+    {
+      "index": 345,
+      "label": "Recreation",
+      "text_length": 194,
+      "keywords": [
+        "240sx named",
+        "200sx uses",
+        "engine isn true",
+        "engine uses likewise",
+        "kind"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 12.0
+    },
+    {
+      "index": 346,
+      "label": "Recreation",
+      "text_length": 445,
+      "keywords": [
+        "monday",
+        "cup winner forward",
+        "correct games pittsburgh",
+        "midnight",
+        "15 stanley cup"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 14.0
+    },
+    {
+      "index": 347,
+      "label": "Recreation",
+      "text_length": 142,
+      "keywords": [
+        "bombarded pictures",
+        "popular mechanics",
+        "mustang",
+        "saw picture 94",
+        "mechanics disappointment bombarded"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 348,
+      "label": "Recreation",
+      "text_length": 147,
+      "keywords": [
+        "yesterday",
+        "hershiser strawberry davis",
+        "leaguers didn badly",
+        "little leaguers",
+        "hmm"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 14.4
+    },
+    {
+      "index": 349,
+      "label": "Recreation",
+      "text_length": 112,
+      "keywords": [
+        "max goes strait",
+        "corners ride honda",
+        "honda 305",
+        "shrough goose",
+        "v-max goes"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 13.0
+    },
+    {
+      "index": 350,
+      "label": "Recreation",
+      "text_length": 200,
+      "keywords": [
+        "hitter background screen",
+        "traveled 500",
+        "richie homer",
+        "black centerfield hitter",
+        "separate occasions"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 351,
+      "label": "Recreation",
+      "text_length": 235,
+      "keywords": [
+        "centerfielder steal",
+        "come time centerfielder",
+        "patient",
+        "sore shoulder",
+        "crashing"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 14.0
+    },
+    {
+      "index": 352,
+      "label": "Recreation",
+      "text_length": 155,
+      "keywords": [
+        "baseball year",
+        "clubhouse banned baseball",
+        "bobby bonilla",
+        "word faggot",
+        "got mad"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 353,
+      "label": "Recreation",
+      "text_length": 600,
+      "keywords": [
+        "anybody prefers alomar",
+        "defense joke alomar",
+        "hate jays don",
+        "better offensive player",
+        "indian hater sorry"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.0
+    },
+    {
+      "index": 354,
+      "label": "Recreation",
+      "text_length": 150,
+      "keywords": [
+        "germany",
+        "european market competition",
+        "competition bmw series",
+        "designed",
+        "honda"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9333333333333332,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 355,
+      "label": "Recreation",
+      "text_length": 498,
+      "keywords": [
+        "possible",
+        "case",
+        "think"
+      ],
+      "keyword_count": 3,
+      "quality_score": 0.7222222222222223,
+      "avg_keyword_length": 5.666666666666667
+    },
+    {
+      "index": 356,
+      "label": "Recreation",
+      "text_length": 817,
+      "keywords": [
+        "minutes overtime",
+        "isles",
+        "defenseman",
+        "insert",
+        "pilon"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 8.4
+    },
+    {
+      "index": 357,
+      "label": "Recreation",
+      "text_length": 1361,
+      "keywords": [
+        "espn tonight big",
+        "cardinals hitting clutch",
+        "favorite team loss",
+        "baseball player manager",
+        "sweet mets favorite"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 358,
+      "label": "Recreation",
+      "text_length": 1153,
+      "keywords": [
+        "universally ignored driving",
+        "riskier driver insure",
+        "florida highway patrol",
+        "worry",
+        "drop"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 15.8
+    },
+    {
+      "index": 359,
+      "label": "Recreation",
+      "text_length": 661,
+      "keywords": [
+        "change porsche",
+        "agreed prefered porsche",
+        "think",
+        "mean late 60s",
+        "biggest change"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 360,
+      "label": "Recreation",
+      "text_length": 578,
+      "keywords": [
+        "apollo thingy people",
+        "c1m av4 3nyr7",
+        "good gifs",
+        "idiot biker dod",
+        "nick idiot biker"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 14.6
+    },
+    {
+      "index": 361,
+      "label": "Recreation",
+      "text_length": 2229,
+      "keywords": [
+        "defense shut leafs",
+        "leaf detroit 3rd",
+        "coaching dumb play",
+        "key leafs success",
+        "game plan detroit"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 362,
+      "label": "Recreation",
+      "text_length": 1219,
+      "keywords": [
+        "border kentucky tennessee",
+        "knoxville leave early",
+        "tenting trip rally",
+        "chicago suggestions areas",
+        "knoxville 6pm 25"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.0
+    },
+    {
+      "index": 363,
+      "label": "Recreation",
+      "text_length": 48,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 364,
+      "label": "Recreation",
+      "text_length": 1911,
+      "keywords": [
+        "despite huge strike",
+        "hurting team isn",
+        "consequences exchange fun",
+        "major league pitchers",
+        "league pitchers hit"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 365,
+      "label": "Recreation",
+      "text_length": 696,
+      "keywords": [
+        "years traded pens",
+        "rick tocchet captain",
+        "captain flyers",
+        "philadelphia flyers",
+        "____________________ break"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.2
+    },
+    {
+      "index": 366,
+      "label": "Recreation",
+      "text_length": 137,
+      "keywords": [
+        "stick me33",
+        "tire ve",
+        "fantastic",
+        "got laser gpz",
+        "tire best tire"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 10.6
+    },
+    {
+      "index": 367,
+      "label": "Recreation",
+      "text_length": 1553,
+      "keywords": [
+        "canadiens gm fredericton",
+        "springfield indians vs",
+        "wins series baltimore",
+        "cup playoff schedule",
+        "full"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 18.2
+    },
+    {
+      "index": 368,
+      "label": "Recreation",
+      "text_length": 489,
+      "keywords": [
+        "planning buy new",
+        "race car drivers",
+        "truckers race car",
+        "guys learn",
+        "something"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 13.6
+    },
+    {
+      "index": 369,
+      "label": "Recreation",
+      "text_length": 371,
+      "keywords": [
+        "really deserving cities",
+        "team miami crazy",
+        "panthers sell hispanics",
+        "canadian tourists transplanted",
+        "relying"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 19.8
+    },
+    {
+      "index": 370,
+      "label": "Recreation",
+      "text_length": 190,
+      "keywords": [
+        "know v6 legend",
+        "commericial cars today",
+        "jaguar",
+        "don know v12",
+        "mr3 mr6 v8"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 12.8
+    },
+    {
+      "index": 371,
+      "label": "Recreation",
+      "text_length": 626,
+      "keywords": [
+        "clubhouse think jays",
+        "sad derek",
+        "popular player",
+        "san diego",
+        "derek bell"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9866666666666667,
+      "avg_keyword_length": 12.4
+    },
+    {
+      "index": 372,
+      "label": "Recreation",
+      "text_length": 1012,
+      "keywords": [
+        "junk offset savings",
+        "greenhouse gasses claims",
+        "expensive install cats",
+        "knew cleaner gas",
+        "debating worker diesels"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.8
+    },
+    {
+      "index": 373,
+      "label": "Recreation",
+      "text_length": 270,
+      "keywords": [
+        "batters ip",
+        "walk batters ip",
+        "fair",
+        "walk",
+        "batters"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9,
+      "avg_keyword_length": 8.0
+    },
+    {
+      "index": 374,
+      "label": "Recreation",
+      "text_length": 143,
+      "keywords": [
+        "desoto year manufacture",
+        "desoto",
+        "first year",
+        "manufacture"
+      ],
+      "keyword_count": 4,
+      "quality_score": 0.9,
+      "avg_keyword_length": 12.5
+    },
+    {
+      "index": 375,
+      "label": "Recreation",
+      "text_length": 5,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 376,
+      "label": "Recreation",
+      "text_length": 376,
+      "keywords": [
+        "ball passes strike",
+        "calls world series",
+        "guess",
+        "nobody noticed",
+        "calls"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9333333333333332,
+      "avg_keyword_length": 12.0
+    },
+    {
+      "index": 377,
+      "label": "Recreation",
+      "text_length": 66,
+      "keywords": [
+        "nough",
+        "said",
+        "group",
+        "answer faq",
+        "answer faq group"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.8933333333333332,
+      "avg_keyword_length": 8.0
+    },
+    {
+      "index": 378,
+      "label": "Recreation",
+      "text_length": 246,
+      "keywords": [
+        "cuts stock mufflers",
+        "louder stock",
+        "mufflers sold road",
+        "therein lies",
+        "rub"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 12.8
+    },
+    {
+      "index": 379,
+      "label": "Recreation",
+      "text_length": 299,
+      "keywords": [
+        "pay fines",
+        "player paid",
+        "just sour grapes",
+        "don playing springfield",
+        "teacher pet player"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 380,
+      "label": "Recreation",
+      "text_length": 66,
+      "keywords": [
+        "wetteland dl",
+        "march 26",
+        "effective march 26",
+        "wetteland",
+        "effective march"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 12.4
+    },
+    {
+      "index": 381,
+      "label": "Recreation",
+      "text_length": 211,
+      "keywords": [
+        "narrow",
+        "come bagman strap",
+        "narrow fit optimal",
+        "bagman strap tankbag",
+        "think"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.94,
+      "avg_keyword_length": 13.2
+    },
+    {
+      "index": 382,
+      "label": "Recreation",
+      "text_length": 127,
+      "keywords": [
+        "squiddly",
+        "wheelies real",
+        "custom wish chain",
+        "chain drive slashfive",
+        "wow"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.94,
+      "avg_keyword_length": 12.4
+    },
+    {
+      "index": 383,
+      "label": "Recreation",
+      "text_length": 160,
+      "keywords": [
+        "business",
+        "cars laid",
+        "week weeks ago",
+        "volvo 850 cars",
+        "article"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 10.4
+    },
+    {
+      "index": 384,
+      "label": "Recreation",
+      "text_length": 203,
+      "keywords": [
+        "psychology",
+        "think suffer assess",
+        "long term biker",
+        "biker understand people",
+        "piece"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 14.4
+    },
+    {
+      "index": 385,
+      "label": "Recreation",
+      "text_length": 173,
+      "keywords": [
+        "wish",
+        "day ll pay",
+        "patience stop day",
+        "judgement reactions people",
+        "hypothermia"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 13.6
+    },
+    {
+      "index": 386,
+      "label": "Recreation",
+      "text_length": 660,
+      "keywords": [
+        "long nhl team",
+        "bought maple leaf",
+        "minnesota fans stuffed",
+        "morning eliminated montreal",
+        "spite montreal fans"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 387,
+      "label": "Recreation",
+      "text_length": 1041,
+      "keywords": [
+        "umpires flexible hirschbeck",
+        "strike called",
+        "gant stalking doubt",
+        "earlier appeal strike",
+        "protest lack appeal"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.8
+    },
+    {
+      "index": 388,
+      "label": "Recreation",
+      "text_length": 178,
+      "keywords": [
+        "baseball",
+        "afraid posting",
+        "roger baseball spewing",
+        "roger",
+        "r.s.baseball spewing"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 389,
+      "label": "Recreation",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 390,
+      "label": "Recreation",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 391,
+      "label": "Recreation",
+      "text_length": 312,
+      "keywords": [
+        "football bowl",
+        "predictions hovered 500",
+        "college football bowl",
+        "thought",
+        "predictions"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 15.0
+    },
+    {
+      "index": 392,
+      "label": "Recreation",
+      "text_length": 260,
+      "keywords": [
+        "bandit",
+        "buff wax help",
+        "wax dull finish",
+        "scrathes passngering fiance",
+        "pack rubbed tail"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 393,
+      "label": "Recreation",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 394,
+      "label": "Recreation",
+      "text_length": 676,
+      "keywords": [
+        "right handlebar good",
+        "foam liner helmet",
+        "crash right handlebar",
+        "resting mirror depress",
+        "weight helmet doesn"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.8
+    },
+    {
+      "index": 395,
+      "label": "Recreation",
+      "text_length": 200,
+      "keywords": [
+        "sunglasses",
+        "shield sunglasses hey",
+        "rider real riding",
+        "true rider real",
+        "wave just wink"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 396,
+      "label": "Recreation",
+      "text_length": 293,
+      "keywords": [
+        "best team cambell",
+        "philadelphia making dust",
+        "dead leafs roger",
+        "predictions got whitewashed",
+        "dead leafs"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.8
+    },
+    {
+      "index": 397,
+      "label": "Recreation",
+      "text_length": 13,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 398,
+      "label": "Recreation",
+      "text_length": 141,
+      "keywords": [
+        "seconds left",
+        "baseball",
+        "overtime game tied",
+        "baseball game",
+        "showing"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 11.6
+    },
+    {
+      "index": 399,
+      "label": "Technology",
+      "text_length": 1364,
+      "keywords": [
+        "anybody retrieve keys",
+        "laptop finally blown",
+        "door encryption algorithm",
+        "procedure typed manually",
+        "pairs suffice"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 400,
+      "label": "Technology",
+      "text_length": 1328,
+      "keywords": [
+        "dealer rutgers computer",
+        "took just weeks",
+        "order ordered ethernet",
+        "heard apple exchange",
+        "610 yesterday"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 401,
+      "label": "Technology",
+      "text_length": 295,
+      "keywords": [
+        "work just fine",
+        "modem 32bis",
+        "32bis modem entirely",
+        "transmit scrambled vocoded",
+        "approved data"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 402,
+      "label": "Technology",
+      "text_length": 398,
+      "keywords": [
+        "windows actually think",
+        "startup file",
+        "apps disable run",
+        "file better memory",
+        "dos apps disable"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 403,
+      "label": "Technology",
+      "text_length": 333,
+      "keywords": [
+        "data bits stop",
+        "need",
+        "find",
+        "uart",
+        "bits"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.84,
+      "avg_keyword_length": 6.0
+    },
+    {
+      "index": 404,
+      "label": "Technology",
+      "text_length": 515,
+      "keywords": [
+        "winjpeg photofinish non",
+        "diamond speedstar",
+        "24 video board",
+        "windows drivers like",
+        "jpeg using cjpeg"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 405,
+      "label": "Technology",
+      "text_length": 111,
+      "keywords": [
+        "martian suit ou",
+        "ou throw football",
+        "throw football refs",
+        "make",
+        "pete conrad"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 13.2
+    },
+    {
+      "index": 406,
+      "label": "Technology",
+      "text_length": 552,
+      "keywords": [
+        "computer graphics applications",
+        "springer verlag berlin",
+        "algorithms computer graphics",
+        "known",
+        "bresenhams run length slice algorithm"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 24.4
+    },
+    {
+      "index": 407,
+      "label": "Technology",
+      "text_length": 513,
+      "keywords": [
+        "drop development newsprint",
+        "photoshop sun articles",
+        "seminar conference",
+        "adobe going port",
+        "couple months"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.0
+    },
+    {
+      "index": 408,
+      "label": "Technology",
+      "text_length": 143,
+      "keywords": [
+        "stringer worked pretty",
+        "used bunch weights",
+        "airplane",
+        "building model airplane",
+        "used"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 15.0
+    },
+    {
+      "index": 409,
+      "label": "Technology",
+      "text_length": 352,
+      "keywords": [
+        "stellr smyrna cc",
+        "r5 file fix",
+        "missed 00 mark",
+        "don file fix",
+        "01 wonder missed"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 410,
+      "label": "Technology",
+      "text_length": 475,
+      "keywords": [
+        "convince people iivx",
+        "stock disrespect",
+        "old stock disrespect",
+        "better buy c610",
+        "speed way cheaper"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 411,
+      "label": "Technology",
+      "text_length": 398,
+      "keywords": [
+        "faq files avail",
+        "seems",
+        "located things",
+        "tgif",
+        "files"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.8933333333333332,
+      "avg_keyword_length": 8.6
+    },
+    {
+      "index": 412,
+      "label": "Technology",
+      "text_length": 348,
+      "keywords": [
+        "amd using intels",
+        "clones legal poe",
+        "prohibiting amd using",
+        "sys ibm pc",
+        "threw jury verdict"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.2
+    },
+    {
+      "index": 413,
+      "label": "Technology",
+      "text_length": 187,
+      "keywords": [
+        "night",
+        "night sky blimps",
+        "sorry aesthetics argument",
+        "space aesthetics planes",
+        "radio towers ruin"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 414,
+      "label": "Technology",
+      "text_length": 358,
+      "keywords": [
+        "mail comp",
+        "available pageview think",
+        "xv want conversion",
+        "ghostview ghostscript",
+        "ghostview ghostscript new"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 19.4
+    },
+    {
+      "index": 415,
+      "label": "Technology",
+      "text_length": 947,
+      "keywords": [
+        "graphics window sounds",
+        "exposures manager widget",
+        "clip gc redraw",
+        "use xrectinregion test",
+        "draws xlib graphics"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.2
+    },
+    {
+      "index": 416,
+      "label": "Technology",
+      "text_length": 917,
+      "keywords": [
+        "framebuffer trying use",
+        "use xkernel 110s",
+        "freshly built statically",
+        "highway lime jello",
+        "tried removing dev"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 417,
+      "label": "Technology",
+      "text_length": 758,
+      "keywords": [
+        "line phone 334re67d99",
+        "conversation clipper phone",
+        "key happens feds",
+        "decipher convo serial",
+        "need key phone"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 418,
+      "label": "Technology",
+      "text_length": 646,
+      "keywords": [
+        "better reinstall incompatibility",
+        "screwey drive thanks",
+        "incompatibility exist quantum",
+        "bad scsi cable",
+        "hardware solution virus"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.6
+    },
+    {
+      "index": 419,
+      "label": "Technology",
+      "text_length": 373,
+      "keywords": [
+        "60s switched",
+        "better performance lower",
+        "father vacuum",
+        "record players radios",
+        "systems mind father"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 420,
+      "label": "Technology",
+      "text_length": 287,
+      "keywords": [
+        "couple articles posted",
+        "heading unfortunately expired",
+        "thanks larry nittler",
+        "use xterm like",
+        "couple"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 18.2
+    },
+    {
+      "index": 421,
+      "label": "Technology",
+      "text_length": 115,
+      "keywords": [
+        "occasions",
+        "federal courts affirmed",
+        "false",
+        "getting sci crypt",
+        "false federal courts"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 422,
+      "label": "Technology",
+      "text_length": 3331,
+      "keywords": [
+        "kill people steal",
+        "stakes criminals lucrative",
+        "criminals lucrative market",
+        "communications specifically terrorists",
+        "steal cipher phone"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.0
+    },
+    {
+      "index": 423,
+      "label": "Technology",
+      "text_length": 2240,
+      "keywords": [
+        "president today announced",
+        "telcos apologies wrong",
+        "encryption ordinary landlines",
+        "read news home",
+        "-begin pgp signed message"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.0
+    },
+    {
+      "index": 424,
+      "label": "Technology",
+      "text_length": 32767,
+      "keywords": [
+        "important internet anonymity",
+        "opinions internet privacy",
+        "privacy email email",
+        "privacy anonymous mailing",
+        "archive-name"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.8
+    },
+    {
+      "index": 425,
+      "label": "Technology",
+      "text_length": 472,
+      "keywords": [
+        "faster cheaper welcome",
+        "weeks 20 faster",
+        "source lithium batteries",
+        "looking",
+        "source"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 426,
+      "label": "Technology",
+      "text_length": 608,
+      "keywords": [
+        "os2 windows",
+        "won emulation inevitable",
+        "difference os2 windows",
+        "incompatibilities crop spite",
+        "developers want channel"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.6
+    },
+    {
+      "index": 427,
+      "label": "Technology",
+      "text_length": 495,
+      "keywords": [
+        "controller hard disk",
+        "add 3comm ethernet",
+        "ethernet card 3c503",
+        "card reboot fine",
+        "reboot receive error"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 428,
+      "label": "Technology",
+      "text_length": 1080,
+      "keywords": [
+        "government going release",
+        "need decrypted access",
+        "agency nsa approve",
+        "crypto didn technical",
+        "james bond nsa"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 429,
+      "label": "Technology",
+      "text_length": 977,
+      "keywords": [
+        "coca cola company",
+        "suffer street hoardings",
+        "watch tv free",
+        "paint moon red",
+        "commercials want escape"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 430,
+      "label": "Technology",
+      "text_length": 724,
+      "keywords": [
+        "engineering computer network",
+        "mouse want interface",
+        "university engineering computer",
+        "mouse xt ps2",
+        "newsgroups comp ibm"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.0
+    },
+    {
+      "index": 431,
+      "label": "Technology",
+      "text_length": 484,
+      "keywords": [
+        "converter iges iif",
+        "ibm",
+        "ibm runs rs",
+        "help way converter",
+        "hei pei"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9333333333333332,
+      "avg_keyword_length": 11.4
+    },
+    {
+      "index": 432,
+      "label": "Technology",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 433,
+      "label": "Technology",
+      "text_length": 305,
+      "keywords": [
+        "used outgoing fax",
+        "seeking recommendations vendors",
+        "fax mainly used",
+        "mac net",
+        "platforms plus ethernet"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 18.6
+    },
+    {
+      "index": 434,
+      "label": "Technology",
+      "text_length": 162,
+      "keywords": [
+        "xdefault file work",
+        "colorizing motif widgets",
+        "normal",
+        "fine bug xdefault",
+        "file work fine"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 15.8
+    },
+    {
+      "index": 435,
+      "label": "Technology",
+      "text_length": 218,
+      "keywords": [
+        "cf fix 09",
+        "fix 10 fix",
+        "set sunpost411fcsld yes",
+        "mit distribution",
+        "osteenyversion mit config"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 16.6
+    },
+    {
+      "index": 436,
+      "label": "Technology",
+      "text_length": 583,
+      "keywords": [
+        "ntsc signals tv",
+        "displaying pc",
+        "circuitry correct gamma",
+        "digitizing ntsc signal",
+        "pc video monitor"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 437,
+      "label": "Technology",
+      "text_length": 219,
+      "keywords": [
+        "substitute exciting win3",
+        "time matter replacing",
+        "company logo thanks",
+        "company logo boot",
+        "replacing logo file"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 438,
+      "label": "Technology",
+      "text_length": 875,
+      "keywords": [
+        "datacom rf modem",
+        "modem rs 232",
+        "interface appear new",
+        "unknown phone company",
+        "please take"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.0
+    },
+    {
+      "index": 439,
+      "label": "Technology",
+      "text_length": 1106,
+      "keywords": [
+        "monitors problem character",
+        "x11r4 reply email",
+        "video xterm text",
+        "lost edge input",
+        "mis motorola cellular"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.0
+    },
+    {
+      "index": 440,
+      "label": "Technology",
+      "text_length": 1120,
+      "keywords": [
+        "brake engine noticeably",
+        "ham radio operators",
+        "engine noticeably slows",
+        "helpful illegal cbers",
+        "car unfortunately computer"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.4
+    },
+    {
+      "index": 441,
+      "label": "Technology",
+      "text_length": 1081,
+      "keywords": [
+        "work official chips",
+        "exchange official chips",
+        "uk necessary wiretap",
+        "comfortable knowing secret",
+        "impossible secrecy algorithm"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.2
+    },
+    {
+      "index": 442,
+      "label": "Technology",
+      "text_length": 1497,
+      "keywords": [
+        "motherboard 50 documentation",
+        "article",
+        "last",
+        "nstassen magnus.acs.ohio-state.edu nicki",
+        "board"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9066666666666666,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 443,
+      "label": "Technology",
+      "text_length": 297,
+      "keywords": [
+        "tape try fresh",
+        "months previous discussions",
+        "using",
+        "identical setup",
+        "tower config"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 14.6
+    },
+    {
+      "index": 444,
+      "label": "Technology",
+      "text_length": 1442,
+      "keywords": [
+        "satellite 26 months",
+        "space news",
+        "ocean reconnaissance launch",
+        "april",
+        "excerpts russia launched"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 17.0
+    },
+    {
+      "index": 445,
+      "label": "Technology",
+      "text_length": 346,
+      "keywords": [
+        "imf uses fm",
+        "chip soun blaster",
+        "document configure ibm",
+        "midi mapper help",
+        "interested"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.2
+    },
+    {
+      "index": 446,
+      "label": "Technology",
+      "text_length": 638,
+      "keywords": [
+        "understand cache uncompressed",
+        "use smartdrive stacker",
+        "caching compressed drive",
+        "uncompressed disk attempt",
+        "smart automatically default"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 25.4
+    },
+    {
+      "index": 447,
+      "label": "Technology",
+      "text_length": 480,
+      "keywords": [
+        "new version week",
+        "competing 3d studio",
+        "know",
+        "competing",
+        "studio"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9266666666666667,
+      "avg_keyword_length": 10.8
+    },
+    {
+      "index": 448,
+      "label": "Technology",
+      "text_length": 700,
+      "keywords": [
+        "germany",
+        "shareware",
+        "best sound conversion",
+        "cards builtin pc",
+        "great player editor"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 14.4
+    },
+    {
+      "index": 449,
+      "label": "Technology",
+      "text_length": 1066,
+      "keywords": [
+        "input charproc cursor",
+        "got stuck build",
+        "sos5 lib ld_run_path",
+        "code make fatal",
+        "failed target xterm"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.0
+    },
+    {
+      "index": 450,
+      "label": "Technology",
+      "text_length": 602,
+      "keywords": [
+        "writes software",
+        "people write programs",
+        "computer engineer computer",
+        "professor",
+        "mine"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 15.0
+    },
+    {
+      "index": 451,
+      "label": "Technology",
+      "text_length": 498,
+      "keywords": [
+        "political higher wouldn",
+        "taxes talking bozos",
+        "50 year moratorium",
+        "give",
+        "winning group"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 452,
+      "label": "Technology",
+      "text_length": 1236,
+      "keywords": [
+        "hard disk cd",
+        "controller unix reads",
+        "smartdrive dos",
+        "rom tape bought",
+        "ide"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 13.0
+    },
+    {
+      "index": 453,
+      "label": "Technology",
+      "text_length": 380,
+      "keywords": [
+        "appreciate info location",
+        "datasets uss enterprise",
+        "doing presentation tomorrow",
+        "looking",
+        "datasets"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 454,
+      "label": "Technology",
+      "text_length": 2180,
+      "keywords": [
+        "compelled criminal case",
+        "prohibiting free exercise",
+        "constitution happen treaties",
+        "cryptographic data encrypted",
+        "say iceland restrict"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 24.8
+    },
+    {
+      "index": 455,
+      "label": "Technology",
+      "text_length": 3,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 456,
+      "label": "Technology",
+      "text_length": 452,
+      "keywords": [
+        "motorcycle happens heard",
+        "ufos actually crew",
+        "unuseable motorcycle",
+        "happens",
+        "heard"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9466666666666667,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 457,
+      "label": "Technology",
+      "text_length": 492,
+      "keywords": [
+        "energy event law",
+        "law law incorrect",
+        "rays shorter thickness",
+        "thickness disk galaxy",
+        "gamma rays"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 458,
+      "label": "Technology",
+      "text_length": 529,
+      "keywords": [
+        "format files hpgl",
+        "generated pic preprocessor",
+        "running aix software",
+        "hardware involved ibm",
+        "hello"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 17.8
+    },
+    {
+      "index": 459,
+      "label": "Technology",
+      "text_length": 284,
+      "keywords": [
+        "microswitch solder",
+        "place old switch",
+        "mode tragedy prompts",
+        "macclassic mouse",
+        "mouse died"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.0
+    },
+    {
+      "index": 460,
+      "label": "Technology",
+      "text_length": 752,
+      "keywords": [
+        "bad lot market",
+        "years use amiga",
+        "fastest true ray",
+        "intel chips amiga",
+        "think speed"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 14.6
+    },
+    {
+      "index": 461,
+      "label": "Technology",
+      "text_length": 1589,
+      "keywords": [
+        "business people business",
+        "consider buying page",
+        "monitor laptop computers",
+        "project marketing class",
+        "laptop computers popular"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.0
+    },
+    {
+      "index": 462,
+      "label": "Technology",
+      "text_length": 245,
+      "keywords": [
+        "earlier lcd screen",
+        "idea use laptop",
+        "quieter",
+        "quieter doug holland",
+        "standard crt laptops"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 16.0
+    },
+    {
+      "index": 463,
+      "label": "Technology",
+      "text_length": 1487,
+      "keywords": [
+        "folders bookbag shoulder",
+        "friend bought primary",
+        "players veritable walkman",
+        "home computers quadra",
+        "happily typing right"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.2
+    },
+    {
+      "index": 464,
+      "label": "Technology",
+      "text_length": 2,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 465,
+      "label": "Technology",
+      "text_length": 492,
+      "keywords": [
+        "3d iff specification",
+        "predecessor turbo silver",
+        "don know lightwave",
+        "possible amiga packages",
+        "iff"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 17.6
+    },
+    {
+      "index": 466,
+      "label": "Technology",
+      "text_length": 134,
+      "keywords": [
+        "deleted putting",
+        "ideas claimed work",
+        "work deleted putting",
+        "cage build jim",
+        "inside faraday cage"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 467,
+      "label": "Technology",
+      "text_length": 12295,
+      "keywords": [
+        "cryptography experts evaluate",
+        "anonymous file transfer",
+        "congress industry encryption",
+        "ftp directory",
+        "clipper chip mykotronx"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 23.0
+    },
+    {
+      "index": 468,
+      "label": "Technology",
+      "text_length": 4617,
+      "keywords": [
+        "universiteit utrecht voor",
+        "zogeheten pulsar symposiumzaal",
+        "huidige utrechtse onderzoek",
+        "sterrenkundig symposium compacte",
+        "sterrenkundig symposium compacte objecten"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 31.0
+    },
+    {
+      "index": 469,
+      "label": "Technology",
+      "text_length": 310,
+      "keywords": [
+        "monitor local bus",
+        "svga card 250",
+        "high",
+        "price",
+        "keep"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.8866666666666667,
+      "avg_keyword_length": 8.6
+    },
+    {
+      "index": 470,
+      "label": "Technology",
+      "text_length": 335,
+      "keywords": [
+        "use mouse com3",
+        "modem com1 vice",
+        "bus mouse",
+        "new computer",
+        "limitation dos fact"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9933333333333333,
+      "avg_keyword_length": 13.8
+    },
+    {
+      "index": 471,
+      "label": "Technology",
+      "text_length": 638,
+      "keywords": [
+        "portion parent widget",
+        "set vectors drawn",
+        "drawnbuttons want colleagues",
+        "work make drawnbuttons",
+        "pixmap clicking button"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.0
+    },
+    {
+      "index": 472,
+      "label": "Technology",
+      "text_length": 849,
+      "keywords": [
+        "radioactives read tom",
+        "hard getting radioactives",
+        "actually plutonium help",
+        "learn make nuclear",
+        "german nuclear physicist"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.2
+    },
+    {
+      "index": 473,
+      "label": "Technology",
+      "text_length": 3215,
+      "keywords": [
+        "incredibly poor programming",
+        "careful incredibly poor",
+        "bugs mention",
+        "corruptimg new floppy",
+        "mailed reply bugs"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.0
+    },
+    {
+      "index": 474,
+      "label": "Technology",
+      "text_length": 484,
+      "keywords": [
+        "wire connected outlet",
+        "screw metal faceplate",
+        "main ground wire",
+        "tabs grounds box",
+        "busbar distribution panel"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.8
+    },
+    {
+      "index": 475,
+      "label": "Technology",
+      "text_length": 197,
+      "keywords": [
+        "missed",
+        "subdirs thanks correcting",
+        "appealing 320x200",
+        "lost subdirs",
+        "sound appealing 320x200"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9733333333333333,
+      "avg_keyword_length": 16.6
+    },
+    {
+      "index": 476,
+      "label": "Technology",
+      "text_length": 76,
+      "keywords": [
+        "curious clipper",
+        "clipper chip handle",
+        "chip handle conference",
+        "handle conference calls",
+        "curious"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 477,
+      "label": "Technology",
+      "text_length": 780,
+      "keywords": [
+        "mb vram math",
+        "mb ram ethernet",
+        "mac hardware purchasing",
+        "040 chip math",
+        "coprocessor built apple"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 17.2
+    },
+    {
+      "index": 478,
+      "label": "Technology",
+      "text_length": 311,
+      "keywords": [
+        "ide controller michael",
+        "normal ide",
+        "200mb info",
+        "compaq machines send",
+        "info"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 13.2
+    },
+    {
+      "index": 479,
+      "label": "Technology",
+      "text_length": 601,
+      "keywords": [
+        "mail order place",
+        "lciii need advice",
+        "price budget lciii",
+        "15 monitor looked",
+        "folks"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9666666666666667,
+      "avg_keyword_length": 14.6
+    },
+    {
+      "index": 480,
+      "label": "Technology",
+      "text_length": 1783,
+      "keywords": [
+        "reentered earth atmosphere",
+        "coast mexico time",
+        "emergencies coverage sarsats",
+        "west coast mexico",
+        "sarsats search rescue"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 21.8
+    },
+    {
+      "index": 481,
+      "label": "Technology",
+      "text_length": 788,
+      "keywords": [
+        "deceleration issue science",
+        "lunar orbit large",
+        "news planetary report",
+        "earth moon",
+        "nasa wasn interested"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.8
+    },
+    {
+      "index": 482,
+      "label": "Technology",
+      "text_length": 911,
+      "keywords": [
+        "question dose xdrawline",
+        "pixmap drawable window",
+        "size 300x300 draw",
+        "don created 900x900",
+        "p2 created pixmap"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.6
+    },
+    {
+      "index": 483,
+      "label": "Technology",
+      "text_length": 169,
+      "keywords": [
+        "don couldn handle",
+        "advice thanks",
+        "signals wrong advice",
+        "handle digital signals",
+        "subject says"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 484,
+      "label": "Technology",
+      "text_length": 400,
+      "keywords": [
+        "telling server second",
+        "client wants associations",
+        "colormap foreground background",
+        "id telling server",
+        "pixmap id colormap"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 22.2
+    },
+    {
+      "index": 485,
+      "label": "Technology",
+      "text_length": 48,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 486,
+      "label": "Technology",
+      "text_length": 716,
+      "keywords": [
+        "dos ndd nu4",
+        "pd freeware",
+        "report problems dos",
+        "smartdrive 32 bit",
+        "corrupted files smartdrive"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 16.8
+    },
+    {
+      "index": 487,
+      "label": "Technology",
+      "text_length": 307,
+      "keywords": [
+        "compulink uk mark",
+        "30 apple 13",
+        "installed rasterops 264",
+        "sale apple macintosh",
+        "ram"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.9533333333333333,
+      "avg_keyword_length": 14.8
+    },
+    {
+      "index": 488,
+      "label": "Technology",
+      "text_length": 957,
+      "keywords": [
+        "defend bogus radar",
+        "gun processes doppler",
+        "car driver good",
+        "radar measured ticket",
+        "pavement car driver"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.8
+    },
+    {
+      "index": 489,
+      "label": "Technology",
+      "text_length": 238,
+      "keywords": [
+        "512k",
+        "256k simms total",
+        "512k vram soldered",
+        "simms 512k vram",
+        "need add 256k"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 13.2
+    },
+    {
+      "index": 490,
+      "label": "Technology",
+      "text_length": 1295,
+      "keywords": [
+        "entry relied default",
+        "value disables setting",
+        "resource toolkit win4workgroups",
+        "windows new dos",
+        "dos env windows"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 20.6
+    },
+    {
+      "index": 491,
+      "label": "Technology",
+      "text_length": 737,
+      "keywords": [
+        "thought video driver",
+        "dos based graphic",
+        "borrowed new mouse",
+        "problem mouse old",
+        "problem"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.98,
+      "avg_keyword_length": 15.8
+    },
+    {
+      "index": 492,
+      "label": "Technology",
+      "text_length": 14,
+      "keywords": [],
+      "keyword_count": 0,
+      "quality_score": 0.0,
+      "avg_keyword_length": 0
+    },
+    {
+      "index": 493,
+      "label": "Technology",
+      "text_length": 128,
+      "keywords": [
+        "look mit clients",
+        "mit clients xwininfo",
+        "source code",
+        "look",
+        "mit clients xwininfo xwininfo.c"
+      ],
+      "keyword_count": 5,
+      "quality_score": 0.96,
+      "avg_keyword_length": 16.4
+    },
+    {
+      "index": 494,
+      "label": "Technology",
+      "text_length": 244,
+      "keywords": [
+        "customizable",
+        "mousebutton",
+        "left mousebutton type",
+        "msw microsoft",
+        "microsoft wants bind"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 15.4
+    },
+    {
+      "index": 495,
+      "label": "Technology",
+      "text_length": 308,
+      "keywords": [
+        "puff rf design",
+        "site understand public",
+        "microstrip filter tools",
+        "public domain correct",
+        "rf design tools"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 19.0
+    },
+    {
+      "index": 496,
+      "label": "Technology",
+      "text_length": 588,
+      "keywords": [
+        "correctly zinc zinc",
+        "acid electrolyte copper",
+        "soaked acid zinc",
+        "zinc coated nail",
+        "wire pennies zinc"
+      ],
+      "keyword_count": 5,
+      "quality_score": 1.0,
+      "avg_keyword_length": 18.2
+    }
+  ],
+  "timestamp": "2025-07-17T23:36:16.893488"
+}
