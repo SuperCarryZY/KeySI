@@ -2135,11 +2135,16 @@ app.clientside_callback(
 # Add initial callback for documents 2D visualization
 @app.callback(
     Output('documents-2d-plot', 'figure'),
-    Input('documents-2d-plot', 'id')  # Only initial load
+    Input('documents-2d-plot', 'id'),  # Only initial load
+    State('display-mode', 'data')
 )
-def update_documents_2d_plot_initial(plot_id):
+def update_documents_2d_plot_initial(plot_id, display_mode):
     """Initial load of documents 2D visualization - show all documents"""
     global df
+    
+    # Only process if we're in keywords mode
+    if display_mode != "keywords":
+        raise PreventUpdate
     
     if 'df' not in globals():
         return {
@@ -2225,13 +2230,18 @@ def update_documents_2d_plot_initial(plot_id):
      Output('highlighted-indices', 'data')],
     [Input('selected-keyword', 'data'),
      Input('selected-group', 'data'),  # Also update when group is selected
-     Input('selected-article', 'data')],  # Also update when article is selected
+     Input('selected-article', 'data'),  # Also update when article is selected
+     Input('display-mode', 'data')],
     State('group-order', 'data'),  # Add group_order as State parameter
     prevent_initial_call=True
 )
-def update_documents_2d_plot(selected_keyword, selected_group, selected_article, group_order):
+def update_documents_2d_plot(selected_keyword, selected_group, selected_article, display_mode, group_order):
     """Update documents 2D visualization chart"""
     global df, _DOCUMENTS_2D_CACHE
+    
+    # Only process if we're in keywords mode
+    if display_mode != "keywords":
+        raise PreventUpdate
     
     print(f"🔍 update_documents_2d_plot called with:")
     print(f"  selected_keyword: {selected_keyword}")
@@ -2750,12 +2760,17 @@ def update_train_button_immediately(n_clicks):
     [Output("article-fulltext-container", "children"),
      Output("selected-article", "data")],
     [Input("documents-2d-plot", "clickData"),
-     Input({"type": "article-item", "index": ALL}, "n_clicks")],
+     Input({"type": "article-item", "index": ALL}, "n_clicks"),
+     Input("display-mode", "data")],
     prevent_initial_call=True
 )
-def display_article_content_fulltext(click_data_docs, article_clicks):
+def display_article_content_fulltext(click_data_docs, article_clicks, display_mode):
     """Display article content when clicking on documents 2D plot or recommended articles"""
     ctx = dash.callback_context
+    
+    # Only process if we're in keywords mode (documents-2d-plot exists)
+    if display_mode != "keywords":
+        raise PreventUpdate
     
     if not ctx.triggered:
         raise PreventUpdate
@@ -2968,66 +2983,98 @@ def update_main_visualization_area(display_mode, training_figures):
             })
         ]
     else:
-        # Show keywords plots - don't regenerate documents-2d-plot as it has its own callback
-        return [
-            # Left: keyword 2D visualization with text labels
-            html.Div([
-                html.H4("Keywords 2D Visualization", style={
-                    "color": "#2c3e50",
-                    "fontSize": "1.3rem",
-                    "fontWeight": "bold",
-                    "marginBottom": "8px",
-                    "textAlign": "center"
-                }),
-                html.P("Click on keywords to view related documents", style={
-                    "color": "#7f8c8d",
-                    "fontSize": "0.9rem",
-                    "textAlign": "center",
-                    "marginBottom": "15px",
-                    "fontStyle": "italic"
-                }),
-                dcc.Graph(
-                    id='keywords-2d-plot',
-                    style={'height': '700px'},
-                    config={'displayModeBar': True, 'displaylogo': False, 'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'select2d']}
-                )
-            ], className="modern-card", style={
-                'width': '49%',
-                'display': 'inline-block',
-                'verticalAlign': 'top',
-                'padding': '20px',
-                'marginRight': '1%'
-            }),
+        # In keywords mode, don't update the main visualization area
+        # Let the individual callbacks handle the updates
+        raise PreventUpdate
+
+# Add callback for training mode highlighting
+@app.callback(
+    Output('highlighted-indices', 'data', allow_duplicate=True),
+    [Input('selected-keyword', 'data'),
+     Input('selected-group', 'data')],
+    State('group-order', 'data'),
+    State('training-figures', 'data'),
+    State('display-mode', 'data'),
+    prevent_initial_call=True
+)
+def update_training_highlights(selected_keyword, selected_group, group_order, training_figures, display_mode):
+    """Update highlighted indices for training mode"""
+    global df
+    
+    # Only process if we're in training mode
+    if display_mode != "training":
+        raise PreventUpdate
+    
+    # Only process if we have data and training figures
+    if 'df' not in globals() or not training_figures:
+        return []
+    
+    try:
+        highlighted_indices = []
+        
+        if selected_keyword:
+            # Find documents containing the selected keyword
+            print(f"🔍 Finding documents for keyword: {selected_keyword}")
+            keyword_indices = []
+            for i, text in enumerate(df.iloc[:, 1]):
+                if selected_keyword.lower() in str(text).lower():
+                    keyword_indices.append(i)
+            highlighted_indices = keyword_indices
+            print(f"🔍 Found {len(keyword_indices)} documents for keyword '{selected_keyword}'")
             
-            # Right: documents 2D visualization - keep existing content
-            html.Div([
-                html.H4("Documents 2D Visualization", style={
-                    "color": "#2c3e50",
-                    "fontSize": "1.3rem",
-                    "fontWeight": "bold",
-                    "marginBottom": "8px",
-                    "textAlign": "center"
-                }),
-                html.P("Documents highlighted by selected keyword", style={
-                    "color": "#7f8c8d",
-                    "fontSize": "0.9rem",
-                    "textAlign": "center",
-                    "marginBottom": "15px",
-                    "fontStyle": "italic"
-                }),
-                dcc.Graph(
-                    id='documents-2d-plot',
-                    style={'height': '700px'},
-                    config={'displayModeBar': True, 'displaylogo': False}
-                )
-            ], className="modern-card", style={
-                'width': '49%',
-                'display': 'inline-block',
-                'verticalAlign': 'top',
-                'padding': '20px',
-                'marginLeft': '1%'
-            })
-        ]
+        elif selected_group and group_order:
+            # Find documents containing any keyword in the selected group
+            print(f"🔍 Finding documents for group: {selected_group}")
+            group_keywords = group_order.get(selected_group, [])
+            group_indices = []
+            for i, text in enumerate(df.iloc[:, 1]):
+                text_lower = str(text).lower()
+                for keyword in group_keywords:
+                    if keyword.lower() in text_lower:
+                        group_indices.append(i)
+                        break  # Only add once per document
+            highlighted_indices = list(set(group_indices))  # Remove duplicates
+            print(f"🔍 Found {len(highlighted_indices)} documents for group '{selected_group}'")
+        
+        return highlighted_indices
+        
+    except Exception as e:
+        print(f"Error updating training highlights: {e}")
+        return []
+
+# Add callback for updating training plots with highlights
+@app.callback(
+    [Output('plot-before', 'figure', allow_duplicate=True),
+     Output('plot-after', 'figure', allow_duplicate=True)],
+    [Input('highlighted-indices', 'data'),
+     Input('display-mode', 'data')],
+    State('training-figures', 'data'),
+    prevent_initial_call=True
+)
+def update_training_plots_with_highlights(highlighted_indices, display_mode, training_figures):
+    """Update training plots with highlighted indices"""
+    
+    # Only process if we're in training mode
+    if display_mode != "training":
+        raise PreventUpdate
+    
+    # Only process if we have training figures and highlighted indices
+    if not training_figures or not highlighted_indices or len(highlighted_indices) == 0:
+        # Return original figures
+        fig_before = training_figures.get("before", {}) if training_figures else {}
+        fig_after = training_figures.get("after", {}) if training_figures else {}
+        return fig_before, fig_after
+    
+    try:
+        # Update training figures with highlights
+        fig_before, fig_after = run_training_with_highlights(highlighted_indices)
+        return fig_before, fig_after
+    except Exception as e:
+        print(f"Error updating training plots with highlights: {e}")
+        # Return original figures if highlighting fails
+        fig_before = training_figures.get("before", {})
+        fig_after = training_figures.get("after", {})
+        return fig_before, fig_after
 
 # Launch the Dash application
 if __name__ == "__main__":
