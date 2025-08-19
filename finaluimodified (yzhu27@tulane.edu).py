@@ -564,9 +564,12 @@ def create_layout():
         dcc.Store(id="articles-data", data=[]),  # Store article data
         dcc.Store(id="document-embeddings", data=None),  # Store document embeddings for 2D visualization
         dcc.Store(id="training-status", data={"is_training": False, "status": "idle"}),  # Training status
+        dcc.Store(id="display-mode", data="keywords"),  # Display mode: "keywords" or "training"
+        dcc.Store(id="training-figures", data={"before": None, "after": None}),  # Store training figures
+        dcc.Store(id="highlighted-indices", data=[]),  # Store highlighted article indices
         
-        # Main content area - left-right column layout
-        html.Div([
+        # Main content area - left-right column layout (dynamic based on display mode)
+        html.Div(id="main-visualization-area", children=[
             # Left: keyword 2D visualization with text labels
             html.Div([
                 html.H4("Keywords 2D Visualization", style={
@@ -716,7 +719,7 @@ def create_layout():
         # Training button and output
         html.Div([
             html.Button("Train Model", id="train-btn", n_clicks=0, style={
-                "margin": "30px auto",
+                "margin": "30px auto 15px auto",
                 "padding": "15px 40px",
                 "fontSize": "1.2rem",
                 "fontWeight": "bold",
@@ -728,64 +731,26 @@ def create_layout():
                 "transition": "all 0.3s ease",
                 "boxShadow": "0 4px 15px rgba(231, 76, 60, 0.3)",
                 "display": "block"
+            }),
+            html.Button("Switch to Training View", id="switch-view-btn", n_clicks=0, style={
+                "margin": "15px auto",
+                "padding": "12px 30px",
+                "fontSize": "1rem",
+                "fontWeight": "bold",
+                "backgroundColor": "#3498db",
+                "color": "white",
+                "border": "none",
+                "borderRadius": "6px",
+                "cursor": "pointer",
+                "transition": "all 0.3s ease",
+                "boxShadow": "0 3px 10px rgba(52, 152, 219, 0.3)",
+                "display": "none"  # Initially hidden, shown after training
             })
         ], style={"textAlign": "center"}),
         
-        # Training result visualization - two side-by-side large plots
-        html.Div(id="train-output", children=[
-            html.H3("Training Results", style={
-                "textAlign": "center",
-                "color": "#2c3e50",
-                "fontSize": "1.8rem",
-                "fontWeight": "bold",
-                "marginBottom": "20px"
-            }),
-            html.Div([
-                html.Div([
-                    html.H4("Before Training", style={
-                        "textAlign": "center",
-                        "color": "#2c3e50",
-                        "fontSize": "1.2rem",
-                        "fontWeight": "bold",
-                        "marginBottom": "10px"
-                    }),
-                    dcc.Graph(id="plot-before", style={"height": "65vh", "width": "100%"}),
-                ], className="modern-card", style={"width": "49%", "display": "inline-block", "vertical-align": "top", "margin-right": "1%", "padding": "15px"}),
-                html.Div([
-                    html.H4("After Training", style={
-                        "textAlign": "center",
-                        "color": "#2c3e50",
-                        "fontSize": "1.2rem",
-                        "fontWeight": "bold",
-                        "marginBottom": "10px"
-                    }),
-                    dcc.Graph(id="plot-after", style={"height": "65vh", "width": "100%"}),
-                ], className="modern-card", style={"width": "49%", "display": "inline-block", "vertical-align": "top", "margin-left": "1%", "padding": "15px"}),
-            ], style={"display": "flex", "justifyContent": "space-between"})
-        ], style={"width": "100%", "display": "none", "padding": "20px", "minHeight": "80vh"}),
+
         
-        # Article content display area
-        html.Div([
-            html.H4("Article Content", style={
-                "color": "#2c3e50",
-                "fontSize": "1.3rem",
-                "fontWeight": "bold",
-                "marginBottom": "15px",
-                "textAlign": "center"
-            }),
-            html.Div(id="article-content", children="Click on a point in the plots above to view article content", 
-                    style={
-                        "backgroundColor": "#f8f9fa",
-                        "borderRadius": "8px",
-                        "padding": "20px",
-                        "maxHeight": "400px",
-                        "overflowY": "auto",
-                        "border": "1px solid #e9ecef",
-                        "color": "#7f8c8d",
-                        "fontStyle": "italic",
-                        "textAlign": "center"
-                    })
-        ], id="content-display", className="modern-card", style={"display": "none", "marginTop": "40px", "padding": "20px"}),
+
         
         # Debug output area
         html.Div(id="debug-output", style={"marginTop": "20px"})
@@ -1284,7 +1249,7 @@ def extract_top_keywords(text, top_k=5):
 
     selected_group = json.loads(triggered_id.split('.')[0])["index"]
     print(f"Switch to group: {selected_group}")  # Add debug info
-    print(f"🔵 Clear selected keyword")
+    print(f"🔵 Clear selected keyword") 
     
     return selected_group, None  # Clear selected keyword when switching groups
 
@@ -1738,34 +1703,61 @@ def run_training():
 
 
     # Create Plotly charts
-    def create_plotly_figure(projected_2d, title, is_after=False):
+    def create_plotly_figure(projected_2d, title, is_after=False, highlighted_indices=None):
         fig = go.Figure()
         
-        # Add scatter plot - each category
-        for label in unique_labels:
-            mask = (labels == label)
-            if np.any(mask):
-                # Add article index as hover info for each point
-                article_indices = np.where(mask)[0]
-                hover_texts = [f"Article {idx}" for idx in article_indices]
-                
-                # Ensure customdata is in correct format
-                custom_data = [[idx] for idx in article_indices]  # One list per point
-                
+        # Add scatter plot - all points in same color (no label colors)
+        article_indices = list(range(len(projected_2d)))
+        hover_texts = [f"Article {idx}" for idx in article_indices]
+        
+        # Ensure customdata is in correct format
+        custom_data = [[idx] for idx in article_indices]  # One list per point
+        
+        fig.add_trace(go.Scatter(
+            x=projected_2d[:, 0],
+            y=projected_2d[:, 1],
+            mode='markers',
+            name="Articles",
+            marker=dict(
+                color='lightblue',
+                size=8,
+                opacity=0.6,
+                line=dict(width=0.5, color='white')
+            ),
+            customdata=custom_data,
+            hovertemplate='<b>%{hovertext}</b><br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>',
+            hovertext=hover_texts
+        ))
+        
+        # Add highlighted points if provided
+        if highlighted_indices:
+            highlighted_x = []
+            highlighted_y = []
+            highlighted_customdata = []
+            highlighted_hovertexts = []
+            
+            for idx in highlighted_indices:
+                if 0 <= idx < len(projected_2d):
+                    highlighted_x.append(projected_2d[idx, 0])
+                    highlighted_y.append(projected_2d[idx, 1])
+                    highlighted_customdata.append([idx])
+                    highlighted_hovertexts.append(f"Article {idx}")
+            
+            if highlighted_x:  # Only add trace if there are highlighted points
                 fig.add_trace(go.Scatter(
-                    x=projected_2d[mask, 0],
-                    y=projected_2d[mask, 1],
+                    x=highlighted_x,
+                    y=highlighted_y,
                     mode='markers',
-                    name=f"Class {label}",
+                    name="Highlighted Articles",
                     marker=dict(
-                        color=label_to_color[label],
-                        size=8,
-                        opacity=0.6,
-                        line=dict(width=0.5, color='white')
+                        color='gold',
+                        size=12,
+                        symbol='star',
+                        line=dict(width=2, color='white')
                     ),
-                    customdata=custom_data,
+                    customdata=highlighted_customdata,
                     hovertemplate='<b>%{hovertext}</b><br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>',
-                    hovertext=hover_texts
+                    hovertext=highlighted_hovertexts
                 ))
         
         # If After Finetuning plot, add group center points
@@ -1814,9 +1806,65 @@ def run_training():
         
         return fig
     
+    # Get highlighted indices from global state (if available)
+    highlighted_indices = []
+    try:
+        # Try to get highlighted indices from global variables or stores
+        # This will be updated by the UI callbacks
+        pass
+    except:
+        pass
+    
     # Generate two charts
-    fig_before = create_plotly_figure(projected_2d_before, "2D Projection Before Finetuning", False)
-    fig_after = create_plotly_figure(projected_2d_after, "2D Projection After Finetuning", True)
+    fig_before = create_plotly_figure(projected_2d_before, "2D Projection Before Finetuning", False, highlighted_indices)
+    fig_after = create_plotly_figure(projected_2d_after, "2D Projection After Finetuning", True, highlighted_indices)
+    
+    return fig_before, fig_after
+
+# Function to run training with highlighted indices
+def run_training_with_highlights(highlighted_indices):
+    """Run training and return figures with highlighted indices"""
+    # This is a simplified version that reuses the main training function
+    # but passes the highlighted indices to the figure creation
+    fig_before, fig_after = run_training()
+    
+    # Update figures with highlights
+    if fig_before and fig_after:
+        # Add highlighted points to both figures
+        for fig in [fig_before, fig_after]:
+            if 'data' in fig and len(fig['data']) > 0:
+                # Add highlighted trace
+                highlighted_x = []
+                highlighted_y = []
+                highlighted_customdata = []
+                highlighted_hovertexts = []
+                
+                # Get the main scatter trace data
+                main_trace = fig['data'][0]
+                if 'x' in main_trace and 'y' in main_trace:
+                    for idx in highlighted_indices:
+                        if 0 <= idx < len(main_trace['x']):
+                            highlighted_x.append(main_trace['x'][idx])
+                            highlighted_y.append(main_trace['y'][idx])
+                            highlighted_customdata.append([idx])
+                            highlighted_hovertexts.append(f"Article {idx}")
+                    
+                    if highlighted_x:  # Only add trace if there are highlighted points
+                        fig['data'].append({
+                            'x': highlighted_x,
+                            'y': highlighted_y,
+                            'mode': 'markers',
+                            'name': 'Highlighted Articles',
+                            'marker': {
+                                'color': 'gold',
+                                'size': 12,
+                                'symbol': 'star',
+                                'line': {'width': 2, 'color': 'white'}
+                            },
+                            'customdata': highlighted_customdata,
+                            'hovertemplate': '<b>%{hovertext}</b><br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>',
+                            'hovertext': highlighted_hovertexts
+                        })
     
     return fig_before, fig_after
 
@@ -2084,16 +2132,14 @@ app.clientside_callback(
 
 
 
+# Add initial callback for documents 2D visualization
 @app.callback(
     Output('documents-2d-plot', 'figure'),
-    [Input('selected-keyword', 'data'),
-     Input('selected-group', 'data'),  # Also update when group is selected
-     Input('selected-article', 'data')],  # Also update when article is selected
-    State('group-order', 'data')  # Add group_order as State parameter
+    Input('documents-2d-plot', 'id')  # Only initial load
 )
-def update_documents_2d_plot(selected_keyword, selected_group, selected_article, group_order):
-    """Update documents 2D visualization chart"""
-    global df, _DOCUMENTS_2D_CACHE
+def update_documents_2d_plot_initial(plot_id):
+    """Initial load of documents 2D visualization - show all documents"""
+    global df
     
     if 'df' not in globals():
         return {
@@ -2104,6 +2150,105 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                 'yaxis': {'title': 'Y'}
             }
         }
+    
+    try:
+        # Calculate document embeddings
+        print("🔍 Initial documents 2D visualization calculation...")
+        all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
+        
+        # Calculate embeddings in batches
+        batch_size = 32
+        all_embeddings = []
+        
+        for i in range(0, len(all_articles_text), batch_size):
+            batch_texts = all_articles_text[i:i + batch_size]
+            batch_embeddings = embedding_model_kw.encode(batch_texts, convert_to_tensor=True).to(device).cpu().numpy()
+            all_embeddings.extend(batch_embeddings)
+        
+        document_embeddings = np.array(all_embeddings)
+        
+        # Calculate TSNE for documents
+        print("🔍 Calculating TSNE for initial documents visualization...")
+        perplexity = min(30, max(5, len(document_embeddings) // 3))
+        tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
+        document_2d = tsne.fit_transform(document_embeddings)
+        document_2d = document_2d.tolist()
+        
+        # Show all documents in one color
+        traces = [{
+            'x': [document_2d[i][0] for i in range(len(df))],
+            'y': [document_2d[i][1] for i in range(len(df))],
+            'mode': 'markers',
+            'type': 'scatter',
+            'name': 'All documents',
+            'marker': {
+                'size': 8,
+                'color': '#2196F3',  # Blue color
+                'opacity': 0.6,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            'text': [f'Doc {i+1}' for i in range(len(df))],
+            'customdata': [[i] for i in range(len(df))],
+            'hovertemplate': '<b>%{text}</b><extra></extra>'
+        }]
+        
+        fig = {
+            'data': traces,
+            'layout': {
+                'title': 'Documents 2D Visualization - All Documents',
+                'xaxis': {'title': 'TSNE Dimension 1'},
+                'yaxis': {'title': 'TSNE Dimension 2'},
+                'hovermode': 'closest',
+                'showlegend': True,
+                'plot_bgcolor': 'white',
+                'paper_bgcolor': 'white',
+                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50}
+            }
+        }
+        
+        print("🔍 Initial documents 2D visualization created successfully")
+        return fig
+        
+    except Exception as e:
+        print(f"Error creating initial documents 2D plot: {e}")
+        return {
+            'data': [],
+            'layout': {
+                'title': f'Error: {str(e)}',
+                'xaxis': {'title': 'X'},
+                'yaxis': {'title': 'Y'}
+            }
+        }
+
+@app.callback(
+    [Output('documents-2d-plot', 'figure', allow_duplicate=True),
+     Output('highlighted-indices', 'data')],
+    [Input('selected-keyword', 'data'),
+     Input('selected-group', 'data'),  # Also update when group is selected
+     Input('selected-article', 'data')],  # Also update when article is selected
+    State('group-order', 'data'),  # Add group_order as State parameter
+    prevent_initial_call=True
+)
+def update_documents_2d_plot(selected_keyword, selected_group, selected_article, group_order):
+    """Update documents 2D visualization chart"""
+    global df, _DOCUMENTS_2D_CACHE
+    
+    print(f"🔍 update_documents_2d_plot called with:")
+    print(f"  selected_keyword: {selected_keyword}")
+    print(f"  selected_group: {selected_group}")
+    print(f"  selected_article: {selected_article}")
+    print(f"  group_order: {group_order}")
+    
+    if 'df' not in globals():
+        print("❌ No df in globals")
+        return {
+            'data': [],
+            'layout': {
+                'title': 'No data available',
+                'xaxis': {'title': 'X'},
+                'yaxis': {'title': 'Y'}
+            }
+        }, []
     
     # Create cache key for documents 2D visualization
     cache_key = None
@@ -2126,12 +2271,29 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
     # Check cache first
     if cache_key and cache_key in _DOCUMENTS_2D_CACHE:
         print(f"Using cached documents 2D plot for: {cache_key}")
-        return _DOCUMENTS_2D_CACHE[cache_key]
+        cached_fig = _DOCUMENTS_2D_CACHE[cache_key]
+        # For cached results, we need to extract highlighted indices
+        highlighted_indices = []
+        if selected_keyword or selected_group or selected_article is not None:
+            # Try to extract indices from the cached figure
+            try:
+                for trace in cached_fig.get('data', []):
+                    if trace.get('name') in ['Keyword/Group matches', 'Selected Article']:
+                        # Extract indices from customdata if available
+                        if 'customdata' in trace:
+                            for data in trace['customdata']:
+                                if isinstance(data, list) and len(data) > 0:
+                                    highlighted_indices.append(data[0])
+            except:
+                pass
+        return cached_fig, highlighted_indices
     
     try:
         # Calculate document embeddings
-        print("Calculating document embeddings for 2D visualization...")
+        print("🔍 Starting document embeddings calculation...")
+        print(f"🔍 df shape: {df.shape}")
         all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
+        print(f"🔍 Number of articles: {len(all_articles_text)}")
         
         # Calculate embeddings in batches
         batch_size = 32
@@ -2145,10 +2307,17 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         document_embeddings = np.array(all_embeddings)
         
         # Calculate TSNE for documents
-        print("Calculating TSNE for documents...")
+        print("🔍 Calculating TSNE for documents...")
+        print(f"🔍 Embeddings shape: {document_embeddings.shape}")
         perplexity = min(30, max(5, len(document_embeddings) // 3))
+        print(f"🔍 Perplexity: {perplexity}")
         tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
         document_2d = tsne.fit_transform(document_embeddings)
+        print(f"🔍 TSNE result shape: {document_2d.shape}")
+        print(f"🔍 TSNE result type: {type(document_2d)}")
+        print(f"🔍 TSNE result dtype: {document_2d.dtype}")
+        # Convert to list for Plotly compatibility
+        document_2d = document_2d.tolist()
         
         # Determine which documents to highlight
         highlight_mask = []
@@ -2208,8 +2377,8 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         # Add trace for keyword/group highlighted documents
         if len(keyword_group_indices) > 0:
             traces.append({
-                'x': document_2d[keyword_group_indices, 0],
-                'y': document_2d[keyword_group_indices, 1],
+                'x': [document_2d[i][0] for i in keyword_group_indices],
+                'y': [document_2d[i][1] for i in keyword_group_indices],
                 'mode': 'markers',
                 'type': 'scatter',
                 'name': 'Keyword/Group matches',
@@ -2220,14 +2389,15 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                     'line': {'width': 2, 'color': 'black'}
                 },
                 'text': [f'Doc {i+1}' for i in keyword_group_indices],
+                'customdata': [[i] for i in keyword_group_indices],
                 'hovertemplate': '<b>%{text}</b><extra></extra>'
             })
         
         # Add trace for selected article (highest priority, will overlay on top)
         if len(selected_article_indices) > 0:
             traces.append({
-                'x': document_2d[selected_article_indices, 0],
-                'y': document_2d[selected_article_indices, 1],
+                'x': [document_2d[i][0] for i in selected_article_indices],
+                'y': [document_2d[i][1] for i in selected_article_indices],
                 'mode': 'markers',
                 'type': 'scatter',
                 'name': 'Selected Article',
@@ -2238,14 +2408,15 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                     'line': {'width': 3, 'color': 'white'}
                 },
                 'text': [f'Doc {i+1}' for i in selected_article_indices],
+                'customdata': [[i] for i in selected_article_indices],
                 'hovertemplate': '<b>%{text}</b><extra></extra>'
             })
         
         # Add trace for other documents
         if len(other_indices) > 0:
             traces.append({
-                'x': document_2d[other_indices, 0],
-                'y': document_2d[other_indices, 1],
+                'x': [document_2d[i][0] for i in other_indices],
+                'y': [document_2d[i][1] for i in other_indices],
                 'mode': 'markers',
                 'type': 'scatter',
                 'name': 'Other documents',
@@ -2256,13 +2427,14 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                     'line': {'width': 0.5, 'color': 'white'}
                 },
                 'text': [f'Doc {i+1}' for i in other_indices],
+                'customdata': [[i] for i in other_indices],
                 'hovertemplate': '<b>%{text}</b><extra></extra>'
             })
         # If no traces created, show all documents in one color
         if not traces:
             traces = [{
-                'x': document_2d[:, 0],
-                'y': document_2d[:, 1],
+                'x': [document_2d[i][0] for i in range(len(df))],
+                'y': [document_2d[i][1] for i in range(len(df))],
                 'mode': 'markers',
                 'type': 'scatter',
                 'name': 'All documents',
@@ -2273,6 +2445,7 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                     'line': {'width': 0.5, 'color': 'white'}
                 },
                 'text': [f'Doc {i+1}' for i in range(len(df))],
+                'customdata': [[i] for i in range(len(df))],
                 'hovertemplate': '<b>%{text}</b><extra></extra>'
             }]
         
@@ -2306,12 +2479,29 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             }
         }
         
+        # Collect highlighted indices for training plots
+        highlighted_indices = []
+        if len(keyword_group_indices) > 0:
+            highlighted_indices.extend(keyword_group_indices.tolist())
+        if len(selected_article_indices) > 0:
+            highlighted_indices.extend(selected_article_indices.tolist())
+        
+        print(f"🔍 Final result:")
+        print(f"  Number of traces: {len(traces)}")
+        print(f"  Highlighted indices: {highlighted_indices}")
+        print(f"  Figure keys: {list(fig.keys())}")
+        print(f"  First trace keys: {list(traces[0].keys()) if traces else 'No traces'}")
+        print(f"  First trace x length: {len(traces[0]['x']) if traces and 'x' in traces[0] else 'No x'}")
+        print(f"  First trace y length: {len(traces[0]['y']) if traces and 'y' in traces[0] else 'No y'}")
+        print(f"  First trace x sample: {traces[0]['x'][:3] if traces and 'x' in traces[0] and len(traces[0]['x']) > 0 else 'No x data'}")
+        print(f"  First trace y sample: {traces[0]['y'][:3] if traces and 'y' in traces[0] and len(traces[0]['y']) > 0 else 'No y data'}")
+        
         # Cache the result for future use
         if cache_key:
             _DOCUMENTS_2D_CACHE[cache_key] = fig
             print(f"Cached documents 2D plot for: {cache_key}")
         
-        return fig
+        return fig, highlighted_indices
         
     except Exception as e:
         print(f"Error creating documents 2D plot: {e}")
@@ -2322,7 +2512,7 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                 'xaxis': {'title': 'X'},
                 'yaxis': {'title': 'Y'}
             }
-        }
+        }, []
 
 @app.callback(
     [Output("group-data", "data", allow_duplicate=True),
@@ -2366,13 +2556,12 @@ def handle_plot_click(click_data, selected_group, group_data):
         raise PreventUpdate
 
 @app.callback(
-    [Output("train-output", "style"),
-     Output("plot-before", "figure"),
-     Output("plot-after", "figure"),
-     Output("content-display", "style"),
-     Output("train-btn", "children"),
+    [Output("train-btn", "children"),
      Output("train-btn", "style"),
-     Output("train-btn", "disabled")],
+     Output("train-btn", "disabled"),
+     Output("switch-view-btn", "style"),
+     Output("display-mode", "data"),
+     Output("training-figures", "data")],
     Input("train-btn", "n_clicks"),
     State("group-order", "data"),
     prevent_initial_call=True
@@ -2455,19 +2644,6 @@ def handle_train_button(n_clicks, group_order):
         fig_before, fig_after = run_training()
         print("Training completed successfully!")
         
-        # Show training results
-        train_output_style = {
-            "width": "100%", 
-            "minHeight": "80vh", 
-            "display": "block",  # Show training output
-            "padding": "20px"
-        }
-        
-        content_display_style = {
-            "display": "block",  # Show article content display
-            "margin-top": "20px"
-        }
-        
         # Training completed successfully - reset button to normal state
         completed_style = {
             "margin-top": "20px",
@@ -2480,7 +2656,23 @@ def handle_train_button(n_clicks, group_order):
             "cursor": "pointer"
         }
         
-        return train_output_style, fig_before, fig_after, content_display_style, "Training Complete", completed_style, False
+        # Show switch button after training completion
+        switch_button_style = {
+            "margin": "15px auto",
+            "padding": "12px 30px",
+            "fontSize": "1rem",
+            "fontWeight": "bold",
+            "backgroundColor": "#3498db",
+            "color": "white",
+            "border": "none",
+            "borderRadius": "6px",
+            "cursor": "pointer",
+            "transition": "all 0.3s ease",
+            "boxShadow": "0 3px 10px rgba(52, 152, 219, 0.3)",
+            "display": "block"  # Show the switch button
+        }
+        
+        return "Training Complete", completed_style, False, switch_button_style, "training", {"before": fig_before, "after": fig_after}
         
     except Exception as e:
         print(f"Training failed with error: {e}")
@@ -2506,13 +2698,6 @@ def handle_train_button(n_clicks, group_order):
             }
         }
         
-        train_output_style = {
-            "width": "100%", 
-            "minHeight": "80vh", 
-            "display": "block",  # Show error
-            "padding": "20px"
-        }
-        
         # Training failed - show error state
         error_style = {
             "margin-top": "20px",
@@ -2525,7 +2710,10 @@ def handle_train_button(n_clicks, group_order):
             "cursor": "pointer"
         }
         
-        return train_output_style, error_fig, error_fig, {"display": "none"}, "Training Failed", error_style, False
+        # Hide switch button on training failure
+        switch_button_style = {"display": "none"}
+        
+        return "Training Failed", error_style, False, switch_button_style, "keywords", {"before": None, "after": None}
 
 # Add a separate callback to handle button state changes immediately when clicked
 @app.callback(
@@ -2626,7 +2814,7 @@ def display_article_content_fulltext(click_data_docs, article_clicks):
         return html.P(f"Error loading article: {str(e)}", style={"color": "red"}), None
 
 @app.callback(
-    Output("article-content", "children"),
+    Output("article-fulltext-container", "children", allow_duplicate=True),
     [Input("plot-before", "clickData"),
      Input("plot-after", "clickData")],
     prevent_initial_call=True
@@ -2676,6 +2864,170 @@ def display_article_content_training(click_data_before, click_data_after):
     
     except Exception as e:
         return html.P(f"Error loading article: {str(e)}", style={"color": "red"})
+
+@app.callback(
+    [Output("display-mode", "data", allow_duplicate=True),
+     Output("switch-view-btn", "children")],
+    Input("switch-view-btn", "n_clicks"),
+    State("display-mode", "data"),
+    prevent_initial_call=True
+)
+def switch_display_mode(n_clicks, current_mode):
+    """Switch between keywords view and training view"""
+    if not n_clicks or n_clicks == 0:
+        raise PreventUpdate
+    
+    if current_mode == "keywords":
+        new_mode = "training"
+        button_text = "Switch to Keywords View"
+    else:
+        new_mode = "keywords"
+        button_text = "Switch to Training View"
+    
+    print(f"Switching display mode from {current_mode} to {new_mode}")
+    return new_mode, button_text
+
+@app.callback(
+    Output("main-visualization-area", "children"),
+    [Input("display-mode", "data"),
+     Input("training-figures", "data")],
+    prevent_initial_call=True
+)
+def update_main_visualization_area(display_mode, training_figures):
+    """Dynamically update the main visualization area based on display mode"""
+    print(f"🔍 update_main_visualization_area called:")
+    print(f"  display_mode: {display_mode}")
+    print(f"  training_figures: {training_figures is not None}")
+    
+    if display_mode == "training" and training_figures:
+        # Show training plots
+        fig_before = training_figures.get("before", {})
+        fig_after = training_figures.get("after", {})
+        
+
+        
+        return [
+            # Left: Before Training
+            html.Div([
+                html.H4("Before Training", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "8px",
+                    "textAlign": "center"
+                }),
+                html.P("Training results before model optimization", style={
+                    "color": "#7f8c8d",
+                    "fontSize": "0.9rem",
+                    "textAlign": "center",
+                    "marginBottom": "15px",
+                    "fontStyle": "italic"
+                }),
+                dcc.Graph(
+                    id='plot-before',
+                    figure=fig_before if fig_before else {},
+                    style={'height': '700px'},
+                    config={'displayModeBar': True, 'displaylogo': False}
+                )
+            ], className="modern-card", style={
+                'width': '49%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'marginRight': '1%'
+            }),
+            
+            # Right: After Training
+            html.Div([
+                html.H4("After Training", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "8px",
+                    "textAlign": "center"
+                }),
+                html.P("Training results after model optimization", style={
+                    "color": "#7f8c8d",
+                    "fontSize": "0.9rem",
+                    "textAlign": "center",
+                    "marginBottom": "15px",
+                    "fontStyle": "italic"
+                }),
+                dcc.Graph(
+                    id='plot-after',
+                    figure=fig_after if fig_after else {},
+                    style={'height': '700px'},
+                    config={'displayModeBar': True, 'displaylogo': False}
+                )
+            ], className="modern-card", style={
+                'width': '49%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'marginLeft': '1%'
+            })
+        ]
+    else:
+        # Show keywords plots - don't regenerate documents-2d-plot as it has its own callback
+        return [
+            # Left: keyword 2D visualization with text labels
+            html.Div([
+                html.H4("Keywords 2D Visualization", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "8px",
+                    "textAlign": "center"
+                }),
+                html.P("Click on keywords to view related documents", style={
+                    "color": "#7f8c8d",
+                    "fontSize": "0.9rem",
+                    "textAlign": "center",
+                    "marginBottom": "15px",
+                    "fontStyle": "italic"
+                }),
+                dcc.Graph(
+                    id='keywords-2d-plot',
+                    style={'height': '700px'},
+                    config={'displayModeBar': True, 'displaylogo': False, 'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'select2d']}
+                )
+            ], className="modern-card", style={
+                'width': '49%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'marginRight': '1%'
+            }),
+            
+            # Right: documents 2D visualization - keep existing content
+            html.Div([
+                html.H4("Documents 2D Visualization", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "8px",
+                    "textAlign": "center"
+                }),
+                html.P("Documents highlighted by selected keyword", style={
+                    "color": "#7f8c8d",
+                    "fontSize": "0.9rem",
+                    "textAlign": "center",
+                    "marginBottom": "15px",
+                    "fontStyle": "italic"
+                }),
+                dcc.Graph(
+                    id='documents-2d-plot',
+                    style={'height': '700px'},
+                    config={'displayModeBar': True, 'displaylogo': False}
+                )
+            ], className="modern-card", style={
+                'width': '49%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'marginLeft': '1%'
+            })
+        ]
 
 # Launch the Dash application
 if __name__ == "__main__":
