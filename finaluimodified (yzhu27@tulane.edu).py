@@ -2230,9 +2230,9 @@ def update_documents_2d_plot_initial(plot_id, display_mode):
      Output('highlighted-indices', 'data')],
     [Input('selected-keyword', 'data'),
      Input('selected-group', 'data'),  # Also update when group is selected
-     Input('selected-article', 'data'),  # Also update when article is selected
-     Input('display-mode', 'data')],
+     Input('selected-article', 'data')],  # Also update when article is selected
     State('group-order', 'data'),  # Add group_order as State parameter
+    State('display-mode', 'data'),
     prevent_initial_call=True
 )
 def update_documents_2d_plot(selected_keyword, selected_group, selected_article, display_mode, group_order):
