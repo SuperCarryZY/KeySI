@@ -771,7 +771,7 @@ def create_layout():
             })
         ], style={'display': 'flex', 'marginBottom': '30px'}),
         
-                # Group management area (below the 2D visualizations) - three column layout
+        # Group management area (below the 2D visualizations) - three column layout
         html.Div([
             # Left: Group selection and keywords
             html.Div([
@@ -1595,21 +1595,21 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
         else:
             # Use traditional text search
             print(f"🔍 Using text search for keywords: {search_keywords}")
-            for idx, row in df.iterrows():
-                text = str(row.iloc[1]) if len(row) > 1 else ""
-                text_lower = text.lower()
-                
-                # Check if any of the search keywords is in the text
-                contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
-                
-                if contains_keyword:
-                    file_keywords = extract_top_keywords(text, 5)
-                    matching_articles.append({
-                        'file_number': idx + 1,
-                        'file_index': idx,
-                        'text': text,
-                        'keywords': file_keywords
-                    })
+        for idx, row in df.iterrows():
+            text = str(row.iloc[1]) if len(row) > 1 else ""
+            text_lower = text.lower()
+            
+            # Check if any of the search keywords is in the text
+            contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
+            
+            if contains_keyword:
+                file_keywords = extract_top_keywords(text, 5)
+                matching_articles.append({
+                    'file_number': idx + 1,
+                    'file_index': idx,
+                    'text': text,
+                    'keywords': file_keywords
+                })
         
         if not matching_articles:
             result = html.P(f"No articles found for the selected search criteria")
@@ -1791,9 +1791,44 @@ def run_training():
     ps = PorterStemmer()
     def preprocess(text):
         ps = PorterStemmer()
-        return [ps.stem(word) for word in text.lower().split()]
+        # Better text preprocessing to handle punctuation and special cases
+        import re
+        
+        # Convert to lowercase and split by whitespace
+        words = text.lower().split()
+        
+        # Clean each word: remove punctuation but preserve important separators
+        cleaned_words = []
+        for word in words:
+            # Remove punctuation from start and end, but keep internal structure
+            cleaned_word = re.sub(r'^[^\w]+|[^\w]+$', '', word)
+            if cleaned_word:  # Only add non-empty words
+                cleaned_words.append(cleaned_word)
+        
+        # Apply stemming
+        stemmed_words = [ps.stem(word) for word in cleaned_words]
+        
+        # Debug: Check if HIV is preserved
+        if 'hiv' in text.lower() and 'hiv' not in [w.lower() for w in stemmed_words]:
+            print(f"🔍 DEBUG: HIV lost in preprocessing!")
+            print(f"🔍 DEBUG:   Original text: {text[:100]}...")
+            print(f"🔍 DEBUG:   Words after split: {words[:20]}")
+            print(f"🔍 DEBUG:   Cleaned words: {cleaned_words[:20]}")
+            print(f"🔍 DEBUG:   Stemmed words: {stemmed_words[:20]}")
+        
+        return stemmed_words
     ps = PorterStemmer()
     tokenized_corpus = Parallel(n_jobs=num_threads)(delayed(preprocess)(doc) for doc in all_articles)
+    
+    # Debug: Check document 57 preprocessing
+    print(f"🔍 DEBUG: Document 57 (index 56) preprocessing:")
+    if len(all_articles) > 56:
+        doc_57_original = all_articles[56]
+        doc_57_processed = preprocess(doc_57_original)
+        print(f"🔍 DEBUG:   Original text: {doc_57_original[:200]}...")
+        print(f"🔍 DEBUG:   Processed tokens: {doc_57_processed[:20]}...")
+        print(f"🔍 DEBUG:   Contains 'hiv' after processing: {'hiv' in doc_57_processed}")
+    
     bm25 = BM25Okapi(tokenized_corpus)
 
     def bm25_search_batch(query_groups):
@@ -1802,9 +1837,16 @@ def run_training():
             query_stemmed = [PorterStemmer().stem(word) for word in query_words]
             scores = bm25.get_scores(query_stemmed)  
             
-
+            print(f"🔍 DEBUG: BM25 search for {group_name} (keywords: {query_words} -> {query_stemmed}):")
+            print(f"🔍 DEBUG:   Total scores: {len(scores)}")
+            print(f"🔍 DEBUG:   Document 57 score (index 56): {scores[56] if len(scores) > 56 else 'N/A'}")
+            print(f"🔍 DEBUG:   Scores > 0: {sum(1 for s in scores if s > 0)}")
+            
             valid_indices = [i for i in range(len(scores)) if scores[i] > 0]
             
+            # Check if document 57 has any score
+            if len(scores) > 56:
+                print(f"🔍 DEBUG:   Document 57 in valid_indices: {56 in valid_indices}")
 
             sorted_indices = sorted(valid_indices, key=lambda i: scores[i], reverse=True)[:top_similar_files]
             
@@ -1814,7 +1856,17 @@ def run_training():
         return results
 
     stemmed_final_dict = stem_keywords_dict(final_dict)
+    print(f"🔍 DEBUG: Original keywords: {final_dict}")
+    print(f"🔍 DEBUG: Stemmed keywords: {stemmed_final_dict}")
+    
+    # Check if HIV stemming is working correctly
+    ps_debug = PorterStemmer()
+    print(f"🔍 DEBUG: HIV stemming test:")
+    print(f"🔍 DEBUG:   'hiv' -> '{ps_debug.stem('hiv')}'")
+    print(f"🔍 DEBUG:   'HIV' -> '{ps_debug.stem('HIV')}'")
+    
     group_to_indices_map = bm25_search_batch(stemmed_final_dict)
+    print(f"🔍 DEBUG: BM25 search results: {group_to_indices_map}")
     print(group_to_indices_map)
 
 
@@ -3121,40 +3173,40 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         else:
             # Fallback to on-demand computation if pre-computation failed
             print("🔍 Pre-computed embeddings not available, computing on-demand...")
-            print(f"🔍 df shape: {df.shape}")
-            all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
-            print(f"🔍 Number of articles: {len(all_articles_text)}")
+        print(f"🔍 df shape: {df.shape}")
+        all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
+        print(f"🔍 Number of articles: {len(all_articles_text)}")
+        
+        # Truncate long texts to prevent token length issues
+        print("🔍 Truncating long texts to fit within model limits...")
+        truncated_articles = [truncate_text_for_model(text, max_length=500) for text in all_articles_text]
+        
+        # Calculate embeddings in batches
+        batch_size = 64 if device == "cpu" else 128
+        all_embeddings = []
+        
+        for i in range(0, len(truncated_articles), batch_size):
+            batch_texts = truncated_articles[i:i + batch_size]
+            print(f"🔍 Processing batch {i//batch_size + 1} for documents 2D visualization")
             
-            # Truncate long texts to prevent token length issues
-            print("🔍 Truncating long texts to fit within model limits...")
-            truncated_articles = [truncate_text_for_model(text, max_length=500) for text in all_articles_text]
-            
-            # Calculate embeddings in batches
-            batch_size = 64 if device == "cpu" else 128
-            all_embeddings = []
-            
-            for i in range(0, len(truncated_articles), batch_size):
-                batch_texts = truncated_articles[i:i + batch_size]
-                print(f"🔍 Processing batch {i//batch_size + 1} for documents 2D visualization")
-                
-                # Use safe encoding function with better error handling
-                batch_embeddings = safe_encode_batch(batch_texts, embedding_model_kw, device)
-                all_embeddings.extend(batch_embeddings)
-            
-            document_embeddings = np.array(all_embeddings)
-            
-            # Calculate TSNE for documents
-            print("🔍 Calculating TSNE for documents...")
-            print(f"🔍 Embeddings shape: {document_embeddings.shape}")
-            perplexity = min(30, max(5, len(document_embeddings) // 3))
-            print(f"🔍 Perplexity: {perplexity}")
-            tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42, n_jobs=-1)
-            document_2d = tsne.fit_transform(document_embeddings)
-            print(f"🔍 TSNE result shape: {document_2d.shape}")
-            print(f"🔍 TSNE result type: {type(document_2d)}")
-            print(f"🔍 TSNE result dtype: {document_2d.dtype}")
-            # Convert to list for Plotly compatibility
-            document_2d = document_2d.tolist()
+            # Use safe encoding function with better error handling
+            batch_embeddings = safe_encode_batch(batch_texts, embedding_model_kw, device)
+            all_embeddings.extend(batch_embeddings)
+        
+        document_embeddings = np.array(all_embeddings)
+        
+        # Calculate TSNE for documents
+        print("🔍 Calculating TSNE for documents...")
+        print(f"🔍 Embeddings shape: {document_embeddings.shape}")
+        perplexity = min(30, max(5, len(document_embeddings) // 3))
+        print(f"🔍 Perplexity: {perplexity}")
+        tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42, n_jobs=-1)
+        document_2d = tsne.fit_transform(document_embeddings)
+        print(f"🔍 TSNE result shape: {document_2d.shape}")
+        print(f"🔍 TSNE result type: {type(document_2d)}")
+        print(f"🔍 TSNE result dtype: {document_2d.dtype}")
+        # Convert to list for Plotly compatibility
+        document_2d = document_2d.tolist()
         
         # Determine which documents to highlight
         highlight_mask = []
@@ -4129,18 +4181,39 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
     elif selected_group and group_order:
         print(f"🔍 DEBUG: 🔍 GROUP SELECTION:")
         print(f"🔍 DEBUG:   Processing group: {selected_group}")
+        print(f"🔍 DEBUG:   Full group_order: {group_order}")
         
         # Find documents containing any keyword in the selected group
         if selected_group in group_order:
             group_keywords = group_order[selected_group]
             print(f"🔍 DEBUG:   Group keywords: {group_keywords}")
+            print(f"🔍 DEBUG:   Group keywords type: {type(group_keywords)}")
+            print(f"🔍 DEBUG:   Group keywords length: {len(group_keywords) if group_keywords else 0}")
             
             group_indices = []
             for i, text in enumerate(df.iloc[:, 1]):
                 text_lower = str(text).lower()
+                
+                # Special debug for document 57 when processing Group 1
+                if i == 56 and selected_group == "Group 1":  # Document 57 (0-indexed)
+                    print(f"🔍 DEBUG: 🔍 DOCUMENT 57 ANALYSIS FOR GROUP 1:")
+                    print(f"🔍 DEBUG:   Document index: {i+1} (1-indexed)")
+                    print(f"🔍 DEBUG:   Text preview: {str(text)[:300]}...")
+                    print(f"🔍 DEBUG:   Text length: {len(str(text))}")
+                    print(f"🔍 DEBUG:   Group keywords: {group_keywords}")
+                    for kw in group_keywords:
+                        contains_kw = kw.lower() in text_lower
+                        print(f"🔍 DEBUG:   Contains '{kw}': {contains_kw}")
+                        if contains_kw:
+                            # Find position of keyword in text
+                            pos = text_lower.find(kw.lower())
+                            context = text_lower[max(0, pos-50):pos+len(kw)+50]
+                            print(f"🔍 DEBUG:     Context: ...{context}...")
+                    print(f"🔍 DEBUG:   Overall match: {any(keyword.lower() in text_lower for keyword in group_keywords)}")
+                
                 # Check if any keyword from the group is in the document
                 if any(keyword.lower() in text_lower for keyword in group_keywords):
-                    group_indices.append(i)
+                        group_indices.append(i)
             
             print(f"🔍 DEBUG:   Found {len(group_indices)} documents for group '{selected_group}'")
             print(f"🔍 DEBUG:   Document indices: {group_indices}")
@@ -4471,7 +4544,7 @@ def select_training_group(n_clicks, display_mode):
     if not ctx.triggered:
         print(f"🔍 DEBUG: ❌ No context triggered, preventing update")
         raise PreventUpdate
-    
+
     print(f"🔍 DEBUG: ✅ Context triggered, analyzing trigger...")
     
     triggered_id = ctx.triggered[0]['prop_id']
@@ -4508,7 +4581,7 @@ def select_training_group(n_clicks, display_mode):
         print(f"🔍 DEBUG: ❌ NOT A VALID TRAINING GROUP HEADER CLICK")
         print(f"🔍 DEBUG:   'training-group-header' in triggered_id: {'training-group-header' in triggered_id}")
         print(f"🔍 DEBUG:   triggered_n_clicks > 0: {triggered_n_clicks and (isinstance(triggered_n_clicks, (int, float)) and triggered_n_clicks > 0)}")
-    
+
     print(f"🔍 DEBUG: ❌ No valid conditions met, raising PreventUpdate")
     raise PreventUpdate
 
@@ -4582,7 +4655,7 @@ def select_training_keyword_from_group(n_clicks, display_mode, group_order):
             else:
                 print(f"🔍 DEBUG: ❌ Invalid n_clicks value: {triggered_n_clicks}")
                 raise PreventUpdate
-                
+            
         except Exception as e:
             print(f"🔍 DEBUG: ❌ ERROR PARSING TRAINING KEYWORD BUTTON ID:")
             print(f"🔍 DEBUG:   Error: {e}")
@@ -4999,7 +5072,7 @@ if __name__ == "__main__":
                 debug=True, 
                 port=8054, 
                 host='127.0.0.1', 
-                use_reloader=False, 
+                use_reloader=False,
                 threaded=True
             )
         except OSError as e2:
