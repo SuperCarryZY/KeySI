@@ -1,10 +1,12 @@
 Group,Index,Label
-Group 1,49,neuro
-Group 1,20,kidney
-Group 1,43,neuro
-Group 2,53,smoking
-Group 2,24,kidney
-Group 2,12,cancer
-Group 2,15,kidney
-Group 2,0,cancer
-Group 3,43,neuro
+Group 1,2,cancer
+Group 1,12,cancer
+Group 1,38,neuro
+Group 1,55,smoking
+Group 1,23,kidney
+Group 1,24,kidney
+Group 1,32,neuro
+Group 1,15,kidney
+Group 2,45,neuro
+Group 2,16,kidney
+Group 2,30,neuro

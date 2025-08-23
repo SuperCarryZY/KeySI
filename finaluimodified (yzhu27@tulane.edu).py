@@ -117,15 +117,16 @@ def clear_gpu_memory():
         torch.cuda.synchronize()
     gc.collect()
 
-# Ensure CSV directory exists and switch to it
+# Set up CSV directory path but don't change working directory
 current_dir = os.getcwd()
 print(f"Current working directory: {current_dir}")
 
 if current_dir.endswith("CSV"):
+    csv_dir = current_dir
     print("Already in CSV directory")
 elif os.path.exists("CSV"):
-    os.chdir("CSV")
-    print(f"Switched to CSV directory: {os.getcwd()}")
+    csv_dir = os.path.join(current_dir, "CSV")
+    print(f"CSV directory found at: {csv_dir}")
 else:
     print("CSV folder does not exist, please check file path")
     print("Please ensure you run this script from the project root directory")
@@ -174,7 +175,7 @@ def get_group_color(group_name):
 
 # Define relative paths for data, model saving, and output
 img_output_dir = "../Keyword_Group/Test"
-csv_path = "risk_factors.csv"  
+csv_path = os.path.join(csv_dir, "risk_factors.csv")  
 final_list_path = "../Keyword_Group/Jupyter/final_list.json"
 save_path = "../Keyword_Group/Jupyter/final_list.json"
 output_dir = "../Keyword_Group/covidtest"
@@ -206,6 +207,47 @@ try:
 except Exception as e:
     print(f"Model initialization failed: {e}")
     raise
+
+def truncate_text_for_model(text, max_length=500):
+    """Truncate text to fit within model's maximum sequence length"""
+    if not text or len(text) <= max_length:
+        return text
+    
+    # Simple truncation: take the first max_length characters
+    # This ensures we don't exceed the model's token limit
+    truncated = text[:max_length]
+    
+    # Try to truncate at a word boundary if possible
+    if ' ' in truncated:
+        last_space = truncated.rfind(' ')
+        if last_space > max_length * 0.8:  # Only truncate at word if it's not too early
+            truncated = truncated[:last_space]
+    
+    return truncated + "..." if len(truncated) < len(text) else truncated
+
+def safe_encode_batch(batch_texts, model, device, fallback_dim=768):
+    """Safely encode a batch of texts with error handling and fallback"""
+    try:
+        # Check text lengths before encoding
+        for i, text in enumerate(batch_texts):
+            if len(text) > 1000:  # Additional safety check
+                print(f"🔍 Warning: Text {i} is very long ({len(text)} chars), truncating further")
+                batch_texts[i] = truncate_text_for_model(text, max_length=400)
+        
+        # Encode with progress indication
+        print(f"🔍 Encoding batch of {len(batch_texts)} texts...")
+        embeddings = model.encode(batch_texts, convert_to_tensor=True).to(device).cpu().numpy()
+        print(f"🔍 Successfully encoded batch, shape: {embeddings.shape}")
+        return embeddings
+        
+    except Exception as e:
+        print(f"🔍 Error encoding batch: {e}")
+        print(f"🔍 Using fallback zero vectors for batch")
+        
+        # Return zero vectors as fallback
+        batch_size = len(batch_texts)
+        fallback_embeddings = np.zeros((batch_size, fallback_dim))
+        return fallback_embeddings
 
 kw_model = KeyBERT(model=embedding_model_kw)
 
@@ -567,6 +609,10 @@ def create_layout():
         dcc.Store(id="display-mode", data="keywords"),  # Display mode: "keywords" or "training"
         dcc.Store(id="training-figures", data={"before": None, "after": None}),  # Store training figures
         dcc.Store(id="highlighted-indices", data=[]),  # Store highlighted article indices
+        dcc.Store(id="keyword-highlights", data=[]),  # New: store keyword highlights separately
+        dcc.Store(id="training-selected-group", data=None),  # Training mode group selection
+        dcc.Store(id="training-selected-keyword", data=None),  # Training mode keyword selection
+        dcc.Store(id="training-selected-article", data=None),  # Training mode article selection
         
         # Main content area - left-right column layout (dynamic based on display mode)
         html.Div(id="main-visualization-area", children=[
@@ -629,7 +675,7 @@ def create_layout():
             })
         ], style={'display': 'flex', 'marginBottom': '30px'}),
         
-        # Group management area (below the 2D visualizations) - three column layout
+                # Group management area (below the 2D visualizations) - three column layout
         html.Div([
             # Left: Group selection and keywords
             html.Div([
@@ -714,7 +760,112 @@ def create_layout():
                 'padding': '20px',
                 'marginLeft': '7px'
             })
-        ], style={'display': 'flex', 'marginBottom': '30px'}),
+        ], id="keywords-group-management-area", style={'display': 'flex', 'marginBottom': '30px'}),
+        
+        # Training mode specific Group Management and Recommended Articles (initially hidden)
+        html.Div(id="training-group-management-area", style={'display': 'none', 'marginBottom': '30px'}, children=[
+            # Left: Training Group Management
+            html.Div([
+                html.H4("Training Group Management", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "15px",
+                    "textAlign": "center"
+                }),
+                html.Div(id="training-group-containers", children=[
+                    html.P("Loading training groups...", 
+                           style={
+                               "color": "#7f8c8d", 
+                               "fontStyle": "italic", 
+                               "textAlign": "center", 
+                               "padding": "40px 20px",
+                               "fontSize": "1rem"
+                           })
+                ], style={
+                    "display": "flex",
+                    "flex-direction": "column",
+                    "gap": "15px",
+                    "margin-bottom": "20px"
+                }),
+            ], className="modern-card", style={
+                'width': '25%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'marginRight': '15px'
+            }),
+            
+            # Middle: Training Recommended Articles
+            html.Div([
+                html.H4("Training Recommended Articles", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "15px",
+                    "textAlign": "center"
+                }),
+                html.Div(id="training-articles-container", children=[
+                    html.P("Loading training articles...", 
+                           style={
+                               "color": "#7f8c8d", 
+                               "fontStyle": "italic", 
+                               "textAlign": "center", 
+                               "padding": "40px 20px",
+                               "fontSize": "1rem"
+                           })
+                ], style={
+                    "backgroundColor": "#f8f9fa",
+                    "borderRadius": "8px",
+                    "padding": "20px",
+                    "minHeight": "400px",
+                    "maxHeight": "600px",
+                    "overflowY": "auto",
+                    "border": "1px solid #e9ecef"
+                })
+            ], className="modern-card", style={
+                'width': '40%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'margin': '0 7px'
+            }),
+            
+            # Right: Training Article Full Text Display
+            html.Div([
+                html.H4("Training Article Full Text", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "15px",
+                    "textAlign": "center"
+                }),
+                html.Div(id="training-article-fulltext-container", children=[
+                    html.P("Click on an article from the middle panel to view its full content", 
+                           style={
+                               "color": "#7f8c8d", 
+                               "fontStyle": "italic", 
+                               "textAlign": "center", 
+                               "padding": "40px 20px",
+                               "fontSize": "1rem"
+                           })
+                ], style={
+                    "backgroundColor": "#f8f9fa",
+                    "borderRadius": "8px",
+                    "padding": "20px",
+                    "minHeight": "400px",
+                    "maxHeight": "600px",
+                    "overflowY": "auto",
+                    "border": "1px solid #e9ecef"
+                })
+            ], className="modern-card", style={
+                'width': '30%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'marginLeft': '7px'
+            })
+        ]),
         
         # Training button and output
         html.Div([
@@ -805,16 +956,39 @@ def update_group_order(generate_n_clicks, group_data, num_groups, current_order)
 @app.callback(
     Output("group-containers", "children"),
     [Input("group-order", "data"),
-     Input("selected-group", "data"),
-     Input("selected-keyword", "data")]
+     Input("selected-group", "data")],
+    [State("selected-keyword", "data"),
+     State("display-mode", "data")]
 )
-def render_groups(group_order, selected_group, selected_keyword):
-    print(f"render_groups called")
-    print(f"group_order: {group_order}")
-    print(f"selected_group: {selected_group}")
-    print(f"selected_keyword: {selected_keyword}")
+def render_groups(group_order, selected_group, selected_keyword, display_mode):
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: render_groups CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   group_order: {group_order}")
+    print(f"🔍 DEBUG:   selected_group: {selected_group}")
+    print(f"🔍 DEBUG:   selected_keyword: {selected_keyword}")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG: 🔍 PARAMETER TYPES:")
+    print(f"🔍 DEBUG:   group_order type: {type(group_order)}")
+    print(f"🔍 DEBUG:   selected_group type: {type(selected_group)}")
+    print(f"🔍 DEBUG:   selected_keyword type: {type(selected_keyword)}")
+    print(f"🔍 DEBUG:   display_mode type: {type(display_mode)}")
+    
+    # In training mode, avoid unnecessary updates that might trigger documents-2d-plot
+    if display_mode == "training" and selected_keyword is not None:
+        print(f"🔍 DEBUG: 🔍 TRAINING MODE WARNING:")
+        print(f"🔍 DEBUG:   selected_keyword is {selected_keyword}")
+        print(f"🔍 DEBUG:   This might cause conflicts with documents-2d-plot")
+        print(f"🔍 DEBUG:   But we're being careful about updates")
+        # Still render groups but be more careful about keyword selection highlighting
+    
     if not group_order:
+        print(f"🔍 DEBUG: ❌ No group_order, returning empty list")
         return []
+    
+    print(f"🔍 DEBUG: ✅ Proceeding with group rendering...")
 
     children = []
     for grp_name, kw_list in group_order.items():
@@ -842,7 +1016,11 @@ def render_groups(group_order, selected_group, selected_keyword):
         group_keywords = []
         for i, kw in enumerate(kw_list):
             # Check if this keyword is selected for Group Management highlighting
-            is_selected = selected_keyword and kw == selected_keyword
+            # In training mode, avoid keyword highlighting to prevent conflicts
+            if display_mode == "training":
+                is_selected = False  # No keyword highlighting in training mode
+            else:
+                is_selected = selected_keyword and kw == selected_keyword
             
             # Use group color for keywords in this group with selection highlighting
             keyword_button = html.Button(
@@ -891,65 +1069,152 @@ def render_groups(group_order, selected_group, selected_keyword):
 
     return children
 
+print("🔍 DEBUG: ==========================================")
+print("🔍 DEBUG: REGISTERING CALLBACK: select_group")
+print("🔍 DEBUG: ==========================================")
+print("🔍 DEBUG: Outputs: selected-group.data, selected-keyword.data")
+print("🔍 DEBUG: Input: {'type': 'group-header', 'index': ALL}.n_clicks")
+print("🔍 DEBUG: State: display-mode.data")
+print("🔍 DEBUG: allow_duplicate: True (for selected-keyword)")
+print("🔍 DEBUG: prevent_initial_call: True")
+
 @app.callback(
     [Output("selected-group", "data"),
      Output("selected-keyword", "data", allow_duplicate=True)],
     Input({"type": "group-header", "index": ALL}, "n_clicks"),
+    State("display-mode", "data"),
     prevent_initial_call=True
 )
-def select_group(n_clicks):
+def select_group(n_clicks, display_mode):
     ctx = dash.callback_context
-    print(f"🔵 select_group called")
-    print(f"🔵 triggered: {ctx.triggered}")
+    
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: select_group CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: n_clicks: {n_clicks}")
+    print(f"🔍 DEBUG: display_mode: {display_mode}")
+    print(f"🔍 DEBUG: display_mode type: {type(display_mode)}")
+    print(f"🔍 DEBUG: ctx.triggered: {ctx.triggered}")
+    print(f"🔍 DEBUG: ctx.triggered length: {len(ctx.triggered) if ctx.triggered else 0}")
+    
     if not ctx.triggered:
+        print(f"🔍 DEBUG: ❌ No context triggered, preventing update")
+        print(f"🔍 DEBUG: This should not happen for a valid group click")
         raise PreventUpdate
 
+    print(f"🔍 DEBUG: ✅ Context triggered, analyzing trigger...")
+    
     triggered_id = ctx.triggered[0]['prop_id']
     triggered_n_clicks = ctx.triggered[0]['value']
+    triggered_prop_id = ctx.triggered[0].get('prop_id', 'N/A')
+    triggered_value = ctx.triggered[0].get('value', 'N/A')
 
-    print(f"triggered_id: {triggered_id}")
-    print(f"triggered_n_clicks: {triggered_n_clicks}")
+    print(f"🔍 DEBUG: 🔍 TRIGGER ANALYSIS:")
+    print(f"🔍 DEBUG:   triggered_id: {triggered_id}")
+    print(f"🔍 DEBUG:   triggered_n_clicks: {triggered_n_clicks}")
+    print(f"🔍 DEBUG:   triggered_prop_id: {triggered_prop_id}")
+    print(f"🔍 DEBUG:   triggered_value: {triggered_value}")
+    print(f"🔍 DEBUG:   triggered_id type: {type(triggered_id)}")
+    print(f"🔍 DEBUG:   triggered_n_clicks type: {type(triggered_n_clicks)}")
     
     # Check if this is a group header click (only if n_clicks > 0)
+    print(f"🔍 DEBUG: 🔍 VALIDATION CHECKS:")
+    print(f"🔍 DEBUG:   'group-header' in triggered_id: {'group-header' in triggered_id}")
+    print(f"🔍 DEBUG:   triggered_n_clicks > 0: {triggered_n_clicks and triggered_n_clicks > 0}")
+    print(f"🔍 DEBUG:   triggered_n_clicks is truthy: {bool(triggered_n_clicks)}")
+    
     if "group-header" in triggered_id and triggered_n_clicks and triggered_n_clicks > 0:
+        print(f"🔍 DEBUG: ✅ Valid group header click detected!")
         try:
-            selected_group = json.loads(triggered_id.split('.')[0])["index"]
-            print(f"Switch to group: {selected_group}")  # Add debug info
-            print(f"DEBUG: Group selection callback completed")
-            print(f"DEBUG: Clearing selected keyword to show all group documents")
+            print(f"🔍 DEBUG: 🔍 PARSING GROUP ID:")
+            print(f"🔍 DEBUG:   Raw triggered_id: {triggered_id}")
+            print(f"🔍 DEBUG:   Splitting by '.': {triggered_id.split('.')}")
+            print(f"🔍 DEBUG:   First part: {triggered_id.split('.')[0]}")
+            
+            parsed_id = json.loads(triggered_id.split('.')[0])
+            print(f"🔍 DEBUG:   Parsed ID: {parsed_id}")
+            print(f"🔍 DEBUG:   Parsed ID type: {type(parsed_id)}")
+            
+            selected_group = parsed_id["index"]
+            print(f"🔍 DEBUG:   Extracted group: {selected_group}")
+            print(f"🔍 DEBUG:   Group type: {type(selected_group)}")
+            
+            print(f"🔍 DEBUG: 🔍 PROCESSING GROUP SELECTION:")
+            print(f"🔍 DEBUG:   Switching to group: {selected_group}")
+            print(f"🔍 DEBUG:   Current display_mode: {display_mode}")
+            print(f"🔍 DEBUG:   About to return: selected_group={selected_group}, display_mode={display_mode}")
             
             # Clear selected keyword when switching groups
             # This ensures group selection shows all documents containing group keywords
             # Also add a flag to prevent keyword selection from overriding
-            return selected_group, None
+            
+            # In training mode, don't update selected-keyword to avoid triggering documents-2d-plot
+            if display_mode == "training":
+                print(f"🔍 DEBUG: 🔍 TRAINING MODE DETECTED:")
+                print(f"🔍 DEBUG:   Returning selected_group={selected_group}")
+                print(f"🔍 DEBUG:   Returning dash.no_update for selected-keyword")
+                print(f"🔍 DEBUG:   This should prevent documents-2d-plot callback from being triggered")
+                print(f"🔍 DEBUG:   Expected behavior: no 'nonexistent object' error")
+                return selected_group, dash.no_update
+            else:
+                print(f"🔍 DEBUG: 🔍 KEYWORDS MODE DETECTED:")
+                print(f"🔍 DEBUG:   Returning selected_group={selected_group}")
+                print(f"🔍 DEBUG:   Returning None for selected-keyword")
+                print(f"🔍 DEBUG:   This is normal behavior for keywords mode")
+                return selected_group, None
+                
         except Exception as e:
-            print(f"Error parsing group header ID: {e}")
+            print(f"🔍 DEBUG: ❌ ERROR PARSING GROUP HEADER ID:")
+            print(f"🔍 DEBUG:   Error: {e}")
+            print(f"🔍 DEBUG:   Error type: {type(e)}")
+            print(f"🔍 DEBUG:   Full traceback:")
+            import traceback
+            traceback.print_exc()
             raise PreventUpdate
+    else:
+        print(f"🔍 DEBUG: ❌ NOT A VALID GROUP HEADER CLICK:")
+        print(f"🔍 DEBUG:   'group-header' in triggered_id: {'group-header' in triggered_id}")
+        print(f"🔍 DEBUG:   triggered_n_clicks > 0: {triggered_n_clicks and triggered_n_clicks > 0}")
+        print(f"🔍 DEBUG:   triggered_id contains: {triggered_id}")
+        print(f"🔍 DEBUG:   This might indicate a different type of click or callback")
 
+    print(f"🔍 DEBUG: ❌ No valid conditions met, raising PreventUpdate")
     raise PreventUpdate
 
 @app.callback(
-    Output("selected-keyword", "data", allow_duplicate=True),
-    Input({"type": "select-keyword", "keyword": ALL, "group": ALL}, "n_clicks"),
+    [Output("selected-keyword", "data", allow_duplicate=True),
+     Output("keyword-highlights", "data", allow_duplicate=True)],
+    [Input({"type": "select-keyword", "keyword": ALL, "group": ALL}, "n_clicks")],
+    [State("display-mode", "data"),
+     State("group-order", "data")],
     prevent_initial_call=True
 )
-def select_keyword_from_group(n_clicks):
+def select_keyword_from_group(n_clicks, display_mode, group_order):
     """Handle keyword selection from group management"""
-    print(f"select_keyword_from_group called")
-    print(f"n_clicks: {n_clicks}")
+    print(f"🔍 DEBUG: select_keyword_from_group called")
+    print(f"🔍 DEBUG: n_clicks: {n_clicks}")
+    print(f"🔍 DEBUG: display_mode: {display_mode}")
+    print(f"🔍 DEBUG: group_order: {group_order}")
+    print(f"🔍 DEBUG: n_clicks type: {type(n_clicks)}")
+    print(f"🔍 DEBUG: display_mode type: {type(display_mode)}")
+    print(f"🔍 DEBUG: group_order type: {type(group_order)}")
     
     ctx = dash.callback_context
-    print(f"ctx.triggered: {ctx.triggered}")
+    print(f"🔍 DEBUG: ctx.triggered: {ctx.triggered}")
+    print(f"🔍 DEBUG: ctx.triggered length: {len(ctx.triggered) if ctx.triggered else 0}")
     
     if not ctx.triggered:
-        print("No context triggered")
+        print(f"🔍 DEBUG: No context triggered")
         raise PreventUpdate
     
     triggered_id = ctx.triggered[0]['prop_id']
     triggered_n_clicks = ctx.triggered[0]['value']
     
-    print(f"triggered_id: {triggered_id}")
-    print(f"triggered_n_clicks: {triggered_n_clicks}")
+    print(f"🔍 DEBUG: triggered_id: {triggered_id}")
+    print(f"🔍 DEBUG: triggered_n_clicks: {triggered_n_clicks}")
+    print(f"🔍 DEBUG: triggered_id type: {type(triggered_id)}")
+    print(f"🔍 DEBUG: triggered_n_clicks type: {type(triggered_n_clicks)}")
     
     # Check if this is a keyword selection (even if n_clicks is None initially)
     if "select-keyword" in triggered_id:
@@ -957,26 +1222,54 @@ def select_keyword_from_group(n_clicks):
             import json
             btn_info = json.loads(triggered_id.split('.')[0])
             keyword = btn_info.get("keyword")
-            print(f"Select keyword from group management: {keyword}")
+            print(f"🔍 DEBUG: Select keyword from group management: {keyword}")
             
             # Check if this is triggered by group selection (not a direct keyword click)
             if triggered_n_clicks is None:
-                print(f"Keyword selection triggered by group change, ignoring")
+                print(f"🔍 DEBUG: Keyword selection triggered by group change, ignoring")
                 raise PreventUpdate
             
             # Check if this is a direct keyword click (n_clicks > 0)
             if triggered_n_clicks and triggered_n_clicks > 0:
-                print(f"Direct keyword click detected, selecting keyword: {keyword}")
-                return keyword
+                print(f"🔍 DEBUG: Direct keyword click detected, selecting keyword: {keyword}")
+                
+                # In training mode, update keyword-highlights instead of selected-keyword
+                if display_mode == "training":
+                    print(f"🔍 DEBUG: Training mode: updating keyword-highlights for keyword: {keyword}")
+                    # Find documents that contain this keyword
+                    keyword_docs = []
+                    
+                    # Load the dataframe to search for documents containing the keyword
+                    try:
+                        global df
+                        if 'df' not in globals():
+                            df = pd.read_csv(csv_path)
+                        
+                        # Search for documents containing the keyword
+                        for i in range(len(df)):
+                            text = str(df.iloc[i, 1]).lower()
+                            if keyword.lower() in text:
+                                keyword_docs.append(i)
+                        
+                        print(f"🔍 DEBUG: Found {len(keyword_docs)} documents containing keyword '{keyword}': {keyword_docs}")
+                        # In training mode, NEVER update selected-keyword to avoid triggering documents-2d-plot
+                        return dash.no_update, keyword_docs
+                    except Exception as e:
+                        print(f"🔍 DEBUG: Error finding documents for keyword '{keyword}': {e}")
+                        return dash.no_update, []
+                else:
+                    # In keywords mode, update selected-keyword normally
+                    print(f"🔍 DEBUG: Keywords mode: updating selected-keyword for keyword: {keyword}")
+                    return keyword, dash.no_update
             else:
-                print(f"Not a direct keyword click, ignoring")
+                print(f"🔍 DEBUG: Not a direct keyword click, ignoring")
                 raise PreventUpdate
             
         except Exception as e:
-            print(f"Error parsing button info: {e}")
+            print(f"🔍 DEBUG: Error parsing button info: {e}")
             raise PreventUpdate
     
-    print("Not a keyword selection")
+    print(f"🔍 DEBUG: Not a keyword selection")
     raise PreventUpdate
 
 @app.callback(
@@ -1051,11 +1344,32 @@ def remove_keyword_from_group(n_clicks, group_order, group_data):
     Output("articles-container", "children"),
     [Input("selected-keyword", "data"),
      Input("selected-group", "data")],  # Also update when group changes
-    State("group-order", "data")  # Add group_order as State parameter
+    [State("group-order", "data"),  # Add group_order as State parameter
+     State("display-mode", "data")],
+    prevent_initial_call=True
 )
-def display_recommended_articles(selected_keyword, selected_group, group_order):
+def display_recommended_articles(selected_keyword, selected_group, group_order, display_mode):
     """Display recommended articles based on selected keyword or group"""
-    print(f"display_recommended_articles called for keyword: {selected_keyword}, group: {selected_group}")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: display_recommended_articles CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   selected_keyword: {selected_keyword}")
+    print(f"🔍 DEBUG:   selected_group: {selected_group}")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG: 🔍 PARAMETER TYPES:")
+    print(f"🔍 DEBUG:   selected_keyword type: {type(selected_keyword)}")
+    print(f"🔍 DEBUG:   selected_group type: {type(selected_group)}")
+    print(f"🔍 DEBUG:   display_mode type: {type(display_mode)}")
+    
+    # In training mode, avoid unnecessary updates that might trigger documents-2d-plot
+    if display_mode == "training" and selected_keyword is not None:
+        print(f"🔍 DEBUG: 🔍 TRAINING MODE WARNING:")
+        print(f"🔍 DEBUG:   selected_keyword is {selected_keyword}")
+        print(f"🔍 DEBUG:   This might cause conflicts with documents-2d-plot")
+        print(f"🔍 DEBUG:   But we're being careful about updates")
+        # Still display articles but be more careful about keyword selection
     
     try:
         global df, _ARTICLES_CACHE
@@ -1281,6 +1595,7 @@ def get_all_cls_vectors(df_data, model, tokenizer, device):
     return torch.stack(vectors, dim=0)
 # Run training process: match articles by keyword groups, remove outliers, and prepare for fine-tuning
 def run_training():
+    print(f"🔍 DEBUG: run_training() called")
     # Clear caches when training starts as data relationships may change
     clear_caches()
     
@@ -1631,6 +1946,8 @@ def run_training():
             print(f"Epoch {epoch+1}/{num_epochs}, Loss={total_loss.item():.4f}, Triplets={triplet_count}")
         else:
             print("No valid triplets available for training")
+            # Set total_loss to a tensor with zero value to avoid .item() error
+            total_loss = torch.tensor(0.0, requires_grad=True)
         
         # Clear GPU memory
         clear_gpu_memory()
@@ -1638,19 +1955,23 @@ def run_training():
         if (epoch + 1) % 10 == 0:
             # Use relative path to save to project's Keyword_Group directory
             model_save_path_epoch = f"../Keyword_Group/bert_finetuned_epoch_{epoch+1}.pth"
+            # Handle both tensor and scalar loss values
+            loss_value = total_loss.item() if hasattr(total_loss, 'item') else float(total_loss)
             torch.save({
                 'epoch': epoch + 1,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                'loss': total_loss.item()
+                'loss': loss_value
             }, model_save_path_epoch)
             print(f"Model saved at epoch {epoch+1} -> {model_save_path_epoch}")
                
 
+    # Handle both tensor and scalar loss values
+    loss_value = total_loss.item() if hasattr(total_loss, 'item') else float(total_loss)
     torch.save({
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-        'loss': total_loss.item()
+        'loss': loss_value
     }, model_save_path)
     print(f"Model saved to {model_save_path}")
 
@@ -1667,9 +1988,16 @@ def run_training():
     colors = ['red', 'blue', 'green', 'purple','red']
     label_to_color = {label: colors[i % len(colors)] for i, label in enumerate(unique_labels)}
 
+    print(f"🔍 DEBUG: df_articles shape: {df_articles.shape}")
+    print(f"🔍 DEBUG: df_articles length: {len(df_articles)}")
+    
     cls_vectors_before = get_all_cls_vectors(df_articles, model_original,tokenizer, device).cpu()
     cls_vectors_after = get_all_cls_vectors(df_articles, model_finetuned,tokenizer, device).cpu()
     cls_vectors_after_cpu = cls_vectors_after.cpu().numpy()
+    
+    print(f"🔍 DEBUG: cls_vectors_before shape: {cls_vectors_before.shape}")
+    print(f"🔍 DEBUG: cls_vectors_after shape: {cls_vectors_after.shape}")
+    print(f"🔍 DEBUG: cls_vectors_after_cpu shape: {cls_vectors_after_cpu.shape}")
     
     # Calculate perplexity parameter
     perplexity_before = min(30, max(5, len(cls_vectors_before) // 3))
@@ -1679,6 +2007,9 @@ def run_training():
     tsne_after = TSNE(n_components=2, perplexity=perplexity_after, random_state=42)
     projected_2d_before = tsne_before.fit_transform(cls_vectors_before.numpy())
     projected_2d_after = tsne_after.fit_transform(cls_vectors_after_cpu)
+    
+    print(f"🔍 DEBUG: projected_2d_before shape: {projected_2d_before.shape}")
+    print(f"🔍 DEBUG: projected_2d_after shape: {projected_2d_after.shape}")
     
     # Calculate center point for each keyword group
     group_centers = {}
@@ -1704,6 +2035,10 @@ def run_training():
 
     # Create Plotly charts
     def create_plotly_figure(projected_2d, title, is_after=False, highlighted_indices=None):
+        print(f"🔍 DEBUG: create_plotly_figure called with projected_2d shape: {projected_2d.shape}")
+        print(f"🔍 DEBUG: projected_2d length: {len(projected_2d)}")
+        print(f"🔍 DEBUG: projected_2d sample: {projected_2d[:3] if len(projected_2d) >= 3 else projected_2d}")
+        
         fig = go.Figure()
         
         # Add scatter plot - all points in same color (no label colors)
@@ -1821,50 +2156,120 @@ def run_training():
     
     return fig_before, fig_after
 
-# Function to run training with highlighted indices
+# Function to update training figures with highlights
 def run_training_with_highlights(highlighted_indices):
-    """Run training and return figures with highlighted indices"""
-    # This is a simplified version that reuses the main training function
-    # but passes the highlighted indices to the figure creation
-    fig_before, fig_after = run_training()
+    """Update training figures with highlighted indices without re-running training"""
+    global df
     
-    # Update figures with highlights
-    if fig_before and fig_after:
-        # Add highlighted points to both figures
-        for fig in [fig_before, fig_after]:
-            if 'data' in fig and len(fig['data']) > 0:
-                # Add highlighted trace
-                highlighted_x = []
-                highlighted_y = []
-                highlighted_customdata = []
-                highlighted_hovertexts = []
-                
-                # Get the main scatter trace data
-                main_trace = fig['data'][0]
-                if 'x' in main_trace and 'y' in main_trace:
-                    for idx in highlighted_indices:
-                        if 0 <= idx < len(main_trace['x']):
-                            highlighted_x.append(main_trace['x'][idx])
-                            highlighted_y.append(main_trace['y'][idx])
-                            highlighted_customdata.append([idx])
-                            highlighted_hovertexts.append(f"Article {idx}")
-                    
-                    if highlighted_x:  # Only add trace if there are highlighted points
-                        fig['data'].append({
-                            'x': highlighted_x,
-                            'y': highlighted_y,
-                            'mode': 'markers',
-                            'name': 'Highlighted Articles',
-                            'marker': {
-                                'color': 'gold',
-                                'size': 12,
-                                'symbol': 'star',
-                                'line': {'width': 2, 'color': 'white'}
-                            },
-                            'customdata': highlighted_customdata,
-                            'hovertemplate': '<b>%{hovertext}</b><br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>',
-                            'hovertext': highlighted_hovertexts
-                        })
+    # Convert highlighted_indices to list if it's a tuple
+    if isinstance(highlighted_indices, tuple):
+        highlighted_indices = list(highlighted_indices)
+    
+    # Load the saved models instead of re-running training
+    model_original = BertModel.from_pretrained('bert-base-uncased').to(device)
+    model_finetuned = BertModel.from_pretrained('bert-base-uncased').to(device)
+    
+    # Initialize tokenizer
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    
+    # Load the saved model
+    model_save_path = "../Keyword_Group/bert_finetuned.pth"
+    if os.path.exists(model_save_path):
+        checkpoint = torch.load(model_save_path, map_location=device)
+        model_finetuned.load_state_dict(checkpoint['model_state_dict'])
+        model_finetuned.eval()
+    
+    if "df_global" not in globals():
+        df_articles = pd.read_csv(csv_path)
+    else:
+        df_articles = df
+    
+    # Get embeddings
+    cls_vectors_before = get_all_cls_vectors(df_articles, model_original, tokenizer, device).cpu()
+    cls_vectors_after = get_all_cls_vectors(df_articles, model_finetuned, tokenizer, device).cpu()
+    cls_vectors_after_cpu = cls_vectors_after.cpu().numpy()
+    
+    # Calculate TSNE
+    perplexity_before = min(30, max(5, len(cls_vectors_before) // 3))
+    perplexity_after = min(30, max(5, len(cls_vectors_after_cpu) // 3))
+    
+    tsne_before = TSNE(n_components=2, perplexity=perplexity_before, random_state=42)
+    tsne_after = TSNE(n_components=2, perplexity=perplexity_after, random_state=42)
+    projected_2d_before = tsne_before.fit_transform(cls_vectors_before.numpy())
+    projected_2d_after = tsne_after.fit_transform(cls_vectors_after_cpu)
+    
+    # Create figures with highlights
+    def create_plotly_figure_with_highlights(projected_2d, title, highlighted_indices=None):
+        fig = go.Figure()
+        
+        # Add scatter plot - all points in same color
+        article_indices = list(range(len(projected_2d)))
+        hover_texts = [f"Article {idx}" for idx in article_indices]
+        custom_data = [[idx] for idx in article_indices]
+        
+        fig.add_trace(go.Scatter(
+            x=projected_2d[:, 0],
+            y=projected_2d[:, 1],
+            mode='markers',
+            name="Articles",
+            marker=dict(
+                color='lightblue',
+                size=8,
+                opacity=0.6,
+                line=dict(width=0.5, color='white')
+            ),
+            customdata=custom_data,
+            hovertemplate='<b>%{hovertext}</b><br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>',
+            hovertext=hover_texts
+        ))
+        
+        # Add highlighted points if provided
+        if highlighted_indices:
+            highlighted_x = []
+            highlighted_y = []
+            highlighted_customdata = []
+            highlighted_hovertexts = []
+            
+            for idx in highlighted_indices:
+                if 0 <= idx < len(projected_2d):
+                    highlighted_x.append(projected_2d[idx, 0])
+                    highlighted_y.append(projected_2d[idx, 1])
+                    highlighted_customdata.append([idx])
+                    highlighted_hovertexts.append(f"Article {idx}")
+            
+            if highlighted_x:  # Only add trace if there are highlighted points
+                fig.add_trace(go.Scatter(
+                    x=highlighted_x,
+                    y=highlighted_y,
+                    mode='markers',
+                    name='Highlighted Articles',
+                    marker=dict(
+                        color='gold',
+                        size=12,
+                        symbol='star',
+                        line=dict(width=2, color='white')
+                    ),
+                    customdata=highlighted_customdata,
+                    hovertemplate='<b>%{hovertext}</b><br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>',
+                    hovertext=highlighted_hovertexts
+                ))
+        
+        fig.update_layout(
+            title=title,
+            xaxis_title='TSNE Dimension 1',
+            yaxis_title='TSNE Dimension 2',
+            hovermode='closest',
+            showlegend=True,
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            margin=dict(l=50, r=50, t=80, b=50)
+        )
+        
+        return fig
+    
+    # Create figures
+    fig_before = create_plotly_figure_with_highlights(projected_2d_before, "Before Training", highlighted_indices)
+    fig_after = create_plotly_figure_with_highlights(projected_2d_after, "After Training", highlighted_indices)
     
     return fig_before, fig_after
 
@@ -2063,8 +2468,39 @@ def update_keywords_2d_plot(plot_id):
             'data': [],
             'layout': {
                 'title': f'Error: {str(e)}',
-                'xaxis': {'title': 'X'},
-                'yaxis': {'title': 'Y'}
+                'xaxis': {
+                    'title': 'X',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
+                'yaxis': {
+                    'title': 'Y',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
+                'plot_bgcolor': 'white',
+                'paper_bgcolor': 'white',
+                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50},
+                'font': {'size': 12},
+                'title': {
+                    'font': {'size': 16, 'color': '#2c3e50'},
+                    'x': 0.5,
+                    'xanchor': 'center'
+                }
             }
         }
 
@@ -2133,18 +2569,71 @@ app.clientside_callback(
 
 
 # Add initial callback for documents 2D visualization
+print("🔍 DEBUG: ==========================================")
+print("🔍 DEBUG: REGISTERING CALLBACK: update_documents_2d_plot_initial")
+print("🔍 DEBUG: ==========================================")
+print("🔍 DEBUG: Output: documents-2d-plot.figure")
+print("🔍 DEBUG: Input: main-visualization-area.children")
+print("🔍 DEBUG: States: display-mode.data, training-figures.data")
+print("🔍 DEBUG: prevent_initial_call: True")
+
 @app.callback(
     Output('documents-2d-plot', 'figure'),
-    Input('documents-2d-plot', 'id'),  # Only initial load
-    State('display-mode', 'data')
+    Input('main-visualization-area', 'children'),  # Trigger when layout changes
+    [State('display-mode', 'data'),
+     State('training-figures', 'data')],  # Add training-figures to check if we're in training mode
+    prevent_initial_call=True
 )
-def update_documents_2d_plot_initial(plot_id, display_mode):
+def update_documents_2d_plot_initial(layout_children, display_mode, training_figures):
     """Initial load of documents 2D visualization - show all documents"""
     global df
     
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: update_documents_2d_plot_initial CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   layout_children type: {type(layout_children)}")
+    print(f"🔍 DEBUG:   layout_children length: {len(layout_children) if layout_children else 'None'}")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG:   training_figures: {training_figures}")
+    print(f"🔍 DEBUG: 🔍 PARAMETER TYPES:")
+    print(f"🔍 DEBUG:   display_mode type: {type(display_mode)}")
+    print(f"🔍 DEBUG:   training_figures type: {type(training_figures)}")
+    
+    print(f"🔍 DEBUG: 🔍 SAFETY CHECKS:")
+    
     # Only process if we're in keywords mode
     if display_mode != "keywords":
+        print(f"🔍 DEBUG: ❌ NOT IN KEYWORDS MODE:")
+        print(f"🔍 DEBUG:   display_mode '{display_mode}' != 'keywords'")
+        print(f"🔍 DEBUG:   Preventing update")
         raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ KEYWORDS MODE CONFIRMED")
+    
+    # Additional safety check: ensure we're not in training mode
+    # This prevents any accidental updates when the component doesn't exist
+    if display_mode == "training":
+        print(f"🔍 DEBUG: ❌ TRAINING MODE DETECTED:")
+        print(f"🔍 DEBUG:   This should prevent the 'nonexistent object' error")
+        print(f"🔍 DEBUG:   Preventing update")
+        raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ NOT IN TRAINING MODE")
+    
+    # Extra safety: check if we're in any mode other than keywords
+    # This catches any edge cases where display_mode might be None or unexpected values
+    if display_mode is None or display_mode not in ["keywords"]:
+        print(f"🔍 DEBUG: ❌ UNEXPECTED DISPLAY MODE:")
+        print(f"🔍 DEBUG:   display_mode: {display_mode}")
+        print(f"🔍 DEBUG:   display_mode is None: {display_mode is None}")
+        print(f"🔍 DEBUG:   display_mode not in ['keywords']: {display_mode not in ['keywords']}")
+        print(f"🔍 DEBUG:   Preventing update")
+        raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ ALL SAFETY CHECKS PASSED")
+    print(f"🔍 DEBUG: 🔍 Proceeding with documents 2D visualization...")
     
     if 'df' not in globals():
         return {
@@ -2161,13 +2650,20 @@ def update_documents_2d_plot_initial(plot_id, display_mode):
         print("🔍 Initial documents 2D visualization calculation...")
         all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
         
+        # Truncate long texts to prevent token length issues
+        print("🔍 Truncating long texts to fit within model limits...")
+        truncated_articles = [truncate_text_for_model(text, max_length=500) for text in all_articles_text]
+        
         # Calculate embeddings in batches
         batch_size = 32
         all_embeddings = []
         
-        for i in range(0, len(all_articles_text), batch_size):
-            batch_texts = all_articles_text[i:i + batch_size]
-            batch_embeddings = embedding_model_kw.encode(batch_texts, convert_to_tensor=True).to(device).cpu().numpy()
+        for i in range(0, len(truncated_articles), batch_size):
+            batch_texts = truncated_articles[i:i + batch_size]
+            print(f"🔍 Processing batch {i//batch_size + 1}/{(len(truncated_articles) + batch_size - 1)//batch_size}")
+            
+            # Use safe encoding function with better error handling
+            batch_embeddings = safe_encode_batch(batch_texts, embedding_model_kw, device)
             all_embeddings.extend(batch_embeddings)
         
         document_embeddings = np.array(all_embeddings)
@@ -2201,13 +2697,48 @@ def update_documents_2d_plot_initial(plot_id, display_mode):
             'data': traces,
             'layout': {
                 'title': 'Documents 2D Visualization - All Documents',
-                'xaxis': {'title': 'TSNE Dimension 1'},
-                'yaxis': {'title': 'TSNE Dimension 2'},
+                'xaxis': {
+                    'title': 'TSNE Dimension 1',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
+                'yaxis': {
+                    'title': 'TSNE Dimension 2',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
                 'hovermode': 'closest',
                 'showlegend': True,
+                'legend': {
+                    'x': 0.02,
+                    'y': 0.98,
+                    'bgcolor': 'rgba(255, 255, 255, 0.8)',
+                    'bordercolor': '#2c3e50',
+                    'borderwidth': 1
+                },
                 'plot_bgcolor': 'white',
                 'paper_bgcolor': 'white',
-                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50}
+                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50},
+                'font': {'size': 12},
+                'title': {
+                    'font': {'size': 16, 'color': '#2c3e50'},
+                    'x': 0.5,
+                    'xanchor': 'center'
+                }
             }
         }
         
@@ -2220,28 +2751,117 @@ def update_documents_2d_plot_initial(plot_id, display_mode):
             'data': [],
             'layout': {
                 'title': f'Error: {str(e)}',
-                'xaxis': {'title': 'X'},
-                'yaxis': {'title': 'Y'}
+                'xaxis': {
+                    'title': 'X',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
+                'yaxis': {
+                    'title': 'Y',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
+                'plot_bgcolor': 'white',
+                'paper_bgcolor': 'white',
+                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50},
+                'font': {'size': 12},
+                'title': {
+                    'font': {'size': 16, 'color': '#2c3e50'},
+                    'x': 0.5,
+                    'xanchor': 'center'
+                }
             }
         }
 
+print("🔍 DEBUG: ==========================================")
+print("🔍 DEBUG: REGISTERING CALLBACK: update_documents_2d_plot")
+print("🔍 DEBUG: ==========================================")
+print("🔍 DEBUG: Outputs: documents-2d-plot.figure, highlighted-indices.data")
+print("🔍 DEBUG: Inputs: selected-keyword.data, selected-group.data, selected-article.data")
+print("🔍 DEBUG: States: group-order.data, display-mode.data")
+print("🔍 DEBUG: allow_duplicate: True (for documents-2d-plot.figure)")
+print("🔍 DEBUG: prevent_initial_call: True")
+print("🔍 DEBUG: ⚠️  WARNING: This callback outputs to documents-2d-plot")
+print("🔍 DEBUG: ⚠️  WARNING: This callback should NEVER run in training mode")
+
 @app.callback(
     [Output('documents-2d-plot', 'figure', allow_duplicate=True),
-     Output('highlighted-indices', 'data')],
+     Output('highlighted-indices', 'data', allow_duplicate=True)],
     [Input('selected-keyword', 'data'),
      Input('selected-group', 'data'),  # Also update when group is selected
-     Input('selected-article', 'data')],  # Also update when article is selected
+     Input('selected-article', 'data')],  # Keep as Input for keywords mode highlighting
     State('group-order', 'data'),  # Add group_order as State parameter
     State('display-mode', 'data'),
     prevent_initial_call=True
 )
-def update_documents_2d_plot(selected_keyword, selected_group, selected_article, display_mode, group_order):
+def update_documents_2d_plot(selected_keyword, selected_group, selected_article, group_order, display_mode):
     """Update documents 2D visualization chart"""
     global df, _DOCUMENTS_2D_CACHE
     
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: update_documents_2d_plot CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG:   selected_keyword: {selected_keyword}")
+    print(f"🔍 DEBUG:   selected_group: {selected_group}")
+    print(f"🔍 DEBUG:   selected_article: {selected_article}")
+    print(f"🔍 DEBUG:   group_order: {group_order}")
+    print(f"🔍 DEBUG: 🔍 PARAMETER TYPES:")
+    print(f"🔍 DEBUG:   display_mode type: {type(display_mode)}")
+    print(f"🔍 DEBUG:   selected_keyword type: {type(selected_keyword)}")
+    print(f"🔍 DEBUG:   selected_group type: {type(selected_group)}")
+    print(f"🔍 DEBUG:   selected_article type: {type(selected_article)}")
+    
+    print(f"🔍 DEBUG: 🔍 SAFETY CHECKS:")
+    
     # Only process if we're in keywords mode
     if display_mode != "keywords":
+        print(f"🔍 DEBUG: ❌ NOT IN KEYWORDS MODE:")
+        print(f"🔍 DEBUG:   display_mode '{display_mode}' != 'keywords'")
+        print(f"🔍 DEBUG:   Preventing update")
         raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ KEYWORDS MODE CONFIRMED")
+    
+    # Additional safety check: ensure we're not in training mode
+    # This prevents any accidental updates when the component doesn't exist
+    if display_mode == "training":
+        print(f"🔍 DEBUG: ❌ TRAINING MODE DETECTED:")
+        print(f"🔍 DEBUG:   This should prevent the 'nonexistent object' error")
+        print(f"🔍 DEBUG:   Preventing update")
+        print(f"🔍 DEBUG:   This callback should NEVER run in training mode")
+        raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ NOT IN TRAINING MODE")
+    
+    # Extra safety: check if we're in any mode other than keywords
+    # This catches any edge cases where display_mode might be None or unexpected values
+    if display_mode is None or display_mode not in ["keywords"]:
+        print(f"🔍 DEBUG: ❌ UNEXPECTED DISPLAY MODE:")
+        print(f"🔍 DEBUG:   display_mode: {display_mode}")
+        print(f"🔍 DEBUG:   display_mode is None: {display_mode is None}")
+        print(f"🔍 DEBUG:   display_mode not in ['keywords']: {display_mode not in ['keywords']}")
+        print(f"🔍 DEBUG:   Preventing update")
+        raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ ALL SAFETY CHECKS PASSED")
+    print(f"🔍 DEBUG: 🔍 Proceeding with documents 2D plot update...")
     
     print(f"🔍 update_documents_2d_plot called with:")
     print(f"  selected_keyword: {selected_keyword}")
@@ -2264,23 +2884,30 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
     cache_key = None
     if selected_keyword:
         cache_key = f"docs_keyword:{selected_keyword}"
+        print(f"🔍 DEBUG: Created cache key for keyword: {cache_key}")
     elif selected_group and group_order:
         # For groups, create cache key based on group keywords
         for group_name, keywords in group_order.items():
             if group_name == selected_group:
                 # Sort keywords for consistent cache key
                 cache_key = f"docs_group:{group_name}:{':'.join(sorted(keywords))}"
+                print(f"🔍 DEBUG: Created cache key for group: {cache_key}")
                 break
     else:
         cache_key = "docs_default"
+        print(f"🔍 DEBUG: Using default cache key: {cache_key}")
     
     # Add selected article to cache key
     if selected_article is not None:
         cache_key = f"{cache_key}_article:{selected_article}"
+        print(f"🔍 DEBUG: Added article to cache key: {cache_key}")
+    
+    print(f"🔍 DEBUG: Final cache key: {cache_key}")
+    print(f"🔍 DEBUG: Cache contains key: {cache_key in _DOCUMENTS_2D_CACHE}")
     
     # Check cache first
     if cache_key and cache_key in _DOCUMENTS_2D_CACHE:
-        print(f"Using cached documents 2D plot for: {cache_key}")
+        print(f"🔍 DEBUG: Using cached documents 2D plot for: {cache_key}")
         cached_fig = _DOCUMENTS_2D_CACHE[cache_key]
         # For cached results, we need to extract highlighted indices
         highlighted_indices = []
@@ -2296,7 +2923,10 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                                     highlighted_indices.append(data[0])
             except:
                 pass
+        print(f"🔍 DEBUG: Returning cached result with {len(highlighted_indices)} highlighted indices")
         return cached_fig, highlighted_indices
+    else:
+        print(f"🔍 DEBUG: Cache miss for key: {cache_key}")
     
     try:
         # Calculate document embeddings
@@ -2305,13 +2935,20 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
         print(f"🔍 Number of articles: {len(all_articles_text)}")
         
+        # Truncate long texts to prevent token length issues
+        print("🔍 Truncating long texts to fit within model limits...")
+        truncated_articles = [truncate_text_for_model(text, max_length=500) for text in all_articles_text]
+        
         # Calculate embeddings in batches
         batch_size = 32
         all_embeddings = []
         
-        for i in range(0, len(all_articles_text), batch_size):
-            batch_texts = all_articles_text[i:i + batch_size]
-            batch_embeddings = embedding_model_kw.encode(batch_texts, convert_to_tensor=True).to(device).cpu().numpy()
+        for i in range(0, len(truncated_articles), batch_size):
+            batch_texts = truncated_articles[i:i + batch_size]
+            print(f"🔍 Processing batch {i//batch_size + 1} for documents 2D visualization")
+            
+            # Use safe encoding function with better error handling
+            batch_embeddings = safe_encode_batch(batch_texts, embedding_model_kw, device)
             all_embeddings.extend(batch_embeddings)
         
         document_embeddings = np.array(all_embeddings)
@@ -2384,7 +3021,7 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         all_highlighted = np.logical_or(np.array(highlight_mask), np.array(selected_article_mask))
         other_indices = np.where(~all_highlighted)[0]
         
-        # Add trace for keyword/group highlighted documents
+                # Add trace for keyword/group highlighted documents
         if len(keyword_group_indices) > 0:
             traces.append({
                 'x': [document_2d[i][0] for i in keyword_group_indices],
@@ -2479,13 +3116,48 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             'data': traces,
             'layout': {
                 'title': title,
-                'xaxis': {'title': 'TSNE Dimension 1'},
-                'yaxis': {'title': 'TSNE Dimension 2'},
+                'xaxis': {
+                    'title': 'TSNE Dimension 1',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
+                'yaxis': {
+                    'title': 'TSNE Dimension 2',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
                 'hovermode': 'closest',
                 'showlegend': True,
+                'legend': {
+                    'x': 0.02,
+                    'y': 0.98,
+                    'bgcolor': 'rgba(255, 255, 255, 0.8)',
+                    'bordercolor': '#2c3e50',
+                    'borderwidth': 1
+                },
                 'plot_bgcolor': 'white',
                 'paper_bgcolor': 'white',
-                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50}
+                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50},
+                'font': {'size': 12},
+                'title': {
+                    'font': {'size': 16, 'color': '#2c3e50'},
+                    'x': 0.5,
+                    'xanchor': 'center'
+                }
             }
         }
         
@@ -2519,8 +3191,39 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             'data': [],
             'layout': {
                 'title': f'Error: {str(e)}',
-                'xaxis': {'title': 'X'},
-                'yaxis': {'title': 'Y'}
+                'xaxis': {
+                    'title': 'X',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
+                'yaxis': {
+                    'title': 'Y',
+                    'showgrid': True,
+                    'gridcolor': '#e1e5e9',
+                    'showline': True,
+                    'linecolor': '#2c3e50',
+                    'linewidth': 1,
+                    'mirror': True,
+                    'zeroline': True,
+                    'zerolinecolor': '#2c3e50',
+                    'zerolinewidth': 1
+                },
+                'plot_bgcolor': 'white',
+                'paper_bgcolor': 'white',
+                'margin': {'l': 50, 'r': 50, 't': 80, 'b': 50},
+                'font': {'size': 12},
+                'title': {
+                    'font': {'size': 16, 'color': '#2c3e50'},
+                    'x': 0.5,
+                    'xanchor': 'center'
+                }
             }
         }, []
 
@@ -2528,15 +3231,23 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
     [Output("group-data", "data", allow_duplicate=True),
      Output("selected-keyword", "data", allow_duplicate=True)],
     Input("keywords-2d-plot", "clickData"),
-    State("selected-group", "data"),
-    State("group-data", "data"),
+    [State("selected-group", "data"),
+     State("group-data", "data"),
+     State("display-mode", "data")],
     prevent_initial_call=True
 )
-def handle_plot_click(click_data, selected_group, group_data):
+def handle_plot_click(click_data, selected_group, group_data, display_mode):
     """Handle chart click events, select keyword for highlighting documents"""
-    print(f"handle_plot_click called")
+    print(f"🔍 DEBUG: handle_plot_click called")
+    print(f"🔍 DEBUG: click_data: {click_data}")
+    print(f"🔍 DEBUG: selected_group: {selected_group}")
+    print(f"🔍 DEBUG: display_mode: {display_mode}")
+    print(f"🔍 DEBUG: click_data type: {type(click_data)}")
+    print(f"🔍 DEBUG: selected_group type: {type(selected_group)}")
+    print(f"🔍 DEBUG: display_mode type: {type(display_mode)}")
+    
     if not click_data:
-        print(f"handle_plot_click exit: no click_data")
+        print(f"🔍 DEBUG: handle_plot_click exit: no click_data")
         raise PreventUpdate
     
     try:
@@ -2555,11 +3266,23 @@ def handle_plot_click(click_data, selected_group, group_data):
             else:
                 print(f"Added keyword '{clicked_keyword}' to group '{selected_group}'")
             new_data[clicked_keyword] = selected_group
-            return new_data, clicked_keyword  # Return both group data and selected keyword
+            
+            # In training mode, don't update selected-keyword to avoid triggering documents-2d-plot
+            if display_mode == "training":
+                print(f"🔍 Training mode: not updating selected-keyword to avoid documents-2d-plot error")
+                return new_data, dash.no_update
+            else:
+                return new_data, clicked_keyword  # Return both group data and selected keyword
         else:
             # No group selected, just select the keyword for highlighting
             print(f"Selected keyword for highlighting: {clicked_keyword}")
-            return group_data, clicked_keyword
+            
+            # In training mode, don't update selected-keyword to avoid triggering documents-2d-plot
+            if display_mode == "training":
+                print(f"🔍 Training mode: not updating selected-keyword to avoid documents-2d-plot error")
+                return group_data, dash.no_update
+            else:
+                return group_data, clicked_keyword
         
     except Exception as e:
         print(f"Error handling plot click: {e}")
@@ -2654,6 +3377,25 @@ def handle_train_button(n_clicks, group_order):
         fig_before, fig_after = run_training()
         print("Training completed successfully!")
         
+        # DEBUG: 直接检查训练图像的内容
+        print(f"🔍 DEBUG: fig_before type: {type(fig_before)}")
+        print(f"🔍 DEBUG: fig_after type: {type(fig_after)}")
+        if hasattr(fig_before, 'data') and fig_before.data:
+            print(f"🔍 DEBUG: fig_before.data length: {len(fig_before.data)}")
+            if len(fig_before.data) > 0:
+                first_trace = fig_before.data[0]
+                print(f"🔍 DEBUG: fig_before first trace x length: {len(first_trace.x) if hasattr(first_trace, 'x') else 'No x'}")
+                print(f"🔍 DEBUG: fig_before first trace y length: {len(first_trace.y) if hasattr(first_trace, 'y') else 'No y'}")
+                print(f"🔍 DEBUG: fig_before first trace customdata length: {len(first_trace.customdata) if hasattr(first_trace, 'customdata') else 'No customdata'}")
+        
+        if hasattr(fig_after, 'data') and fig_after.data:
+            print(f"🔍 DEBUG: fig_after.data length: {len(fig_after.data)}")
+            if len(fig_after.data) > 0:
+                first_trace = fig_after.data[0]
+                print(f"🔍 DEBUG: fig_after first trace x length: {len(first_trace.x) if hasattr(first_trace, 'x') else 'No x'}")
+                print(f"🔍 DEBUG: fig_after first trace y length: {len(first_trace.y) if hasattr(first_trace, 'y') else 'No y'}")
+                print(f"🔍 DEBUG: fig_after first trace customdata length: {len(first_trace.customdata) if hasattr(first_trace, 'customdata') else 'No customdata'}")
+        
         # Training completed successfully - reset button to normal state
         completed_style = {
             "margin-top": "20px",
@@ -2682,7 +3424,82 @@ def handle_train_button(n_clicks, group_order):
             "display": "block"  # Show the switch button
         }
         
-        return "Training Complete", completed_style, False, switch_button_style, "training", {"before": fig_before, "after": fig_after}
+        # Manually build complete dictionaries to ensure all data is preserved
+        print(f"🔍 DEBUG: Manually building complete dictionaries")
+        
+        # Build fig_before_dict manually
+        fig_before_dict = {
+            'data': [],
+            'layout': fig_before.layout.to_dict() if hasattr(fig_before.layout, 'to_dict') else {}
+        }
+        
+        for trace in fig_before.data:
+            # Safely convert marker to dict
+            try:
+                marker_dict = trace.marker.to_dict() if hasattr(trace.marker, 'to_dict') else {}
+            except:
+                marker_dict = {}
+            
+            trace_dict = {
+                'x': trace.x.tolist() if hasattr(trace.x, 'tolist') else list(trace.x),
+                'y': trace.y.tolist() if hasattr(trace.y, 'tolist') else list(trace.y),
+                'mode': trace.mode,
+                'type': trace.type,
+                'name': trace.name,
+                'marker': marker_dict,
+                'text': trace.text.tolist() if hasattr(trace.text, 'tolist') and trace.text is not None else ([] if trace.text is None else list(trace.text)),
+                'customdata': trace.customdata.tolist() if hasattr(trace.customdata, 'tolist') and trace.customdata is not None else ([] if trace.customdata is None else list(trace.customdata)),
+                'hovertemplate': trace.hovertemplate
+            }
+            fig_before_dict['data'].append(trace_dict)
+        
+        # Build fig_after_dict manually
+        fig_after_dict = {
+            'data': [],
+            'layout': fig_after.layout.to_dict() if hasattr(fig_after.layout, 'to_dict') else {}
+        }
+        
+        for trace in fig_after.data:
+            # Safely convert marker to dict
+            try:
+                marker_dict = trace.marker.to_dict() if hasattr(trace.marker, 'to_dict') else {}
+            except:
+                marker_dict = {}
+            
+            trace_dict = {
+                'x': trace.x.tolist() if hasattr(trace.x, 'tolist') else list(trace.x),
+                'y': trace.y.tolist() if hasattr(trace.y, 'tolist') else list(trace.y),
+                'mode': trace.mode,
+                'type': trace.type,
+                'name': trace.name,
+                'marker': marker_dict,
+                'text': trace.text.tolist() if hasattr(trace.text, 'tolist') and trace.text is not None else ([] if trace.text is None else list(trace.text)),
+                'customdata': trace.customdata.tolist() if hasattr(trace.customdata, 'tolist') and trace.customdata is not None else ([] if trace.customdata is None else list(trace.customdata)),
+                'hovertemplate': trace.hovertemplate
+            }
+            fig_after_dict['data'].append(trace_dict)
+        
+        print(f"🔍 DEBUG: Manually built fig_before_dict type: {type(fig_before_dict)}")
+        print(f"🔍 DEBUG: Manually built fig_after_dict type: {type(fig_after_dict)}")
+        
+        # DEBUG: 检查手动构建的字典内容
+        if isinstance(fig_before_dict, dict) and 'data' in fig_before_dict:
+            print(f"🔍 DEBUG: fig_before_dict data length: {len(fig_before_dict['data'])}")
+            if len(fig_before_dict['data']) > 0:
+                first_trace = fig_before_dict['data'][0]
+                print(f"🔍 DEBUG: fig_before_dict first trace x length: {len(first_trace.get('x', []))}")
+                print(f"🔍 DEBUG: fig_before_dict first trace y length: {len(first_trace.get('y', []))}")
+                print(f"🔍 DEBUG: fig_before_dict first trace customdata length: {len(first_trace.get('customdata', []))}")
+        
+        if isinstance(fig_after_dict, dict) and 'data' in fig_after_dict:
+            print(f"🔍 DEBUG: fig_after_dict data length: {len(fig_after_dict['data'])}")
+            if len(fig_after_dict['data']) > 0:
+                first_trace = fig_after_dict['data'][0]
+                print(f"🔍 DEBUG: fig_after_dict first trace x length: {len(first_trace.get('x', []))}")
+                print(f"🔍 DEBUG: fig_after_dict first trace y length: {len(first_trace.get('y', []))}")
+                print(f"🔍 DEBUG: fig_after_dict first trace customdata length: {len(first_trace.get('customdata', []))}")
+        
+        return "Training Complete", completed_style, False, switch_button_style, "training", {"before": fig_before_dict, "after": fig_after_dict}
         
     except Exception as e:
         print(f"Training failed with error: {e}")
@@ -2756,80 +3573,11 @@ def update_train_button_immediately(n_clicks):
 
 
 
-@app.callback(
-    [Output("article-fulltext-container", "children"),
-     Output("selected-article", "data")],
-    [Input("documents-2d-plot", "clickData"),
-     Input({"type": "article-item", "index": ALL}, "n_clicks"),
-     Input("display-mode", "data")],
-    prevent_initial_call=True
-)
-def display_article_content_fulltext(click_data_docs, article_clicks, display_mode):
-    """Display article content when clicking on documents 2D plot or recommended articles"""
-    ctx = dash.callback_context
-    
-    # Only process if we're in keywords mode (documents-2d-plot exists)
-    if display_mode != "keywords":
-        raise PreventUpdate
-    
-    if not ctx.triggered:
-        raise PreventUpdate
-    
-    # Determine which plot was clicked or if it's an article click
-    click_data = None
-    article_index = None
-    
-    if ctx.triggered[0]['prop_id'] == 'documents-2d-plot.clickData':
-        click_data = click_data_docs
-    elif 'article-item' in ctx.triggered[0]['prop_id']:
-        # Handle article item clicks from recommended articles
-        try:
-            import json
-            triggered_id = ctx.triggered[0]['prop_id']
-            btn_info = json.loads(triggered_id.split('.')[0])
-            article_index = btn_info.get("index")
-            print(f"Article item clicked, index: {article_index}")
-        except Exception as e:
-            print(f"Error parsing article item click: {e}")
-            raise PreventUpdate
-    
-    if not click_data and article_index is None:
-        raise PreventUpdate
-    
-    try:
-        # Get article index from click data or use the parsed article_index
-        if click_data and article_index is None:
-            article_index = click_data['points'][0]['customdata'][0]
-        
-        # Load article content
-        global df
-        if 'df' not in globals():
-            df = pd.read_csv(csv_path)
-        
-        if article_index is not None and article_index < len(df):
-            article_text = str(df.iloc[article_index, 1])
-            article_label = str(df.iloc[article_index, 0])
-            
-            content = html.Div([
-                html.H5(f"Article {article_index + 1} (Label: {article_label})", 
-                       style={"color": "#2c3e50", "marginBottom": "10px"}),
-                html.P(article_text, style={
-                    "lineHeight": "1.6", 
-                    "textAlign": "justify",
-                    "fontSize": "14px",
-                    "color": "#333"
-                })
-            ])
-            
-            return content, article_index
-        else:
-            return html.P("Article not found", style={"color": "red"}), None
-    
-    except Exception as e:
-        return html.P(f"Error loading article: {str(e)}", style={"color": "red"}), None
+
 
 @app.callback(
-    Output("article-fulltext-container", "children", allow_duplicate=True),
+    [Output("article-fulltext-container", "children", allow_duplicate=True),
+     Output("highlighted-indices", "data", allow_duplicate=True)],
     [Input("plot-before", "clickData"),
      Input("plot-after", "clickData")],
     prevent_initial_call=True
@@ -2864,7 +3612,7 @@ def display_article_content_training(click_data_before, click_data_after):
             article_text = str(df.iloc[article_index, 1])
             article_label = str(df.iloc[article_index, 0])
             
-            return html.Div([
+            content = html.Div([
                 html.H5(f"Article {article_index + 1} (Label: {article_label})", 
                        style={"color": "#2c3e50", "marginBottom": "10px"}),
                 html.P(article_text, style={
@@ -2874,11 +3622,15 @@ def display_article_content_training(click_data_before, click_data_after):
                     "color": "#333"
                 })
             ])
+            
+            # Return both content and article index for training mode highlighting
+            # In training mode, we add the clicked article to highlighted indices for special highlighting
+            return content, [article_index]
         else:
-            return html.P("Article not found", style={"color": "red"})
+            return html.P("Article not found", style={"color": "red"}), []
     
     except Exception as e:
-        return html.P(f"Error loading article: {str(e)}", style={"color": "red"})
+        return html.P(f"Error loading article: {str(e)}", style={"color": "red"}), []
 
 @app.callback(
     [Output("display-mode", "data", allow_duplicate=True),
@@ -2903,23 +3655,90 @@ def switch_display_mode(n_clicks, current_mode):
     return new_mode, button_text
 
 @app.callback(
-    Output("main-visualization-area", "children"),
+    [Output("main-visualization-area", "children"),
+     Output("training-group-management-area", "style"),
+     Output("keywords-group-management-area", "style")],
     [Input("display-mode", "data"),
      Input("training-figures", "data")],
     prevent_initial_call=True
 )
 def update_main_visualization_area(display_mode, training_figures):
     """Dynamically update the main visualization area based on display mode"""
-    print(f"🔍 update_main_visualization_area called:")
-    print(f"  display_mode: {display_mode}")
-    print(f"  training_figures: {training_figures is not None}")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: update_main_visualization_area CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG:   display_mode type: {type(display_mode)}")
+    print(f"🔍 DEBUG:   training_figures: {training_figures is not None}")
+    print(f"🔍 DEBUG:   training_figures type: {type(training_figures)}")
+    if training_figures:
+        print(f"🔍 DEBUG:   training_figures keys: {list(training_figures.keys()) if isinstance(training_figures, dict) else 'not dict'}")
     
-    if display_mode == "training" and training_figures:
-        # Show training plots
-        fig_before = training_figures.get("before", {})
-        fig_after = training_figures.get("after", {})
+    print(f"🔍 DEBUG: 🔍 CALLBACK LOGIC:")
+    print(f"🔍 DEBUG:   About to check if display_mode == 'training'")
+    print(f"🔍 DEBUG:   display_mode == 'training': {display_mode == 'training'}")
+    print(f"🔍 DEBUG:   display_mode == 'keywords': {display_mode == 'keywords'}")
+    
+    if display_mode == "training":
+        print(f"🔍 DEBUG: ✅ ENTERING TRAINING MODE LAYOUT")
+        print(f"🔍 DEBUG:   Will return training plots and hide keywords panels")
+        print(f"🔍 DEBUG:   training_group_style will be: {{'display': 'flex', 'marginBottom': '30px'}}")
+        print(f"🔍 DEBUG:   keywords_group_style will be: {{'display': 'none', 'marginBottom': '30px'}}")
+        # Show training plots and show training group management area
+        if training_figures:
+            fig_before = training_figures.get("before", {})
+            fig_after = training_figures.get("after", {})
+            print(f"🔍 Using existing training figures")
+        else:
+            print(f"🔍 No training figures available, using placeholders")
+            # Show placeholder figures when no training data is available
+            fig_before = {
+                'data': [],
+                'layout': {
+                    'title': 'Before Training - No Data Available',
+                    'xaxis': {'title': 'X'},
+                    'yaxis': {'title': 'Y'},
+                    'annotations': [{
+                        'text': 'Please run training first to see results',
+                        'x': 0.5,
+                        'y': 0.5,
+                        'xref': 'paper',
+                        'yref': 'paper',
+                        'showarrow': False,
+                        'font': {'size': 16, 'color': '#666'}
+                    }]
+                }
+            }
+            fig_after = {
+                'data': [],
+                'layout': {
+                    'title': 'After Training - No Data Available',
+                    'xaxis': {'title': 'X'},
+                    'yaxis': {'title': 'Y'},
+                    'annotations': [{
+                        'text': 'Please run training first to see results',
+                        'x': 0.5,
+                        'y': 0.5,
+                        'xref': 'paper',
+                        'yref': 'paper',
+                        'showarrow': False,
+                        'font': {'size': 16, 'color': '#666'}
+                    }]
+                }
+            }
         
-
+        # Show training group management area
+        training_group_style = {'display': 'flex', 'marginBottom': '30px'}
+        
+        # Force trigger training mode callbacks by updating their inputs
+        # This ensures the training interfaces are populated when switching to training mode
+        
+        print(f"🔍 DEBUG: 🔍 RETURNING TRAINING MODE LAYOUT:")
+        print(f"🔍 DEBUG:   - main-visualization-area: training plots")
+        print(f"🔍 DEBUG:   - training-group-management-area: {{'display': 'flex'}}")
+        print(f"🔍 DEBUG:   - keywords-group-management-area: {{'display': 'none'}}")
         
         return [
             # Left: Before Training
@@ -2981,102 +3800,1043 @@ def update_main_visualization_area(display_mode, training_figures):
                 'padding': '20px',
                 'marginLeft': '1%'
             })
-        ]
+        ], training_group_style, {'display': 'none', 'marginBottom': '30px'}
     else:
-        # In keywords mode, don't update the main visualization area
-        # Let the individual callbacks handle the updates
-        raise PreventUpdate
+        print(f"🔍 DEBUG: ✅ ENTERING KEYWORDS MODE LAYOUT")
+        print(f"🔍 DEBUG:   Will return keywords plots and show keywords panels")
+        print(f"🔍 DEBUG:   training_group_style will be: {{'display': 'none', 'marginBottom': '30px'}}")
+        print(f"🔍 DEBUG:   keywords_group_style will be: {{'display': 'flex', 'marginBottom': '30px'}}")
+        # In keywords mode, restore the original keywords view layout and hide training group management
+        training_group_style = {'display': 'none', 'marginBottom': '30px'}
+        
+        print(f"🔍 DEBUG: 🔍 RETURNING KEYWORDS MODE LAYOUT:")
+        print(f"🔍 DEBUG:   - main-visualization-area: keywords plots")
+        print(f"🔍 DEBUG:   - training-group-management-area: {{'display': 'none'}}")
+        print(f"🔍 DEBUG:   - keywords-group-management-area: {{'display': 'flex'}}")
+        
+        return [
+            # Left: Keywords 2D Visualization
+            html.Div([
+                html.H4("Keywords 2D Visualization", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "8px",
+                    "textAlign": "center"
+                }),
+                html.P("Click on keywords to highlight related documents", style={
+                    "color": "#7f8c8d",
+                    "fontSize": "0.9rem",
+                    "textAlign": "center",
+                    "marginBottom": "15px",
+                    "fontStyle": "italic"
+                }),
+                dcc.Graph(
+                    id='keywords-2d-plot',
+                    style={'height': '700px'},
+                    config={'displayModeBar': True, 'displaylogo': False}
+                )
+            ], className="modern-card", style={
+                'width': '49%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'marginRight': '1%'
+            }),
+            
+            # Right: Documents 2D Visualization
+            html.Div([
+                html.H4("Documents 2D Visualization", style={
+                    "color": "#2c3e50",
+                    "fontSize": "1.3rem",
+                    "fontWeight": "bold",
+                    "marginBottom": "8px",
+                    "textAlign": "center"
+                }),
+                html.P("Documents highlighted by selected keyword", style={
+                    "color": "#7f8c8d",
+                    "fontSize": "0.9rem",
+                    "textAlign": "center",
+                    "marginBottom": "15px",
+                    "fontStyle": "italic"
+                }),
+                dcc.Graph(
+                    id='documents-2d-plot',
+                    style={'height': '700px'},
+                    config={'displayModeBar': True, 'displaylogo': False}
+                )
+            ], className="modern-card", style={
+                'width': '49%',
+                'display': 'inline-block',
+                'verticalAlign': 'top',
+                'padding': '20px',
+                'marginLeft': '1%'
+            })
+        ], training_group_style, {'display': 'flex', 'marginBottom': '30px'}
 
 # Add callback for training mode highlighting
 @app.callback(
     Output('highlighted-indices', 'data', allow_duplicate=True),
-    [Input('selected-keyword', 'data'),
-     Input('selected-group', 'data')],
+    [Input('training-selected-keyword', 'data'),
+     Input('training-selected-group', 'data')],
     State('group-order', 'data'),
     State('training-figures', 'data'),
     State('display-mode', 'data'),
     prevent_initial_call=True
 )
 def update_training_highlights(selected_keyword, selected_group, group_order, training_figures, display_mode):
-    """Update highlighted indices for training mode"""
+    """Update highlighted indices for training mode - following keywords mode logic"""
     global df
+    
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: update_training_highlights CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   selected_keyword: {selected_keyword}")
+    print(f"🔍 DEBUG:   selected_group: {selected_group}")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG:   group_order: {group_order}")
+    print(f"🔍 DEBUG:   training_figures: {training_figures is not None}")
     
     # Only process if we're in training mode
     if display_mode != "training":
+        print(f"🔍 DEBUG: ❌ NOT IN TRAINING MODE:")
+        print(f"🔍 DEBUG:   display_mode '{display_mode}' != 'training'")
+        print(f"🔍 DEBUG:   Preventing update")
         raise PreventUpdate
     
-    # Only process if we have data and training figures
-    if 'df' not in globals() or not training_figures:
-        return []
+    print(f"🔍 DEBUG: ✅ TRAINING MODE CONFIRMED")
     
-    try:
-        highlighted_indices = []
+    # Check if we have data
+    if 'df' not in globals() or not training_figures:
+        print(f"🔍 DEBUG: ❌ MISSING DATA OR TRAINING FIGURES:")
+        print(f"🔍 DEBUG:   df in globals: {'df' in globals()}")
+        print(f"🔍 DEBUG:   training_figures: {training_figures}")
+        print(f"🔍 DEBUG:   Returning empty")
+        return {"type": "none", "indices": []}
+    
+    print(f"🔍 DEBUG: ✅ DATA AND TRAINING FIGURES AVAILABLE")
+    
+    # Following keywords mode logic: keyword selection has priority over group selection
+    # But if no keyword is selected, then group selection should work
+    
+    if selected_keyword:
+        print(f"🔍 DEBUG: 🔍 KEYWORD SELECTION:")
+        print(f"🔍 DEBUG:   Processing keyword: {selected_keyword}")
         
-        if selected_keyword:
-            # Find documents containing the selected keyword
-            print(f"🔍 Finding documents for keyword: {selected_keyword}")
-            keyword_indices = []
-            for i, text in enumerate(df.iloc[:, 1]):
-                if selected_keyword.lower() in str(text).lower():
-                    keyword_indices.append(i)
-            highlighted_indices = keyword_indices
-            print(f"🔍 Found {len(keyword_indices)} documents for keyword '{selected_keyword}'")
+        # Find documents containing the selected keyword
+        keyword_indices = []
+        for i, text in enumerate(df.iloc[:, 1]):
+            if selected_keyword.lower() in str(text).lower():
+                keyword_indices.append(i)
+        
+        print(f"🔍 DEBUG:   Found {len(keyword_indices)} documents for keyword '{selected_keyword}'")
+        print(f"🔍 DEBUG:   Document indices: {keyword_indices}")
+        
+        return {"type": "keyword", "indices": keyword_indices, "keyword": selected_keyword}
+        
+    elif selected_group and group_order:
+        print(f"🔍 DEBUG: 🔍 GROUP SELECTION:")
+        print(f"🔍 DEBUG:   Processing group: {selected_group}")
+        
+        # Find documents containing any keyword in the selected group
+        if selected_group in group_order:
+            group_keywords = group_order[selected_group]
+            print(f"🔍 DEBUG:   Group keywords: {group_keywords}")
             
-        elif selected_group and group_order:
-            # Find documents containing any keyword in the selected group
-            print(f"🔍 Finding documents for group: {selected_group}")
-            group_keywords = group_order.get(selected_group, [])
             group_indices = []
             for i, text in enumerate(df.iloc[:, 1]):
                 text_lower = str(text).lower()
-                for keyword in group_keywords:
-                    if keyword.lower() in text_lower:
-                        group_indices.append(i)
-                        break  # Only add once per document
-            highlighted_indices = list(set(group_indices))  # Remove duplicates
-            print(f"🔍 Found {len(highlighted_indices)} documents for group '{selected_group}'")
-        
-        return highlighted_indices
-        
-    except Exception as e:
-        print(f"Error updating training highlights: {e}")
-        return []
+                # Check if any keyword from the group is in the document
+                if any(keyword.lower() in text_lower for keyword in group_keywords):
+                    group_indices.append(i)
+            
+            print(f"🔍 DEBUG:   Found {len(group_indices)} documents for group '{selected_group}'")
+            print(f"🔍 DEBUG:   Document indices: {group_indices}")
+            
+            return {"type": "group", "indices": group_indices, "group": selected_group}
+        else:
+            print(f"🔍 DEBUG:   ❌ Group '{selected_group}' not found in group_order")
+            return {"type": "group", "indices": [], "group": selected_group}
+    
+    # If neither keyword nor group is selected
+    print(f"🔍 DEBUG: 🔍 NO SELECTION:")
+    print(f"🔍 DEBUG:   No keyword or group selected, returning empty")
+    return {"type": "none", "indices": []}
 
 # Add callback for updating training plots with highlights
 @app.callback(
     [Output('plot-before', 'figure', allow_duplicate=True),
      Output('plot-after', 'figure', allow_duplicate=True)],
     [Input('highlighted-indices', 'data'),
+     Input('training-selected-article', 'data'),
      Input('display-mode', 'data')],
-    State('training-figures', 'data'),
+    [State('training-figures', 'data'),
+     State('group-order', 'data')],
     prevent_initial_call=True
 )
-def update_training_plots_with_highlights(highlighted_indices, display_mode, training_figures):
-    """Update training plots with highlighted indices"""
+def update_training_plots_with_highlights(highlighted_indices, training_selected_article, display_mode, training_figures, group_order):
+    """Update training plots with highlighted indices - following keywords mode logic"""
+    global df
+    
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: update_training_plots_with_highlights CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   highlighted_indices: {highlighted_indices}")
+    print(f"🔍 DEBUG:   training_selected_article: {training_selected_article}")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG:   training_figures: {training_figures is not None}")
+    print(f"🔍 DEBUG:   group_order: {group_order}")
     
     # Only process if we're in training mode
     if display_mode != "training":
+        print(f"🔍 DEBUG: ❌ NOT IN TRAINING MODE:")
+        print(f"🔍 DEBUG:   display_mode '{display_mode}' != 'training'")
+        print(f"🔍 DEBUG:   Preventing update")
         raise PreventUpdate
     
-    # Only process if we have training figures and highlighted indices
-    if not training_figures or not highlighted_indices or len(highlighted_indices) == 0:
-        # Return original figures
-        fig_before = training_figures.get("before", {}) if training_figures else {}
-        fig_after = training_figures.get("after", {}) if training_figures else {}
-        return fig_before, fig_after
+    print(f"🔍 DEBUG: ✅ TRAINING MODE CONFIRMED")
+    
+    # Check if we have training figures
+    if not training_figures:
+        print(f"🔍 DEBUG: ❌ NO TRAINING FIGURES:")
+        print(f"🔍 DEBUG:   Returning empty figures")
+        return {}, {}
+    
+    print(f"🔍 DEBUG: ✅ TRAINING FIGURES AVAILABLE")
+    
+    # Get original training figures
+    fig_before = training_figures.get("before", {})
+    fig_after = training_figures.get("after", {})
+    
+    # Initialize highlight variables
+    keyword_group_highlights = []
+    selected_article_highlight = None
+    
+    # Process highlights following keywords mode logic
+    if isinstance(highlighted_indices, dict) and 'type' in highlighted_indices:
+        highlight_type = highlighted_indices.get('type')
+        highlight_indices = highlighted_indices.get('indices', [])
+        
+        print(f"🔍 DEBUG: 🔍 PROCESSING HIGHLIGHTS:")
+        print(f"🔍 DEBUG:   Highlight type: {highlight_type}")
+        print(f"🔍 DEBUG:   Highlight indices: {highlight_indices}")
+        
+        if highlight_type == "group":
+            # Group highlights - show all documents in the group
+            keyword_group_highlights = highlight_indices
+            print(f"🔍 DEBUG:   Group highlights: {keyword_group_highlights}")
+            
+        elif highlight_type == "keyword":
+            # Keyword highlights - show only documents with this keyword
+            keyword_group_highlights = highlight_indices
+            print(f"🔍 DEBUG:   Keyword highlights: {keyword_group_highlights}")
+            
+        elif highlight_type == "none":
+            # No highlights
+            keyword_group_highlights = []
+            print(f"🔍 DEBUG:   No highlights")
+    
+    # Process article selection (can coexist with group/keyword highlights)
+    if training_selected_article is not None and training_selected_article < len(df):
+        selected_article_highlight = training_selected_article
+        print(f"🔍 DEBUG: 🔍 ARTICLE SELECTION:")
+        print(f"🔍 DEBUG:   Selected article: {training_selected_article}")
+        
+        # If we have group/keyword highlights, check if this article is part of them
+        if keyword_group_highlights and training_selected_article not in keyword_group_highlights:
+            print(f"🔍 DEBUG:   Article {training_selected_article} is NOT in current highlights")
+            print(f"🔍 DEBUG:   This will show both highlights and article")
+        elif keyword_group_highlights and training_selected_article in keyword_group_highlights:
+            print(f"🔍 DEBUG:   Article {training_selected_article} IS in current highlights")
+            print(f"🔍 DEBUG:   This will show highlights with article highlighted")
+        else:
+            print(f"🔍 DEBUG:   No current highlights, only showing article")
+    
+    print(f"🔍 DEBUG: 🔍 FINAL HIGHLIGHT STATE:")
+    print(f"🔍 DEBUG:   Keyword/Group highlights: {keyword_group_highlights}")
+    print(f"🔍 DEBUG:   Selected article highlight: {selected_article_highlight}")
+    
+    # Apply highlights to both plots
+    updated_fig_before = apply_highlights_to_training_plot(fig_before, keyword_group_highlights, selected_article_highlight, "before")
+    updated_fig_after = apply_highlights_to_training_plot(fig_after, keyword_group_highlights, selected_article_highlight, "after")
+    
+    return updated_fig_before, updated_fig_after
+
+def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_article_highlight, plot_name):
+    """Apply highlights to a training plot following keywords mode logic"""
+    if not fig or 'data' not in fig:
+        return fig
+    
+    print(f"🔍 DEBUG: 🔍 APPLYING HIGHLIGHTS TO {plot_name.upper()} PLOT:")
+    print(f"🔍 DEBUG:   Keyword/Group highlights: {keyword_group_highlights}")
+    print(f"🔍 DEBUG:   Selected article: {selected_article_highlight}")
+    
+    # Create a copy of the figure
+    updated_fig = fig.copy()
+    
+    # Get the main trace (assuming it's the first one)
+    if not updated_fig['data']:
+        return updated_fig
+    
+    main_trace = updated_fig['data'][0]
+    
+    # Create highlight traces
+    traces = []
+    
+    # Add main trace (all points in default style)
+    traces.append(main_trace)
+    
+    # Add keyword/group highlight trace (gold stars)
+    if keyword_group_highlights:
+        highlight_x = [main_trace['x'][i] for i in keyword_group_highlights if i < len(main_trace['x'])]
+        highlight_y = [main_trace['y'][i] for i in keyword_group_highlights if i < len(main_trace['y'])]
+        
+        if highlight_x and highlight_y:
+            traces.append({
+                'x': highlight_x,
+                'y': highlight_y,
+                'mode': 'markers',
+                'type': 'scatter',
+                'name': 'Keyword/Group matches',
+                'marker': {
+                    'size': 15,
+                    'color': '#FFD700',  # Gold color
+                    'symbol': 'star',
+                    'line': {'width': 2, 'color': 'black'}
+                },
+                'text': [f'Doc {i+1}' for i in keyword_group_highlights if i < len(main_trace['x'])],
+                'customdata': [[i] for i in keyword_group_highlights if i < len(main_trace['x'])],
+                'hovertemplate': '<b>%{text}</b><extra></extra>'
+            })
+            print(f"🔍 DEBUG:   Added keyword/group highlight trace with {len(highlight_x)} points")
+    
+    # Add selected article highlight trace (red star, highest priority)
+    if selected_article_highlight is not None and selected_article_highlight < len(main_trace['x']):
+        article_x = [main_trace['x'][selected_article_highlight]]
+        article_y = [main_trace['y'][selected_article_highlight]]
+        
+        traces.append({
+            'x': article_x,
+            'y': article_y,
+            'mode': 'markers',
+            'type': 'scatter',
+            'name': 'Selected Article',
+            'marker': {
+                'size': 20,
+                'color': '#FF0000',  # Red color
+                'symbol': 'star',
+                'line': {'width': 3, 'color': 'white'}
+            },
+            'text': [f'Doc {selected_article_highlight+1}'],
+            'customdata': [[selected_article_highlight]],
+            'hovertemplate': '<b>%{text}</b><extra></extra>'
+        })
+        print(f"🔍 DEBUG:   Added selected article highlight trace")
+    
+    # Update the figure with new traces
+    updated_fig['data'] = traces
+    
+    print(f"🔍 DEBUG:   Final trace count: {len(traces)}")
+    
+    return updated_fig
+
+# Add callback for rendering training group containers
+@app.callback(
+    Output("training-group-containers", "children"),
+    [Input("group-order", "data"),
+     Input("training-selected-group", "data"),
+     Input("display-mode", "data")],  # Add display-mode as Input to trigger on mode change
+    [State("training-selected-keyword", "data")],
+    prevent_initial_call=False  # Allow initial call to populate content
+)
+def render_training_groups(group_order, selected_group, display_mode, selected_keyword):
+    """Render training mode group containers - identical to render_groups but independent"""
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: render_training_groups CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   group_order: {group_order}")
+    print(f"🔍 DEBUG:   selected_group: {selected_group}")
+    print(f"🔍 DEBUG:   selected_keyword: {selected_keyword}")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    
+    # Only process if we're in training mode
+    if display_mode != "training":
+        print(f"🔍 DEBUG: ❌ NOT IN TRAINING MODE:")
+        print(f"🔍 DEBUG:   display_mode '{display_mode}' != 'training'")
+        print(f"🔍 DEBUG:   Preventing update")
+        raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ TRAINING MODE CONFIRMED")
+    
+    if not group_order:
+        print(f"🔍 DEBUG: ❌ No group_order, showing placeholder")
+        return html.Div([
+            html.H6("Training Group Management", style={"color": "#2c3e50", "marginBottom": "10px"}),
+            html.P("No groups have been created yet. Please create groups in Keywords mode first.", 
+                   style={"color": "#666", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
+        ])
+    
+    print(f"🔍 DEBUG: ✅ Proceeding with training group rendering...")
+
+    children = []
+    for grp_name, kw_list in group_order.items():
+        # Group header with number and color
+        group_number = grp_name.replace("Group ", "")
+        group_color = get_group_color(grp_name)
+        
+        group_header = html.Button(
+            f"Training Group {group_number}",
+            id={"type": "training-group-header", "index": grp_name},
+            style={
+                "width": "100%",
+                "background": group_color if grp_name == selected_group else "#f0f0f0",
+                "color": "white" if grp_name == selected_group else "black",
+                "border": f"2px solid {group_color}",
+                "padding": "10px",
+                "cursor": "pointer",
+                "fontWeight": "bold",
+                "marginBottom": "5px",
+                "borderRadius": "5px"
+            }
+        )
+
+        # Keywords list
+        group_keywords = []
+        for i, kw in enumerate(kw_list):
+            # Check if this keyword is selected for Training Group Management highlighting
+            is_selected = selected_keyword and kw == selected_keyword
+            
+            # Use group color for keywords in this group with selection highlighting
+            keyword_button = html.Button(
+                kw,
+                id={"type": "training-select-keyword", "keyword": kw, "group": grp_name},
+                style={
+                    "padding": "5px 8px", 
+                    "margin": "2px", 
+                    "border": f"1px solid {group_color}", 
+                    "width": "100%",
+                    "textAlign": "left",
+                    "backgroundColor": group_color if is_selected else f"{group_color}20",  # Highlight when selected
+                    "color": "white" if is_selected else group_color,  # White text when selected
+                    "cursor": "pointer",
+                    "borderRadius": "4px",
+                    "fontSize": "12px",
+                    "fontWeight": "bold" if is_selected else "normal"  # Bold when selected
+                }
+            )
+            
+            keyword_item = html.Div([
+                keyword_button,
+                html.Button("×", id={"type": "training-remove-keyword", "group": grp_name, "index": i}, 
+                           style={"margin": "2px", "padding": "2px 6px", "fontSize": "10px", "color": "red", "float": "right"})
+            ], style={"display": "flex", "alignItems": "center", "marginBottom": "3px"})
+            group_keywords.append(keyword_item)
+
+        group_body = html.Div(
+            group_keywords,
+            style={
+                "border": "1px solid #ddd",
+                "padding": "8px",
+                "minHeight": "50px",
+                "maxHeight": "200px",
+                "overflowY": "auto",
+                "backgroundColor": "#f9f9f9",
+                "marginBottom": "10px"
+            }
+        )
+
+        group_container = html.Div(
+            [group_header, group_body],
+            style={"marginBottom": "15px"}
+        )
+        children.append(group_container)
+
+    return children
+
+# Add callback for training group selection
+@app.callback(
+    [Output("training-selected-group", "data"),
+     Output("training-selected-keyword", "data")],
+    Input({"type": "training-group-header", "index": ALL}, "n_clicks"),
+    State("display-mode", "data"),
+    prevent_initial_call=True
+)
+def select_training_group(n_clicks, display_mode):
+    """Handle training group selection - following keywords mode logic"""
+    ctx = dash.callback_context
+    
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: select_training_group CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: n_clicks: {n_clicks}")
+    print(f"🔍 DEBUG: display_mode: {display_mode}")
+    
+    if not ctx.triggered:
+        print(f"🔍 DEBUG: ❌ No context triggered, preventing update")
+        raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ Context triggered, analyzing trigger...")
+    
+    triggered_id = ctx.triggered[0]['prop_id']
+    triggered_n_clicks = ctx.triggered[0]['value']
+    
+    print(f"🔍 DEBUG: 🔍 TRIGGER ANALYSIS:")
+    print(f"🔍 DEBUG:   triggered_id: {triggered_id}")
+    print(f"🔍 DEBUG:   triggered_n_clicks: {triggered_n_clicks}")
+    
+    # Check if this is a training group header click (only if n_clicks > 0)
+    if "training-group-header" in triggered_id and triggered_n_clicks and triggered_n_clicks > 0:
+        print(f"🔍 DEBUG: ✅ Valid training group header click detected!")
+        try:
+            import json
+            parsed_id = json.loads(triggered_id.split('.')[0])
+            selected_group = parsed_id["index"]
+            print(f"🔍 DEBUG:   Extracted training group: {selected_group}")
+            
+            # Following keywords mode logic: group selection clears keyword selection
+            print(f"🔍 DEBUG:   Switching to training group: {selected_group}")
+            print(f"🔍 DEBUG:   Clearing training selected keyword")
+            print(f"🔍 DEBUG:   🔍 RETURN VALUES:")
+            print(f"🔍 DEBUG:     training-selected-group: {selected_group}")
+            print(f"🔍 DEBUG:     training-selected-keyword: None")
+            print(f"🔍 DEBUG:   ✅ SUCCESS: About to return (selected_group, None)")
+            
+            return selected_group, None  # Return group and clear keyword
+                
+        except Exception as e:
+            print(f"🔍 DEBUG: ❌ ERROR PARSING TRAINING GROUP HEADER ID:")
+            print(f"🔍 DEBUG:   Error: {e}")
+            raise PreventUpdate
+    else:
+        print(f"🔍 DEBUG: ❌ NOT A VALID TRAINING GROUP HEADER CLICK")
+        print(f"🔍 DEBUG:   'training-group-header' in triggered_id: {'training-group-header' in triggered_id}")
+        print(f"🔍 DEBUG:   triggered_n_clicks > 0: {triggered_n_clicks and triggered_n_clicks > 0}")
+    
+    print(f"🔍 DEBUG: ❌ No valid conditions met, raising PreventUpdate")
+    raise PreventUpdate
+
+# Add callback for training keyword selection
+@app.callback(
+    [Output("training-selected-keyword", "data", allow_duplicate=True),
+     Output("training-selected-group", "data", allow_duplicate=True)],
+    [Input({"type": "training-select-keyword", "keyword": ALL, "group": ALL}, "n_clicks")],
+    [State("display-mode", "data"),
+     State("group-order", "data")],
+    prevent_initial_call=True
+)
+def select_training_keyword_from_group(n_clicks, display_mode, group_order):
+    """Handle training keyword selection from group management - following keywords mode logic"""
+    ctx = dash.callback_context
+    
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: select_training_keyword_from_group CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: n_clicks: {n_clicks}")
+    print(f"🔍 DEBUG: display_mode: {display_mode}")
+    print(f"🔍 DEBUG: group_order: {group_order}")
+    
+    if not ctx.triggered:
+        print(f"🔍 DEBUG: No context triggered")
+        raise PreventUpdate
+    
+    triggered_id = ctx.triggered[0]['prop_id']
+    triggered_n_clicks = ctx.triggered[0]['value']
+    
+    print(f"🔍 DEBUG: triggered_id: {triggered_id}")
+    print(f"🔍 DEBUG: triggered_n_clicks: {triggered_n_clicks}")
+    
+    # Check if this is a keyword selection
+    if "training-select-keyword" in triggered_id:
+        try:
+            import json
+            btn_info = json.loads(triggered_id.split('.')[0])
+            keyword = btn_info.get("keyword")
+            print(f"🔍 DEBUG: Select training keyword from group management: {keyword}")
+            
+            # Check if this is a direct keyword click (n_clicks > 0)
+            if triggered_n_clicks and triggered_n_clicks > 0:
+                print(f"🔍 DEBUG: Direct training keyword click detected, selecting keyword: {keyword}")
+                
+                # Following keywords mode logic: keyword selection clears group selection
+                print(f"🔍 DEBUG: Following the same logic as keywords mode: keyword selection clears group selection")
+                
+                # Find documents that contain this keyword
+                keyword_docs = []
+                
+                if 'df' in globals():
+                    for i, text in enumerate(df.iloc[:, 1]):
+                        if keyword.lower() in str(text).lower():
+                            keyword_docs.append(i)
+                    
+                    print(f"🔍 DEBUG: Found {len(keyword_docs)} documents containing keyword '{keyword}': {keyword_docs}")
+                    print(f"🔍 DEBUG: ✅ SUCCESS: About to return (keyword, None)")
+                    print(f"🔍 DEBUG:   This will:")
+                    print(f"🔍 DEBUG:     1. Set training-selected-keyword to '{keyword}'")
+                    print(f"🔍 DEBUG:     2. Clear training-selected-group to None")
+                    print(f"🔍 DEBUG:   Following keywords mode logic: keyword selection clears group selection")
+                    
+                    # Return keyword and clear group selection
+                    # This ensures mutual exclusivity between keyword and group selection
+                    return keyword, None
+                else:
+                    print(f"🔍 DEBUG: ❌ ERROR: No dataframe available")
+                    return keyword, None
+            else:
+                print(f"🔍 DEBUG: ❌ Invalid n_clicks value: {triggered_n_clicks}")
+                raise PreventUpdate
+                
+        except Exception as e:
+            print(f"🔍 DEBUG: ❌ ERROR PARSING TRAINING KEYWORD BUTTON ID:")
+            print(f"🔍 DEBUG:   Error: {e}")
+            raise PreventUpdate
+    else:
+        print(f"🔍 DEBUG: ❌ NOT A TRAINING KEYWORD SELECTION:")
+        print(f"🔍 DEBUG:   'training-select-keyword' in triggered_id: {'training-select-keyword' in triggered_id}")
+        print(f"🔍 DEBUG:   triggered_id contains: {triggered_id}")
+    
+    print(f"🔍 DEBUG: ❌ No valid conditions met, raising PreventUpdate")
+    raise PreventUpdate
+
+# Add callback for training recommended articles
+@app.callback(
+    Output("training-articles-container", "children"),
+    [Input("training-selected-keyword", "data"),
+     Input("training-selected-group", "data"),
+     Input("display-mode", "data")],  # Add display-mode as Input to trigger on mode change
+    [State("group-order", "data")],
+    prevent_initial_call=False  # Allow initial call to populate content
+)
+def display_training_recommended_articles(selected_keyword, selected_group, display_mode, group_order):
+    """Display training recommended articles - identical to display_recommended_articles but independent"""
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: display_training_recommended_articles CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   selected_keyword: {selected_keyword}")
+    print(f"🔍 DEBUG:   selected_group: {selected_group}")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG:   🔍 PARAMETER ANALYSIS:")
+    print(f"🔍 DEBUG:     selected_keyword type: {type(selected_keyword)}")
+    print(f"🔍 DEBUG:     selected_keyword value: {repr(selected_keyword)}")
+    print(f"🔍 DEBUG:     selected_group type: {type(selected_group)}")
+    print(f"🔍 DEBUG:     selected_group value: {repr(selected_group)}")
+    print(f"🔍 DEBUG:     Both parameters present: {selected_keyword is not None and selected_group is not None}")
+    print(f"🔍 DEBUG:     This might indicate a callback chain issue")
+    
+    # Only process if we're in training mode
+    if display_mode != "training":
+        print(f"🔍 DEBUG: ❌ NOT IN TRAINING MODE:")
+        print(f"🔍 DEBUG:   display_mode '{display_mode}' != 'training'")
+        print(f"🔍 DEBUG:   Preventing update")
+        raise PreventUpdate
+    
+    print(f"🔍 DEBUG: ✅ TRAINING MODE CONFIRMED")
     
     try:
-        # Update training figures with highlights
-        fig_before, fig_after = run_training_with_highlights(highlighted_indices)
-        return fig_before, fig_after
+        global df, _ARTICLES_CACHE
+        if 'df' not in globals():
+            print("Data not loaded")
+            return html.P("Data not loaded")
+        
+        # Create cache key based on search criteria (training specific)
+        cache_key = None
+        if selected_keyword:
+            cache_key = f"training_keyword:{selected_keyword}"
+        elif selected_group and group_order:
+            # For groups, create cache key based on group keywords
+            for group_name, keywords in group_order.items():
+                if group_name == selected_group:
+                    # Sort keywords for consistent cache key
+                    cache_key = f"training_group:{group_name}:{':'.join(sorted(keywords))}"
+                    break
+        
+        # Check cache first
+        if cache_key and cache_key in _ARTICLES_CACHE:
+            print(f"Using cached training articles for: {cache_key}")
+            return _ARTICLES_CACHE[cache_key]
+        
+        # Determine search criteria
+        search_keywords = []
+        search_title = ""
+        
+        if selected_keyword:
+            # Priority: specific keyword search
+            search_keywords = [selected_keyword]
+            search_title = f"Training Articles containing '{selected_keyword}'"
+            print(f"Searching for training articles containing keyword: {selected_keyword}")
+        elif selected_group:
+            # Secondary: group keyword search
+            print(f"Training group selected: {selected_group}")
+            print(f"group_order parameter received: {group_order}")
+            
+            if group_order:
+                search_keywords = []
+                for group_name, keywords in group_order.items():
+                    print(f"Checking training group '{group_name}' vs selected '{selected_group}'")
+                    if group_name == selected_group:
+                        search_keywords = keywords
+                        print(f"Found matching training group with keywords: {keywords}")
+                        break
+                
+                if search_keywords:
+                    search_title = f"Training Articles containing keywords from group '{selected_group}'"
+                    print(f"Will search for training articles containing group '{selected_group}' keywords: {search_keywords}")
+                else:
+                    print(f"No keywords found for training group '{selected_group}' or group is empty")
+                    return html.Div([
+                        html.H6("Training Recommended Articles", style={"color": "#2c3e50", "marginBottom": "10px"}),
+                        html.P(f"Training Group '{selected_group}' has no keywords assigned", 
+                               style={"color": "#666", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
+                    ])
+            else:
+                print(f"group_order is empty or None")
+                return html.Div([
+                    html.H6("Training Recommended Articles", style={"color": "#2c3e50", "marginBottom": "10px"}),
+                    html.P("No training groups have been created yet", 
+                           style={"color": "#666", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
+                ])
+        else:
+            # Show default content when no keyword or group is selected
+            return html.Div([
+                html.H6("Training Recommended Articles", style={"color": "#2c3e50", "marginBottom": "10px"}),
+                html.P("Please select a training keyword or group to view recommended articles", 
+                       style={"color": "#666", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
+            ])
+        
+        # Search for articles containing any of the search keywords
+        matching_articles = []
+        for idx, row in df.iterrows():
+            text = str(row.iloc[1]) if len(row) > 1 else ""
+            text_lower = text.lower()
+            
+            # Check if any of the search keywords is in the text
+            contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
+            
+            if contains_keyword:
+                file_keywords = extract_top_keywords(text, 5)
+                matching_articles.append({
+                    'file_number': idx + 1,
+                    'file_index': idx,
+                    'text': text,
+                    'keywords': file_keywords
+                })
+        
+        if not matching_articles:
+            result = html.P(f"No training articles found for the selected search criteria")
+            if cache_key:
+                _ARTICLES_CACHE[cache_key] = result
+                print(f"Cached 'no training articles' result for: {cache_key}")
+            return result
+        
+        # Create article display items
+        article_items = [
+            html.H6(f"{search_title} (Found {len(matching_articles)} articles)", 
+                   style={"color": "#2c3e50", "marginBottom": "15px"})
+        ]
+        
+        # Create article items with file number and keywords
+        for article_info in matching_articles:
+            # Create keyword tags
+            keyword_tags = []
+            for keyword in article_info['keywords']:
+                keyword_tag = html.Span(
+                    keyword,
+                    style={
+                        "backgroundColor": "#e3f2fd",
+                        "color": "#1976d2",
+                        "padding": "2px 6px",
+                        "margin": "2px",
+                        "borderRadius": "12px",
+                        "fontSize": "11px",
+                        "display": "inline-block"
+                    }
+                )
+                keyword_tags.append(keyword_tag)
+            
+            # Create clickable article item with file number and keywords
+            article_item = html.Div([
+                html.Button(
+                    html.Div([
+                        html.H6(f"Training Article {article_info['file_number']}", 
+                               style={"color": "#333", "marginBottom": "8px", "fontSize": "14px", "margin": "0"}),
+                        html.Div([
+                            html.Span("Top 5 Keywords: ", style={"fontWeight": "bold", "color": "#666"}),
+                            html.Div(keyword_tags, style={"display": "inline-block", "marginLeft": "5px"})
+                        ], style={"marginBottom": "8px"}),
+                    ]),
+                    id={"type": "training-article-item", "index": article_info['file_index']},
+                    className="article-item-button",
+                    style={
+                        "width": "100%",
+                        "padding": "12px", 
+                        "border": "1px solid #eee",
+                        "backgroundColor": "white",
+                        "borderRadius": "5px",
+                        "marginBottom": "8px",
+                        "boxShadow": "0 1px 3px rgba(0,0,0,0.1)",
+                        "cursor": "pointer",
+                        "textAlign": "left",
+                        "outline": "none"
+                    },
+                    n_clicks=0
+                ),
+                html.Hr(style={"margin": "4px 0", "borderColor": "#ddd"})
+            ])
+            article_items.append(article_item)
+        
+        # Cache the result for future use
+        result = html.Div(article_items)
+        if cache_key:
+            _ARTICLES_CACHE[cache_key] = result
+            print(f"Cached training articles result for: {cache_key}")
+        
+        return result
+        
     except Exception as e:
-        print(f"Error updating training plots with highlights: {e}")
-        # Return original figures if highlighting fails
-        fig_before = training_figures.get("before", {})
-        fig_after = training_figures.get("after", {})
-        return fig_before, fig_after
+        print(f"Error displaying training recommended articles: {e}")
+        return html.P(f"Error displaying training recommended articles: {str(e)}")
+
+# Add callback for training article content display
+@app.callback(
+    [Output("training-article-fulltext-container", "children"),
+     Output("training-selected-article", "data")],
+    [Input({"type": "training-article-item", "index": ALL}, "n_clicks")],
+    [State("display-mode", "data")],
+    prevent_initial_call=True
+)
+def display_training_article_content(article_clicks, display_mode):
+    """Handle training article clicks - following keywords mode logic"""
+    ctx = dash.callback_context
+    
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: display_training_article_content CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    
+    if not ctx.triggered:
+        print(f"🔍 DEBUG: ❌ No context triggered")
+        raise PreventUpdate
+    
+    # Handle training article item clicks
+    article_index = None
+    if 'training-article-item' in ctx.triggered[0]['prop_id']:
+        try:
+            triggered_id = ctx.triggered[0]['prop_id']
+            btn_info = json.loads(triggered_id.split('.')[0])
+            article_index = btn_info.get("index")
+            print(f"🔍 DEBUG: Training article item clicked, index: {article_index}, mode: {display_mode}")
+        except Exception as e:
+            print(f"🔍 DEBUG: ❌ Error parsing training article item click: {e}")
+            raise PreventUpdate
+    
+    if article_index is None:
+        print(f"🔍 DEBUG: ❌ No article index found")
+        raise PreventUpdate
+    
+    try:
+        # Load article content
+        global df
+        if 'df' not in globals():
+            df = pd.read_csv(csv_path)
+        
+        if article_index is not None and article_index < len(df):
+            article_text = str(df.iloc[article_index, 1])
+            article_label = str(df.iloc[article_index, 0])
+            
+            content = html.Div([
+                html.H5(f"Training Article {article_index + 1} (Label: {article_label})", 
+                       style={"color": "#2c3e50", "marginBottom": "10px"}),
+                html.P(article_text, style={
+                    "lineHeight": "1.6", 
+                    "textAlign": "justify",
+                    "fontSize": "14px",
+                    "color": "#333"
+                })
+            ])
+            
+            print(f"🔍 DEBUG: ✅ SUCCESS: Training article content loaded for article {article_index}")
+            print(f"🔍 DEBUG:   Training mode: updating training-selected-article, not triggering keywords mode callbacks")
+            
+            # Update training-selected-article instead of selected-article to avoid triggering keywords mode callbacks
+            return content, article_index
+            
+        else:
+            print(f"🔍 DEBUG: ❌ Article index {article_index} out of range")
+            return html.P("Training article not found", style={"color": "red"}), None
+    
+    except Exception as e:
+        print(f"🔍 DEBUG: ❌ Error loading training article: {e}")
+        return html.P(f"Error loading training article: {str(e)}", style={"color": "red"}), None
+
+
+
+
+
+# Smart callback for handling article clicks in both modes
+@app.callback(
+    [Output("article-fulltext-container", "children"),
+     Output("selected-article", "data", allow_duplicate=True)],
+    [Input({"type": "article-item", "index": ALL}, "n_clicks")],
+    [State("display-mode", "data"),
+     State("selected-keyword", "data"),
+     State("selected-group", "data"),
+     State("group-order", "data")],
+    prevent_initial_call=True
+)
+def display_article_content_smart(article_clicks, display_mode, current_keyword, current_group, group_order):
+    """Smart callback that handles article clicks in both keywords and training modes - following keywords mode logic"""
+    ctx = dash.callback_context
+    
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: display_article_content_smart CALLBACK TRIGGERED")
+    print(f"🔍 DEBUG: ==========================================")
+    print(f"🔍 DEBUG: Function called at: {__import__('datetime').datetime.now()}")
+    print(f"🔍 DEBUG: 🔍 INPUT PARAMETERS:")
+    print(f"🔍 DEBUG:   display_mode: {display_mode}")
+    print(f"🔍 DEBUG:   current_keyword: {current_keyword}")
+    print(f"🔍 DEBUG:   current_group: {current_group}")
+    print(f"🔍 DEBUG:   group_order: {group_order}")
+    
+    if not ctx.triggered:
+        print(f"🔍 DEBUG: ❌ No context triggered")
+        raise PreventUpdate
+    
+    # Handle article item clicks from recommended articles
+    article_index = None
+    if 'article-item' in ctx.triggered[0]['prop_id']:
+        try:
+            import json
+            triggered_id = ctx.triggered[0]['prop_id']
+            btn_info = json.loads(triggered_id.split('.')[0])
+            article_index = btn_info.get("index")
+            print(f"🔍 DEBUG: Article item clicked, index: {article_index}, mode: {display_mode}")
+        except Exception as e:
+            print(f"🔍 DEBUG: ❌ Error parsing article item click: {e}")
+            raise PreventUpdate
+    
+    if article_index is None:
+        print(f"🔍 DEBUG: ❌ No article index found")
+        raise PreventUpdate
+    
+    try:
+        # Load article content
+        global df
+        if 'df' not in globals():
+            df = pd.read_csv(csv_path)
+        
+        if article_index is not None and article_index < len(df):
+            article_text = str(df.iloc[article_index, 1])
+            article_label = str(df.iloc[article_index, 0])
+            
+            content = html.Div([
+                html.H5(f"Article {article_index + 1} (Label: {article_label})", 
+                       style={"color": "#2c3e50", "marginBottom": "10px"}),
+                html.P(article_text, style={
+                    "lineHeight": "1.6", 
+                    "textAlign": "justify",
+                    "fontSize": "14px",
+                    "color": "#333"
+                })
+            ])
+            
+            print(f"🔍 DEBUG: ✅ SUCCESS: Article content loaded for article {article_index}")
+            print(f"🔍 DEBUG:   Following keywords mode logic: article click only updates selected-article")
+            print(f"🔍 DEBUG:   This preserves existing Group/Keyword highlights")
+            
+            # Following keywords mode logic: article click only updates selected-article
+            # This preserves existing Group/Keyword highlights and allows them to coexist
+            return content, article_index
+            
+        else:
+            print(f"🔍 DEBUG: ❌ Article index {article_index} out of range")
+            return html.P("Article not found", style={"color": "red"}), None
+    
+    except Exception as e:
+        print(f"🔍 DEBUG: ❌ Error loading article: {e}")
+        return html.P(f"Error loading article: {str(e)}", style={"color": "red"}), None
 
 # Launch the Dash application
+print("🔍 DEBUG: ==========================================")
+print("🔍 DEBUG: CALLBACK REGISTRATION COMPLETE")
+print("🔍 DEBUG: ==========================================")
+print("🔍 DEBUG: All callbacks have been registered")
+print("🔍 DEBUG: Application is ready to start")
+
 if __name__ == "__main__":
-    print(" http://127.0.0.1:8053 ")
-    app.run(debug=True, dev_tools_hot_reload=False, port=8053)
+    print("🔍 DEBUG: ==========================================")
+    print("🔍 DEBUG: DASH APPLICATION STARTUP")
+    print("🔍 DEBUG: ==========================================")
+    print("🔍 DEBUG: Starting Dash application...")
+    print("🔍 DEBUG: Target URL: http://127.0.0.1:8053")
+    print("🔍 DEBUG: Current working directory:", os.getcwd())
+    print("🔍 DEBUG: Python version:", __import__('sys').version)
+    print("🔍 DEBUG: Dash version:", __import__('dash').__version__)
+    
+    # Disable reloader to prevent threading issues
+    import os
+    os.environ['FLASK_ENV'] = 'development'
+    
+    print("🔍 DEBUG: Environment variables set:")
+    print("🔍 DEBUG:   FLASK_ENV =", os.environ.get('FLASK_ENV'))
+    
+    try:
+        print("🔍 DEBUG: 🔍 ATTEMPTING TO START ON PORT 8053...")
+        app.run(
+            debug=True,
+            port=8053,
+            host='127.0.0.1',
+            use_reloader=False,
+            threaded=True
+        )
+    except OSError as e:
+        print(f"🔍 DEBUG: OSError occurred on port 8053: {e}")
+        print(f"🔍 DEBUG: Error type: {type(e)}")
+        print(f"🔍 DEBUG: Trying alternative port 8054...")
+        
+        try:
+            app.run(
+                debug=True, 
+                port=8054, 
+                host='127.0.0.1', 
+                use_reloader=False,
+                threaded=True
+            )
+        except OSError as e2:
+            print(f"🔍 DEBUG: Alternative port 8054 also failed: {e2}")
+            print(f"🔍 DEBUG: Please check if ports are available")
+            print(f"🔍 DEBUG: You can manually specify a different port")
+            
+            # Try a random available port
+            import socket
+            def find_free_port():
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.bind(('', 0))
+                    s.listen(1)
+                    port = s.getsockname()[1]
+                return port
+            
+            try:
+                free_port = find_free_port()
+                print(f"🔍 DEBUG: Found free port: {free_port}")
+                print(f"🔍 DEBUG: Starting on port {free_port}...")
+                app.run(
+                    debug=True, 
+                    port=free_port, 
+                    host='127.0.0.1', 
+                    use_reloader=False,
+                    threaded=True
+                )
+            except Exception as e3:
+                print(f"🔍 DEBUG: All attempts failed: {e3}")
+                print(f"🔍 DEBUG: Please restart the application manually")
