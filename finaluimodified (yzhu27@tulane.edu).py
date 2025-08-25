@@ -1052,9 +1052,9 @@ def update_group_order(generate_n_clicks, group_data, num_groups, current_order)
 @app.callback(
     Output("group-containers", "children"),
     [Input("group-order", "data"),
-     Input("selected-group", "data")],
-    [State("selected-keyword", "data"),
-     State("display-mode", "data")]
+     Input("selected-group", "data"),
+     Input("selected-keyword", "data")],  # Add selected-keyword as Input to trigger re-render
+    [State("display-mode", "data")]
 )
 def render_groups(group_order, selected_group, selected_keyword, display_mode):
     print(f"🔍 DEBUG: ==========================================")
