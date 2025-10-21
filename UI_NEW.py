@@ -55,18 +55,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 TRAINING_CONFIG = {
-
     "bert_name": "bert-base-uncased",
     "proj_dim": 256,
     "freeze_layers": 6,
     
-
-    "triplet_epochs": 1,        
+    "triplet_epochs": 10,        
     "triplet_batch_size": 16,
     "triplet_margin": 0.8,
     "triplet_lr": 2e-5,
     
-
     "proto_epochs": 5,          
     "proto_batch_size": 64,
     "proto_lr": 1e-5,
@@ -96,7 +93,7 @@ TRAINING_CONFIG = {
 }
 
 def get_config(key, default=None):
-    """[EMOJI]"""
+
     return TRAINING_CONFIG.get(key, default)
 
 
@@ -213,7 +210,7 @@ GROUP_COLORS = {
 }
 
 def get_group_color(group_name):
-    """Get color for a specific group"""
+
     return GROUP_COLORS.get(group_name, "#808080")  
 
 
@@ -396,7 +393,7 @@ def precompute_document_embeddings():
         _GLOBAL_DOCUMENT_EMBEDDINGS_READY = False
 
 def get_document_embeddings():
-    """Get pre-computed document embeddings"""
+    
     global _GLOBAL_DOCUMENT_EMBEDDINGS, _GLOBAL_DOCUMENT_EMBEDDINGS_READY
     
     if not _GLOBAL_DOCUMENT_EMBEDDINGS_READY:
@@ -405,7 +402,7 @@ def get_document_embeddings():
     return _GLOBAL_DOCUMENT_EMBEDDINGS
 
 def get_document_tsne():
-    """Get pre-computed document t-SNE results"""
+    
     global _GLOBAL_DOCUMENT_TSNE, _GLOBAL_DOCUMENT_EMBEDDINGS_READY
     
     if not _GLOBAL_DOCUMENT_EMBEDDINGS_READY:
@@ -414,30 +411,29 @@ def get_document_tsne():
     return _GLOBAL_DOCUMENT_TSNE
 
 def truncate_text_for_model(text, max_length=500):
-    """Truncate text to fit within model's maximum sequence length"""
+ 
     if not text or len(text) <= max_length:
         return text
     
-    # Simple truncation: take the first max_length characters
-    # This ensures we don't exceed the model's token limit
+  
     truncated = text[:max_length]
     
-    # Try to truncate at a word boundary if possible
+
     if ' ' in truncated:
         last_space = truncated.rfind(' ')
-        if last_space > max_length * 0.8:  # Only truncate at word if it's not too early
+        if last_space > max_length * 0.8:  
             truncated = truncated[:last_space]
     
     return truncated + "..." if len(truncated) < len(text) else truncated
 
-# Pre-compute embeddings when script starts
-print("    Initializing document embeddings...")
+
+
 try:
     precompute_document_embeddings()
     print("         Document embeddings initialization completed successfully!")
     print(f"          Performance improvement: Keyword clicks should now be 3-5x faster")
     print(f"            Memory usage: ~{_GLOBAL_DOCUMENT_EMBEDDINGS.nbytes / 1024 / 1024:.1f} MB for embeddings")
-    print_performance_tips()
+  
 except Exception as e:
     print(f"    Warning: Could not pre-compute embeddings: {e}")
     print("    Will compute on-demand (slower response)")
@@ -445,15 +441,13 @@ except Exception as e:
 
 
 def safe_encode_batch(batch_texts, model, device, fallback_dim=768):
-    """Safely encode a batch of texts with error handling and fallback"""
     try:
-        # Check text lengths before encoding
+
         for i, text in enumerate(batch_texts):
-            if len(text) > 1000:  # Additional safety check
+            if len(text) > 1000:  
                 print(f"    Warning: Text {i} is very long ({len(text)} chars), truncating further")
                 batch_texts[i] = truncate_text_for_model(text, max_length=400)
         
-        # Encode with progress indication
         print(f"    Encoding batch of {len(batch_texts)} texts...")
         embeddings = model.encode(batch_texts, convert_to_tensor=True).to(device).cpu().numpy()
         print(f"    Successfully encoded batch, shape: {embeddings.shape}")
@@ -463,7 +457,6 @@ def safe_encode_batch(batch_texts, model, device, fallback_dim=768):
         print(f"    Error encoding batch: {e}")
         print(f"    Using fallback zero vectors for batch")
         
-        # Return zero vectors as fallback
         batch_size = len(batch_texts)
         fallback_embeddings = np.zeros((batch_size, fallback_dim))
         return fallback_embeddings
@@ -477,9 +470,9 @@ df = pd.read_csv(csv_path)
 all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
 labels = df.iloc[:, 0].values
 
-# Extract and count keywords using KeyBERT and NLTK - GPU optimized version
+
 def preprocess_articles_batch(articles):
-    """Batch preprocess articles, extract nouns"""
+
     processed_articles = []
     valid_indices = []
     
@@ -505,7 +498,7 @@ def extract_keywords_batch_gpu(articles, batch_size=None):
     if batch_size is None:
     
         if device == "cuda":
-            batch_size = 128  # RTX 5090 large memory can handle larger batch
+            batch_size = 128  
           
         else:
             batch_size = 32
@@ -540,8 +533,7 @@ def extract_keywords_batch_gpu(articles, batch_size=None):
                 batch_results.append(result if result else None)
             
             results.extend(batch_results)
-            
-            # Clear GPU memory
+        
             clear_gpu_memory()
             
         except Exception as e:
@@ -550,14 +542,11 @@ def extract_keywords_batch_gpu(articles, batch_size=None):
     
     return results
 
-# Batch preprocessing
 processed_articles, valid_indices = preprocess_articles_batch(all_articles_text)
 
-# GPU batch keyword extraction
 if processed_articles:
     batch_results = extract_keywords_batch_gpu(processed_articles, batch_size=128)
-    
-    # Rebuild complete result list
+
     results = [None] * len(all_articles_text)
     for i, result in enumerate(batch_results):
         if i < len(valid_indices):
@@ -594,18 +583,16 @@ keywords = [kw for cluster in output_dict.values() for kw in cluster]
 cluster_names = list(output_dict.keys())
 total_clusters = len(cluster_names)
 GLOBAL_OUTPUT_DICT = output_dict
-GLOBAL_KEYWORDS = keywords  # Ensure keywords are available in global scope
+GLOBAL_KEYWORDS = keywords  
 
-# Ensure keyword variables are defined
 if 'keywords' not in locals():
     keywords = []
     print("Warning: Keyword list is empty, using default values")
 
-# Build Dash layout with UI components like inputs, buttons, and containers
 app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
 
-# Add custom CSS for animations
+
 app.index_string = '''
 <!DOCTYPE html>
 <html>
@@ -696,9 +683,7 @@ app.index_string = '''
 '''
 
 def create_layout():
-    """Create Dash layout - keyword 2D dimensionality reduction visualization version"""
     return html.Div([
-        # Header with modern design
         html.Div([
             html.H1("KeySI System", style={
                 "textAlign": "center",
@@ -723,9 +708,9 @@ def create_layout():
             "boxShadow": "0 4px 15px rgba(0,0,0,0.1)"
         }),
         
-        # Top control area with modern styling - side by side layout
+        
         html.Div([
-            # Left: Number of Groups
+        
             html.Div([
                 html.Label("Number of Groups:", style={
                     "fontWeight": "bold",
@@ -830,7 +815,7 @@ def create_layout():
             "marginBottom": "30px"
         }),
 
-        # Data storage
+      
         dcc.Store(id="group-data", data={kw: None for kw in (keywords if 'keywords' in globals() else [])}),
         dcc.Store(id="selected-group", data=None),
         dcc.Store(id="group-order", data={}),
@@ -851,15 +836,14 @@ def create_layout():
         dcc.Store(id="finetune-figures", data=None),  # Store finetune-specific figures (updated after finetune training)
         dcc.Store(id="finetune-selected-group", data=None),
         dcc.Store(id="finetune-selected-sample", data=None),
-        dcc.Store(id="finetune-selected-keyword", data=None),  # [EMOJI] selected_keyword store
-        dcc.Store(id="finetune-selected-article-index", data=None),  # [EMOJI]
+        dcc.Store(id="finetune-selected-keyword", data=None),  
+        dcc.Store(id="finetune-selected-article-index", data=None),  
         dcc.Store(id="finetune-highlight-core", data=[]),
         dcc.Store(id="finetune-highlight-gray", data=[]),
         dcc.Store(id="finetune-temp-assignments", data={}),
         
-        # Main content area - left-right column layout (dynamic based on display mode)
         html.Div(id="main-visualization-area", children=[
-            # Left: keyword 2D visualization with text labels
+           
             html.Div([
                 html.H4("Keywords 2D Visualization", style={
                     "color": "#2c3e50",
@@ -888,7 +872,7 @@ def create_layout():
                 'marginRight': '1%'
             }),
             
-            # Right: documents 2D visualization
+           
             html.Div([
                 html.H4("Documents 2D Visualization", style={
                     "color": "#2c3e50",
@@ -918,9 +902,8 @@ def create_layout():
             })
         ], style={'display': 'flex', 'marginBottom': '30px'}),
         
-        # Group management area (below the 2D visualizations) - three column layout
+        
         html.Div([
-            # Left: Group selection and keywords
             html.Div([
                 html.H4("Group Management", style={
                     "color": "#2c3e50",
@@ -943,7 +926,7 @@ def create_layout():
                 'marginRight': '15px'
             }),
             
-            # Middle: Recommended Articles
+        
             html.Div([
                 html.H4("Recommended Articles", style={
                     "color": "#2c3e50",
@@ -969,7 +952,7 @@ def create_layout():
                 'margin': '0 7px'
             }),
             
-            # Right: Article Full Text Display
+            
             html.Div([
                 html.H4("Article Full Text", style={
                     "color": "#2c3e50",
@@ -1005,9 +988,8 @@ def create_layout():
             })
         ], id="keywords-group-management-area", style={'display': 'flex', 'marginBottom': '30px'}),
         
-        # Training mode specific Group Management and Recommended Articles (initially hidden)
+        
         html.Div(id="training-group-management-area", style={'display': 'none', 'marginBottom': '30px'}, children=[
-            # Left: Training Group Management
             html.Div([
                 html.H4("Training Group Management", style={
                     "color": "#2c3e50",
@@ -1039,7 +1021,6 @@ def create_layout():
                 'marginRight': '15px'
             }),
             
-            # Middle: Training Recommended Articles
             html.Div([
                 html.H4("Training Recommended Articles", style={
                     "color": "#2c3e50",
@@ -1074,7 +1055,6 @@ def create_layout():
                 'margin': '0 7px'
             }),
             
-            # Right: Training Article Full Text Display
             html.Div([
                 html.H4("Training Article Full Text", style={
                     "color": "#2c3e50",
@@ -1110,9 +1090,7 @@ def create_layout():
             })
         ]),
         
-        # Finetune mode specific Group Management and Operations (initially hidden)
         html.Div(id="finetune-group-management-area", style={'display': 'none', 'marginBottom': '30px'}, children=[
-            # Left: Finetune Group Management
         html.Div([
                 html.H4("Finetune Group Management", style={
                     "color": "#2c3e50",
@@ -1144,7 +1122,6 @@ def create_layout():
                 'marginRight': '15px'
             }),
             
-            # Middle: Finetune Document List ([EMOJI] Training Recommended Articles)
             html.Div([
                 html.H4("Documents List", id="finetune-articles-title", style={
                     "color": "#2c3e50",
@@ -1179,9 +1156,7 @@ def create_layout():
                 'margin': '0 7px'
             }),
             
-            # Right: Sample Operations + Adjustment History
             html.Div([
-                # Sample Operations Section
                 html.H4("Sample Operations", style={
                     "color": "#2c3e50",
                     "fontSize": "1.2rem",
@@ -1189,10 +1164,8 @@ def create_layout():
                     "marginBottom": "10px",
                     "textAlign": "center"
                 }),
-                # [EMOJI]
                 html.Div(id="finetune-operation-buttons", children=[], style={"marginBottom": "20px"}),
                 
-                # Selected Document Preview with Title
                 html.H5("Article Full Text", style={
                     "color": "#2c3e50",
                     "fontSize": "1.1rem",
@@ -1221,7 +1194,6 @@ def create_layout():
                     "fontSize": "0.85rem"
                 }),
                 
-                # Adjustment History Section
                 html.H4("Adjustment History", style={
                     "color": "#2c3e50",
                     "fontSize": "1.2rem",
@@ -1295,7 +1267,6 @@ def create_layout():
             })
         ]),
         
-        # Training button and output
         html.Div([
             html.Button("Train Model", id="train-btn", n_clicks=0, style={
                 "margin": "30px auto 15px auto",
@@ -1323,7 +1294,7 @@ def create_layout():
                 "cursor": "pointer",
                 "transition": "all 0.3s ease",
                 "boxShadow": "0 3px 10px rgba(52, 152, 219, 0.3)",
-                "display": "none"  # Initially hidden, shown after training
+                "display": "none"  
             }),
             html.Button("Switch to Finetune Mode", id="switch-finetune-btn", n_clicks=0, style={
                 "margin": "15px auto",
@@ -1340,19 +1311,12 @@ def create_layout():
                 "display": "none"
             })
         ], style={"textAlign": "center"}),
-        
 
-        
-
-        
-        # Debug output area
         html.Div(id="debug-output", style={"marginTop": "20px"})
     ])
 
-# Set application layout
 app.layout = create_layout()
 
-# Add necessary callback functions
 @app.callback(
     Output("group-order", "data"),
     [
@@ -1380,22 +1344,17 @@ def update_group_order(generate_n_clicks, group_data, num_groups, current_order)
         if not num_groups or num_groups < 1:
             raise PreventUpdate
         
-        # [EMOJI]
         groups = {f"Group {i+1}": [] for i in range(num_groups)}
         
-        # [EMOJI]"Other"[EMOJI]
         groups["Other"] = []
         print(f"        Added 'Other' group for exclusion (total groups: {num_groups + 1})")
         
         return groups
     
     elif triggered_id == "group-data":
-        # Fix: sync group-data and group-order, ensure all group keywords are correctly saved
-        # First clear all group keyword lists
         for group_name in new_order:
             new_order[group_name] = []
         
-        # Then refill based on group_data
         for kw, grp in group_data.items():
             if grp and grp in new_order:
                 new_order[grp].append(kw)
@@ -1411,9 +1370,7 @@ def update_group_order(generate_n_clicks, group_data, num_groups, current_order)
     [State("display-mode", "data")]
 )
 def render_groups(group_order, selected_group, selected_keyword, display_mode):
-    print(f"    DEBUG: ==========================================")
     print(f"    DEBUG: render_groups CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG:     INPUT PARAMETERS:")
     print(f"    DEBUG:   group_order: {group_order}")
@@ -1426,13 +1383,11 @@ def render_groups(group_order, selected_group, selected_keyword, display_mode):
     print(f"    DEBUG:   selected_keyword type: {type(selected_keyword)}")
     print(f"    DEBUG:   display_mode type: {type(display_mode)}")
     
-    # In training mode, avoid unnecessary updates that might trigger documents-2d-plot
     if display_mode == "training" and selected_keyword is not None:
         print(f"    DEBUG:     TRAINING MODE WARNING:")
         print(f"    DEBUG:   selected_keyword is {selected_keyword}")
         print(f"    DEBUG:   This might cause conflicts with documents-2d-plot")
         print(f"    DEBUG:   But we're being careful about updates")
-        # Still render groups but be more careful about keyword selection highlighting
     
     if not group_order:
         print(f"    DEBUG:         No group_order, returning empty list")
@@ -1442,7 +1397,6 @@ def render_groups(group_order, selected_group, selected_keyword, display_mode):
 
     children = []
     for grp_name, kw_list in group_order.items():
-        # Group header with number and color
         if grp_name == "Other":
             group_display_name = "Other (Exclude)"
             group_color = get_group_color(grp_name)
@@ -1451,19 +1405,18 @@ def render_groups(group_order, selected_group, selected_keyword, display_mode):
             group_display_name = f"Group {group_number}"
             group_color = get_group_color(grp_name)
         
-        # Special styling for Other group
         if grp_name == "Other":
             header_style = {
                 "width": "100%",
                 "background": group_color if grp_name == selected_group else "#f0f0f0",
                 "color": "white" if grp_name == selected_group else "black",
-                "border": f"2px dashed {group_color}",  # Dashed border for exclusion
+                "border": f"2px dashed {group_color}",  
                 "padding": "10px",
                 "cursor": "pointer",
                 "fontWeight": "bold",
                 "marginBottom": "5px",
                 "borderRadius": "5px",
-                "opacity": "0.8"  # Slightly transparent
+                "opacity": "0.8"  
             }
         else:
             header_style = {
@@ -1484,17 +1437,14 @@ def render_groups(group_order, selected_group, selected_keyword, display_mode):
             style=header_style
         )
 
-        # Keywords list
         group_keywords = []
         for i, kw in enumerate(kw_list):
-            # Check if this keyword is selected for Group Management highlighting
-            # In training mode, avoid keyword highlighting to prevent conflicts
+            
             if display_mode == "training":
-                is_selected = False  # No keyword highlighting in training mode
+                is_selected = False  
             else:
                 is_selected = selected_keyword and kw == selected_keyword
             
-            # Use group color for keywords in this group with selection highlighting
             keyword_button = html.Button(
                 kw,
                 id={"type": "select-keyword", "keyword": kw, "group": grp_name},
@@ -1504,12 +1454,12 @@ def render_groups(group_order, selected_group, selected_keyword, display_mode):
                     "border": f"1px solid {group_color}", 
                     "width": "100%",
                     "textAlign": "left",
-                    "backgroundColor": group_color if is_selected else f"{group_color}20",  # Highlight when selected
-                    "color": "white" if is_selected else group_color,  # White text when selected
+                    "backgroundColor": group_color if is_selected else f"{group_color}20",  
+                    "color": "white" if is_selected else group_color,  
                     "cursor": "pointer",
                     "borderRadius": "4px",
                     "fontSize": "12px",
-                    "fontWeight": "bold" if is_selected else "normal"  # Bold when selected
+                    "fontWeight": "bold" if is_selected else "normal"  
                 }
             )
             
@@ -1541,9 +1491,7 @@ def render_groups(group_order, selected_group, selected_keyword, display_mode):
 
     return children
 
-print("    DEBUG: ==========================================")
-print("    DEBUG: REGISTERING CALLBACK: select_group")
-print("    DEBUG: ==========================================")
+
 print("    DEBUG: Outputs: selected-group.data, selected-keyword.data")
 print("    DEBUG: Input: {'type': 'group-header', 'index': ALL}.n_clicks")
 print("    DEBUG: State: display-mode.data")
@@ -1560,9 +1508,6 @@ print("    DEBUG: prevent_initial_call: True")
 def select_group(n_clicks, display_mode):
     ctx = dash.callback_context
     
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: select_group CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG: n_clicks: {n_clicks}")
     print(f"    DEBUG: display_mode: {display_mode}")
@@ -1574,15 +1519,12 @@ def select_group(n_clicks, display_mode):
         print(f"    DEBUG:         No context triggered, preventing update")
         print(f"    DEBUG: This should not happen for a valid group click")
         raise PreventUpdate
-
-    print(f"    DEBUG:      Context triggered, analyzing trigger...")
     
     triggered_id = ctx.triggered[0]['prop_id']
     triggered_n_clicks = ctx.triggered[0]['value']
     triggered_prop_id = ctx.triggered[0].get('prop_id', 'N/A')
     triggered_value = ctx.triggered[0].get('value', 'N/A')
 
-    print(f"    DEBUG:     TRIGGER ANALYSIS:")
     print(f"    DEBUG:   triggered_id: {triggered_id}")
     print(f"    DEBUG:   triggered_n_clicks: {triggered_n_clicks}")
     print(f"    DEBUG:   triggered_prop_id: {triggered_prop_id}")
@@ -1590,8 +1532,6 @@ def select_group(n_clicks, display_mode):
     print(f"    DEBUG:   triggered_id type: {type(triggered_id)}")
     print(f"    DEBUG:   triggered_n_clicks type: {type(triggered_n_clicks)}")
     
-    # Check if this is a group header click (only if n_clicks > 0)
-    print(f"    DEBUG:     VALIDATION CHECKS:")
     print(f"    DEBUG:   'group-header' in triggered_id: {'group-header' in triggered_id}")
     print(f"    DEBUG:   triggered_n_clicks > 0: {triggered_n_clicks and (isinstance(triggered_n_clicks, (int, float)) and triggered_n_clicks > 0)}")
     print(f"    DEBUG:   triggered_n_clicks is truthy: {bool(triggered_n_clicks)}")
@@ -1617,11 +1557,7 @@ def select_group(n_clicks, display_mode):
             print(f"    DEBUG:   Current display_mode: {display_mode}")
             print(f"    DEBUG:   About to return: selected_group={selected_group}, display_mode={display_mode}")
             
-            # Clear selected keyword when switching groups
-            # This ensures group selection shows all documents containing group keywords
-            # Also add a flag to prevent keyword selection from overriding
             
-            # In training mode, don't update selected-keyword to avoid triggering documents-2d-plot
             if display_mode == "training":
                 print(f"    DEBUG:     TRAINING MODE DETECTED:")
                 print(f"    DEBUG:   Returning selected_group={selected_group}")
@@ -1663,7 +1599,6 @@ def select_group(n_clicks, display_mode):
     prevent_initial_call=True
 )
 def select_keyword_from_group(n_clicks, display_mode, group_order):
-    """Handle keyword selection from group management"""
     print(f"    DEBUG: select_keyword_from_group called")
     print(f"    DEBUG: n_clicks: {n_clicks}")
     print(f"    DEBUG: display_mode: {display_mode}")
@@ -1688,7 +1623,6 @@ def select_keyword_from_group(n_clicks, display_mode, group_order):
     print(f"    DEBUG: triggered_id type: {type(triggered_id)}")
     print(f"    DEBUG: triggered_n_clicks type: {type(triggered_n_clicks)}")
     
-    # Check if this is a keyword selection (even if n_clicks is None initially)
     if "select-keyword" in triggered_id:
         try:
             import json
@@ -1696,41 +1630,33 @@ def select_keyword_from_group(n_clicks, display_mode, group_order):
             keyword = btn_info.get("keyword")
             print(f"    DEBUG: Select keyword from group management: {keyword}")
             
-            # Check if this is triggered by group selection (not a direct keyword click)
             if triggered_n_clicks is None:
                 print(f"    DEBUG: Keyword selection triggered by group change, ignoring")
                 raise PreventUpdate
             
-            # Check if this is a direct keyword click (n_clicks > 0)
             if triggered_n_clicks and (isinstance(triggered_n_clicks, (int, float)) and triggered_n_clicks > 0):
                 print(f"    DEBUG: Direct keyword click detected, selecting keyword: {keyword}")
                 
-                # In training mode, update keyword-highlights instead of selected-keyword
                 if display_mode == "training":
                     print(f"    DEBUG: Training mode: updating keyword-highlights for keyword: {keyword}")
-                    # Find documents that contain this keyword
                     keyword_docs = []
                     
-                    # Load the dataframe to search for documents containing the keyword
                     try:
                         global df
                         if 'df' not in globals():
                             df = pd.read_csv(csv_path)
                         
-                        # Search for documents containing the keyword
                         for i in range(len(df)):
                             text = str(df.iloc[i, 1]).lower()
                             if keyword.lower() in text:
                                 keyword_docs.append(i)
                         
                         print(f"    DEBUG: Found {len(keyword_docs)} documents containing keyword '{keyword}': {keyword_docs}")
-                        # In training mode, NEVER update selected-keyword to avoid triggering documents-2d-plot
                         return dash.no_update, keyword_docs
                     except Exception as e:
                         print(f"    DEBUG: Error finding documents for keyword '{keyword}': {e}")
                         return dash.no_update, []
                 else:
-                    # In keywords mode, update selected-keyword normally
                     print(f"    DEBUG: Keywords mode: updating selected-keyword for keyword: {keyword}")
                     return keyword, dash.no_update
             else:
@@ -1753,7 +1679,6 @@ def select_keyword_from_group(n_clicks, display_mode, group_order):
     prevent_initial_call=True
 )
 def remove_keyword_from_group(n_clicks, group_order, group_data):
-    """Remove keyword from group when delete button is clicked"""
     print(f"remove_keyword_from_group called")
     print(f"n_clicks: {n_clicks}")
     
@@ -1764,14 +1689,12 @@ def remove_keyword_from_group(n_clicks, group_order, group_data):
         print("No delete button clicked")
         raise PreventUpdate
     
-    # Find which delete button was clicked
     triggered_id = ctx.triggered[0]['prop_id']
     if not triggered_id or '.n_clicks' not in triggered_id:
         print("Invalid trigger")
         raise PreventUpdate
     
     try:
-        # Parse the button ID
         button_id = json.loads(triggered_id.split('.')[0])
         group_name = button_id.get("group")
         keyword_index = button_id.get("index")
@@ -1782,7 +1705,6 @@ def remove_keyword_from_group(n_clicks, group_order, group_data):
             print("Missing group name or index")
             raise PreventUpdate
         
-        # Update group_order by removing the keyword at the specified index
         new_group_order = dict(group_order) if group_order else {}
         
         if group_name in new_group_order:
@@ -1791,7 +1713,6 @@ def remove_keyword_from_group(n_clicks, group_order, group_data):
                 removed_keyword = keyword_list.pop(keyword_index)
                 new_group_order[group_name] = keyword_list
                 
-                # Also update group_data to remove the keyword assignment
                 new_group_data = dict(group_data) if group_data else {}
                 if removed_keyword in new_group_data:
                     new_group_data[removed_keyword] = None
@@ -1799,7 +1720,6 @@ def remove_keyword_from_group(n_clicks, group_order, group_data):
                 print(f"Removed keyword '{removed_keyword}' from group '{group_name}'")
                 print(f"Updated group_data: {removed_keyword} = None")
                 
-                # Clear caches when groups change
                 clear_caches()
                 return new_group_order, new_group_data
             else:
@@ -1815,16 +1735,13 @@ def remove_keyword_from_group(n_clicks, group_order, group_data):
 @app.callback(
     Output("articles-container", "children"),
     [Input("selected-keyword", "data"),
-     Input("selected-group", "data")],  # Also update when group changes
-    [State("group-order", "data"),  # Add group_order as State parameter
+     Input("selected-group", "data")],  
+    [State("group-order", "data"),  
      State("display-mode", "data")],
     prevent_initial_call=True
 )
 def display_recommended_articles(selected_keyword, selected_group, group_order, display_mode):
-    """Display recommended articles based on selected keyword or group"""
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: display_recommended_articles CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
+
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG:     INPUT PARAMETERS:")
     print(f"    DEBUG:   selected_keyword: {selected_keyword}")
@@ -1835,13 +1752,11 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
     print(f"    DEBUG:   selected_group type: {type(selected_group)}")
     print(f"    DEBUG:   display_mode type: {type(display_mode)}")
     
-    # In training mode, avoid unnecessary updates that might trigger documents-2d-plot
     if display_mode == "training" and selected_keyword is not None:
         print(f"    DEBUG:     TRAINING MODE WARNING:")
         print(f"    DEBUG:   selected_keyword is {selected_keyword}")
         print(f"    DEBUG:   This might cause conflicts with documents-2d-plot")
         print(f"    DEBUG:   But we're being careful about updates")
-        # Still display articles but be more careful about keyword selection
     
     try:
         global df, _ARTICLES_CACHE
@@ -1849,34 +1764,27 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
             print("Data not loaded")
             return html.P("Data not loaded")
         
-        # Create cache key based on search criteria
         cache_key = None
         if selected_keyword:
             cache_key = f"keyword:{selected_keyword}"
         elif selected_group and group_order:
-            # For groups, create cache key based on group keywords
             for group_name, keywords in group_order.items():
                 if group_name == selected_group:
-                    # Sort keywords for consistent cache key
                     cache_key = f"group:{group_name}:{':'.join(sorted(keywords))}"
                     break
         
-        # Check cache first
         if cache_key and cache_key in _ARTICLES_CACHE:
             print(f"Using cached articles for: {cache_key}")
             return _ARTICLES_CACHE[cache_key]
         
-        # Determine search criteria
         search_keywords = []
         search_title = ""
         
         if selected_keyword:
-            # Priority: specific keyword search
             search_keywords = [selected_keyword]
             search_title = f"Articles containing '{selected_keyword}'"
             print(f"Searching for articles containing keyword: {selected_keyword}")
         elif selected_group:
-            # Secondary: group keyword search
             print(f"Group selected: {selected_group}")
             print(f"group_order parameter received: {group_order}")
             
@@ -1913,28 +1821,23 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
                        style={"color": "#666", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
             ])
         
-        # Search for articles using semantic search if embeddings are available, otherwise use text search
         matching_articles = []
         
         if _GLOBAL_DOCUMENT_EMBEDDINGS_READY and len(search_keywords) > 0:
             try:
                 print(f"    Using semantic search for keywords: {search_keywords}")
                 
-                # Get keyword embeddings
-                keyword_texts = " ".join(search_keywords)  # Combine keywords for semantic search
+                keyword_texts = " ".join(search_keywords)  
                 keyword_embedding = embedding_model_kw.encode([keyword_texts], convert_to_tensor=True).to(device).cpu().numpy()
                 
-                # Get pre-computed document embeddings
                 document_embeddings = get_document_embeddings()
                 
-                # Calculate similarities
                 similarities = cosine_similarity(keyword_embedding, document_embeddings)[0]
                 
-                # Get top similar documents
                 top_indices = np.argsort(similarities)[::-1]
                 
                 for idx in top_indices:
-                    if similarities[idx] > 0.15:  # Similarity threshold
+                    if similarities[idx] > 0.15:  
                         text = str(df.iloc[int(idx), 1]) if len(df.iloc[int(idx)]) > 1 else ""
                         file_keywords = extract_top_keywords(text, 5)
                         matching_articles.append({
@@ -1945,7 +1848,7 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
                             'similarity': float(similarities[idx])
                         })
                         
-                        if len(matching_articles) >= 50:  # Limit results
+                        if len(matching_articles) >= 50:  
                             break
                 
                 print(f"    Semantic search found {len(matching_articles)} relevant documents")
@@ -1957,7 +1860,6 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
                     text = str(row.iloc[1]) if len(row) > 1 else ""
                     text_lower = text.lower()
                     
-                    # Check if any of the search keywords is in the text
                     contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
                     
                     if contains_keyword:
@@ -1969,13 +1871,11 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
                             'keywords': file_keywords
                         })
         else:
-            # Use traditional text search
             print(f"    Using text search for keywords: {search_keywords}")
         for idx, row in df.iterrows():
             text = str(row.iloc[1]) if len(row) > 1 else ""
             text_lower = text.lower()
             
-            # Check if any of the search keywords is in the text
             contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
             
             if contains_keyword:
@@ -1994,15 +1894,12 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
                 print(f"Cached 'no articles' result for: {cache_key}")
             return result
         
-        # Create article display items
         article_items = [
             html.H6(f"{search_title} (Found {len(matching_articles)} articles)", 
                    style={"color": "#2c3e50", "marginBottom": "15px"})
         ]
         
-        # Create article items with file number and keywords
         for article_info in matching_articles:
-            # Create keyword tags
             keyword_tags = []
             for keyword in article_info['keywords']:
                 keyword_tag = html.Span(
@@ -2019,7 +1916,6 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
                 )
                 keyword_tags.append(keyword_tag)
             
-            # Create clickable article item with file number and keywords
             article_item = html.Div([
                 html.Button(
                     html.Div([
@@ -2050,7 +1946,6 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
             ])
             article_items.append(article_item)
         
-        # Cache the result for future use
         result = html.Div(article_items)
         if cache_key:
             _ARTICLES_CACHE[cache_key] = result
@@ -2063,19 +1958,14 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
         return html.P(f"Error displaying recommended articles: {str(e)}")
 
 def extract_top_keywords(text, top_k=5):
-    """Extract top N single-word keywords from text"""
     try:
         global kw_model
         if 'kw_model' in globals() and kw_model:
-            # Use KeyBERT to extract keywords - only single words (1, 1)
             keywords = kw_model.extract_keywords(text, keyphrase_ngram_range=(1, 1), 
                                                stop_words='english')
-            # Only return text part of top_k keywords
             return [kw[0] for kw in keywords[:top_k]]
         else:
-            # If KeyBERT not available, return simple word splitting
             words = text.lower().split()
-            # Filter out common stop words and short words
             stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'was', 'are', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should'}
             filtered_words = [w for w in words if len(w) > 3 and w not in stop_words]
             return filtered_words[:top_k]
@@ -2090,10 +1980,10 @@ def extract_top_keywords(text, top_k=5):
         raise PreventUpdate
 
     selected_group = json.loads(triggered_id.split('.')[0])["index"]
-    print(f"Switch to group: {selected_group}")  # Add debug info
+    print(f"Switch to group: {selected_group}")  
     print(f"        Clear selected keyword") 
     
-    return selected_group, None  # Clear selected keyword when switching groups
+    return selected_group, None  
 
 def get_all_cls_vectors(df_data, model, tokenizer, device):
     vectors = []
@@ -2121,17 +2011,11 @@ def get_all_cls_vectors(df_data, model, tokenizer, device):
             avg_cls = torch.mean(stacked_cls, dim=0)
             vectors.append(avg_cls.detach().cpu())
     return torch.stack(vectors, dim=0)
-# Run training process: match articles by keyword groups, remove outliers, and prepare for fine-tuning
 def run_training():
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: STARTING TRAINING PROCESS")
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: run_training() called")
+
     try:
-        # Clear caches when training starts as data relationships may change
         clear_caches()
         
-        # [EMOJI]combinedloss_onlytriplet.py[EMOJI]
         print(f"    DEBUG: Loading CSV data from: {csv_path}")
         df = pd.read_csv(csv_path)
         print(f"    DEBUG: CSV loaded successfully, shape: {df.shape}")
@@ -2153,7 +2037,6 @@ def run_training():
 
     out_dir = "test_results"; os.makedirs(out_dir, exist_ok=True)
 
-    # BM25[EMOJI]
     from nltk.stem import SnowballStemmer
     stemmer = SnowballStemmer('english')
     
@@ -2179,29 +2062,25 @@ def run_training():
         results = {}
         for g, words in query_groups.items():
             q = [stemmer.stem(w.lower()) for w in words]
-            print(f"    BM25[EMOJI] '{g}': [EMOJI] {words} -> [EMOJI] {q}")
+            print(f"    BM25 '{g}': {words} -> {q}")
             scores = bm25.get_scores(q)
-            print(f"    [EMOJI]: min={min(scores):.4f}, max={max(scores):.4f}, [EMOJI]: {sum(1 for s in scores if s > 0)}")
+            print(f"    min={min(scores):.4f}, max={max(scores):.4f}, {sum(1 for s in scores if s > 0)}")
             
-            # [EMOJI]
-            idx_corpus = [i for i, s in enumerate(scores) if s > 0.1]  # [EMOJI]0[EMOJI]0.1
+            idx_corpus = [i for i, s in enumerate(scores) if s > 0.1]  
             if len(idx_corpus) == 0:
-                # [EMOJI]
                 idx_corpus = [i for i, s in enumerate(scores) if s > 0.01]
             
             idx_orig = [valid_indices[i] for i in idx_corpus]
-            results[g] = idx_orig[:3000]  # top_similar_files
-            print(f"    [EMOJI] '{g}' [EMOJI] {len(idx_orig)} [EMOJI]")
+            results[g] = idx_orig[:3000]  
+
         return results
 
     tokenized_corpus, valid_indices = process_articles_serial(all_texts)
     bm25 = BM25Okapi([s.split() for s in tokenized_corpus])
 
-    # [EMOJI]
     USER_GROUPS_ONLY = True
     ALLOW_EMPTY_GROUPS = False
     
-    # [EMOJI]
     query_groups = {}
     print(f"    DEBUG: Checking for user groups at: {final_list_path}")
     if os.path.exists(final_list_path):
@@ -2209,11 +2088,10 @@ def run_training():
             with open(final_list_path, "r", encoding="utf-8") as f:
                 user_groups = json.load(f)
             print(f"    DEBUG: Loaded user groups: {user_groups}")
-            # [EMOJI]Other[EMOJI]BM25[EMOJI]
             for group_name, keywords in user_groups.items():
-                if keywords:  # [EMOJI]Other[EMOJI]
+                if keywords:  
                     query_groups[group_name] = keywords
-                    print(f"     {group_name}: [EMOJI] {keywords}")
+                    print(f"     {group_name}:  {keywords}")
             print(f"     Loaded user groups for training: {list(query_groups.keys())}")
         except Exception as e:
             print(f"    ERROR: Failed to load user groups: {e}")
@@ -2224,10 +2102,9 @@ def run_training():
         print(f"    WARNING: User groups file not found: {final_list_path}")
         query_groups = {}
     
-    # [EMOJI]
     if not query_groups and not ALLOW_EMPTY_GROUPS:
         print("    ERROR: No user groups found and ALLOW_EMPTY_GROUPS is False")
-        print("        [EMOJI]UI[EMOJI]")
+
         return None, None
     
     print(f"    DEBUG: Starting BM25 search with {len(query_groups)} groups")
@@ -2242,17 +2119,17 @@ def run_training():
     for g, idxs in matched_dict.items():
         print(f"[BM25] {g}: {len(idxs)} docs")
     
-    # [EMOJI]Other[EMOJI]BM25[EMOJI]
+
     if "Other" not in matched_dict:
         matched_dict["Other"] = []
-        print(f"[BM25] Other: {len(matched_dict['Other'])} docs ([EMOJI])")
+        print(f"[BM25] Other: {len(matched_dict['Other'])} docs")
     else:
-        print(f"[BM25] Other: {len(matched_dict['Other'])} docs ([EMOJI])")
+        print(f"[BM25] Other: {len(matched_dict['Other'])} docs")
     
     with open(os.path.join(out_dir, "bm25_search_results.json"), "w", encoding="utf-8") as f:
         json.dump(matched_dict, f, ensure_ascii=False, indent=2)
 
-    # [EMOJI]
+
     print(f"    DEBUG: Initializing tokenizer with model: {get_config('bert_name')}")
     try:
         tokenizer = BertTokenizer.from_pretrained(get_config("bert_name"))
@@ -2263,22 +2140,22 @@ def run_training():
         traceback.print_exc()
         return None, None
     
-    # [EMOJI]SentenceEncoder[EMOJI]
+
     class SentenceEncoder(nn.Module):
-        # BERT -> mean-pool -> Linear(proj) -> LayerNorm -> L2
+
         def __init__(self, bert_name=None, proj_dim=None, device='cpu'):
             if bert_name is None:
                 bert_name = get_config("bert_name")
             if proj_dim is None:
                 proj_dim = get_config("proj_dim")
             super().__init__()
-            # [EMOJI] CPU [EMOJI] meta tensor [EMOJI]
+
             self.bert = BertModel.from_pretrained(bert_name)
             self.hidden = self.bert.config.hidden_size
             self.proj = nn.Linear(self.hidden, proj_dim) if proj_dim else None
             self.out_dim = proj_dim or self.hidden
             self.ln = nn.LayerNorm(self.out_dim)
-            # [EMOJI]
+
             if device != 'cpu':
                 self.to(device)
 
@@ -2301,7 +2178,7 @@ def run_training():
         traceback.print_exc()
         return None, None
 
-    # [EMOJI]Triplet[EMOJI]
+
     class TripletTextDataset(torch.utils.data.Dataset):
         def __init__(self, triplets, texts):
             self.triplets, self.texts = triplets, texts
@@ -2327,16 +2204,15 @@ def run_training():
         
         triplets = []
         for group_name, idxs in pos_groups.items():
-            # [EMOJI]Other[EMOJI]
             neg_pool = []
             for g, g_idxs in matched_dict.items():
-                if g != group_name:  # [EMOJI]Other
+                if g != group_name:  
                     neg_pool.extend(g_idxs)
-                    print(f"[DEBUG] [EMOJI] {g}: {len(g_idxs)} docs")
+                    print(f"[DEBUG]  {g}: {len(g_idxs)} docs")
             
-            print(f"[DEBUG] {group_name} [EMOJI]: {len(neg_pool)} docs")
-            if len(neg_pool) == 0:  # [EMOJI]
-                print(f"[WARN] {group_name} [EMOJI]")
+            print(f"[DEBUG] {group_name} : {len(neg_pool)} docs")
+            if len(neg_pool) == 0:  
+                print(f"[WARN] {group_name} ")
                 continue
             
             for a in idxs:
@@ -2344,7 +2220,7 @@ def run_training():
                 if len(pos) > num_pos_per_anchor: 
                     pos = random.sample(pos, num_pos_per_anchor)
                 
-                # [EMOJI]
+             
                 neg = random.sample(neg_pool, k=min(num_neg_per_anchor, len(neg_pool)))
                 
                 for p in pos:
@@ -2353,29 +2229,25 @@ def run_training():
                         triplets.append((a,p,n))
         
         random.shuffle(triplets)
-        print(f"[Triplet] [EMOJI] {len(triplets)} [EMOJI]triplets[EMOJI]")
+        print(f"[Triplet] {len(triplets)} triplets")
         return triplets
 
     def semi_hard_triplet(za, zp, zn, margin=0.8):
-        """
-        [EMOJI]fallback[EMOJI]hardest-in-batch
-        [EMOJI] semi-hard[EMOJI]d_ap < d_an < d_ap + margin
-        """
+
         d_ap = torch.norm(za - zp, dim=1)
         d_an = torch.norm(za - zn, dim=1)
-        # [EMOJI] semi-hard [EMOJI]d_ap < d_an < d_ap + margin
         mask = (d_an > d_ap) & (d_an < d_ap + margin)
         if mask.any():
             return nn.TripletMarginLoss(margin=margin, p=2)(za[mask], zp[mask], zn[mask])
         
-        # fallback[EMOJI]hardest-in-batch
+      
         with torch.no_grad():
             D = torch.cdist(za, zn, p=2)
             n_hard = D.argmin(dim=1)
         return nn.TripletMarginLoss(margin=margin, p=2)(za, zp, zn[n_hard])
 
     def train_triplet_text(model, tokenizer, triplets, texts, device, epochs=None, bs=None, margin=None, lr=None, freeze_layers=None):
-        # [EMOJI]
+
         if epochs is None: epochs = get_config("triplet_epochs")
         if bs is None: bs = get_config("triplet_batch_size")
         if margin is None: margin = get_config("triplet_margin")
@@ -2405,8 +2277,7 @@ def run_training():
                 loss.backward()
                 opt.step()
                 total_loss += loss.item()
-                if (step+1) % 20 == 0:
-                    print(f"[Triplet] Ep {ep+1} Step {step+1}/{len(dl)} Loss {loss.item():.4f}")
+                print(f"[Triplet] Epoch {ep+1} Step {step+1}/{len(dl)} Loss: {loss.item():.4f}")
             avg_loss = total_loss / len(dl)
             print(f"[Triplet] Ep {ep+1} Avg {avg_loss:.4f}")
         return model
@@ -2428,18 +2299,8 @@ def run_training():
     def gap_based_group_filtering(Z_raw, matched_dict, label_map, alpha=None):
         if alpha is None:
             alpha = get_config("gap_alpha")
-        """
-        [EMOJI]gap[EMOJI]
-        gap_i = s_i,top1 - s_i,top2 ([EMOJI])
-        [EMOJI]gap[EMOJI]Mean-Std[EMOJI]
-        """
-        print("=== Gap-based[EMOJI] ===")
-        
-        # [EMOJI]
         Z_np = Z_raw.copy()
         Z_norm = Z_np / (np.linalg.norm(Z_np, axis=1, keepdims=True) + 1e-8)
-        
-        # [EMOJI]
         group_centers = {}
         for group_name, indices in matched_dict.items():
             if group_name == "Other" or len(indices) == 0:
@@ -2449,45 +2310,39 @@ def run_training():
                 group_center = np.mean(Z_norm[valid_indices], axis=0)
                 group_center = group_center / (np.linalg.norm(group_center) + 1e-8)
                 group_centers[group_name] = group_center
-        
-        # [EMOJI]
+
         all_similarities = []
         for group_name, center in group_centers.items():
             sim = np.dot(Z_norm, center)
             all_similarities.append(sim)
         
         if len(all_similarities) == 0:
-            print("  [EMOJI]")
+
             return matched_dict
         
-        all_similarities = np.array(all_similarities).T  # [N, num_groups]
+        all_similarities = np.array(all_similarities).T  
         
-        # [EMOJI]gap: s_top1 - s_top2
-        sorted_indices = np.argsort(all_similarities, axis=1)[:, ::-1]  # [EMOJI]
+        sorted_indices = np.argsort(all_similarities, axis=1)[:, ::-1]  
         s_top1 = all_similarities[np.arange(len(all_similarities)), sorted_indices[:, 0]]
         s_top2 = all_similarities[np.arange(len(all_similarities)), sorted_indices[:, 1]] if all_similarities.shape[1] > 1 else s_top1
         gap = s_top1 - s_top2
         
-        # [EMOJI]top1[EMOJI]
         group_names = list(group_centers.keys())
-        arg1 = sorted_indices[:, 0]  # [EMOJI]
+        arg1 = sorted_indices[:, 0]  
         
-        print(f"  [EMOJI] {len(gap)} [EMOJI]gap[EMOJI]")
-        print(f"  Gap[EMOJI]: [{gap.min():.3f}, {gap.max():.3f}]")
-        
-        # [EMOJI]gap[EMOJI]Mean-Std[EMOJI]
-        print("  [EMOJI]gap[EMOJI]...")
+        print(f"  {len(gap)} gap")
+        print(f"  Gap: [{gap.min():.3f}, {gap.max():.3f}]")
+
         group_thresholds = {}
         
         for group_name, group_idx in label_map.items():
             if group_name == "Other" or group_name not in group_centers:
                 continue
                 
-            # [EMOJI]group_centers[EMOJI]
+
             if group_name in group_names:
                 group_center_idx = group_names.index(group_name)
                 
-                # [EMOJI]gap
                 group_mask = (arg1 == group_center_idx)
                 if not group_mask.any():
                     continue
@@ -2496,18 +2351,17 @@ def run_training():
                 mean_gap = gaps_group.mean()
                 std_gap = gaps_group.std()
                 
-                # [EMOJI]mean - α*std[EMOJI]
+
                 base_threshold = mean_gap - alpha * std_gap
-                
-                # [EMOJI]/[EMOJI]
+
                 min_samples = get_config("gap_min_samples")
                 percentile_fallback = get_config("gap_percentile_fallback")
                 if len(gaps_group) < min_samples or std_gap < 1e-6:
-                    # [EMOJI]
+
                     threshold = np.percentile(gaps_group, percentile_fallback)
-                    print(f"    {group_name}: [EMOJI]:{len(gaps_group)}, std:{std_gap:.6f}[EMOJI]")
+                    print(f"    {group_name}: {len(gaps_group)}, std:{std_gap:.6f}")
                 else:
-                    # [EMOJI]
+
                     global_median = np.median(gap)
                     thr_floor = get_config("gap_floor_threshold")
                     mix_ratio = get_config("gap_mix_ratio")
@@ -2516,10 +2370,8 @@ def run_training():
                 group_thresholds[group_name] = threshold
                 
                 print(f"    {group_name}: mean={mean_gap:.3f}, std={std_gap:.3f}, thr={threshold:.3f}")
-                print(f"      [EMOJI]: {np.sum(group_mask)}, gap[EMOJI]: [{gaps_group.min():.3f}, {gaps_group.max():.3f}]")
+                print(f"      {np.sum(group_mask)}, gap: [{gaps_group.min():.3f}, {gaps_group.max():.3f}]")
         
-        # [EMOJI]gap < [EMOJI] → [EMOJI]
-        print("  [EMOJI]...")
         keep_mask = np.ones(len(gap), dtype=bool)
         filtered_by_group = {}
         
@@ -2534,21 +2386,19 @@ def run_training():
                         filtered_by_group[group_name] += 1
         
         filtered_count = np.sum(~keep_mask)
-        print(f"  [EMOJI] {filtered_count} [EMOJI] ({filtered_count/len(gap)*100:.1f}%)")
+        print(f"  {filtered_count} ({filtered_count/len(gap)*100:.1f}%)")
         for group_name, count in filtered_by_group.items():
-            print(f"    {group_name}: [EMOJI] {count} [EMOJI]")
+            print(f"    {group_name}: {count}")
         
-        # [EMOJI]
         clean_matched_dict = {}
         for group_name, indices in matched_dict.items():
             if group_name == "Other":
-                clean_matched_dict[group_name] = indices  # Other[EMOJI]
+                clean_matched_dict[group_name] = indices  
                 continue
                 
             if group_name in group_centers:
                 group_center_idx = group_names.index(group_name)
-                # [EMOJI]BM25[EMOJI]
-                orig_idxs = set(indices)  # [EMOJI]BM25[EMOJI]
+                orig_idxs = set(indices)  
                 group_mask = (arg1 == group_center_idx) & keep_mask
                 filtered_indices = [int(i) for i in np.where(group_mask)[0] if int(i) in orig_idxs]
                 clean_matched_dict[group_name] = filtered_indices
@@ -2560,10 +2410,7 @@ def run_training():
     def build_group_prototypes(encoder, tokenizer, texts, matched_dict, device, bs=None, min_per_group=None):
         if bs is None: bs = get_config("encoding_batch_size")
         if min_per_group is None: min_per_group = get_config("min_per_group_prototype")
-        """
-        [EMOJI] matched_dict [EMOJI]/[EMOJI]L2 [EMOJI]
-        """
-        # [EMOJI]
+
         def encode_all():
             encoder.eval()
             Z=[]
@@ -2571,9 +2418,9 @@ def run_training():
                 toks = tokenizer(texts[i:i+bs], return_tensors='pt', padding=True, truncation=True, max_length=256)
                 toks = {k:v.to(device) for k,v in toks.items()}
                 Z.append(encoder.encode_tokens(toks).detach().cpu())
-            return torch.vstack(Z)  # (N,D)
+            return torch.vstack(Z)  
         
-        Z_all = encode_all()           # torch.Tensor [N,D], [EMOJI] L2norm
+        Z_all = encode_all()           
         G = {}
         for g, idxs in matched_dict.items():
             if g == "Other": 
@@ -2586,17 +2433,12 @@ def run_training():
 
     def prototype_separation_training(encoder, tokenizer, all_texts, group_prototypes, device,
                                      epochs=None, bs=None, lr=None, min_separation=None, matched_dict=None):
-        # [EMOJI]
+
         if epochs is None: epochs = get_config("proto_epochs")
         if bs is None: bs = get_config("proto_batch_size")
         if lr is None: lr = get_config("proto_lr")
         if min_separation is None: min_separation = get_config("min_separation")
-        """
-        [EMOJI]EMA memory bank[EMOJI]
-        - [EMOJI]group_prototypes[EMOJI]
-        - [EMOJI]epoch[EMOJI]
-        """
-        # [EMOJI]BERT[EMOJI]
+
         if hasattr(encoder, 'bert'):
             for p in encoder.bert.embeddings.parameters(): 
                 p.requires_grad = False
@@ -2604,18 +2446,16 @@ def run_training():
                 for p in layer.parameters(): 
                     p.requires_grad = False
         
-        # [EMOJI]EMA memory bank[EMOJI]
         global_prototypes = {}
         for group_name, proto_tensor in group_prototypes.items():
             if group_name != "Other":
                 global_prototypes[group_name] = proto_tensor.clone().to(device).detach()
         
         params = [p for p in encoder.parameters() if p.requires_grad]
-        print(f"[INFO] Prototype Separation[EMOJI]: {sum(p.numel() for p in params):,}")
+        print(f"Prototype Separation: {sum(p.numel() for p in params):,}")
         
         opt = torch.optim.AdamW(params, lr=lr)
         
-        # [EMOJI]balanced batch sampler
         class BalancedBatchSampler:
             def __init__(self, indices_by_group, groups, m_per_group=4, batch_size=64):
                 self.buckets = {g: list(idxs) for g, idxs in indices_by_group.items()}
@@ -2624,11 +2464,9 @@ def run_training():
                 self.batch_size = batch_size
                 
             def __iter__(self):
-                # [EMOJI]
                 groups_shuffled = self.groups.copy()
                 random.shuffle(groups_shuffled)
                 
-                # [EMOJI]2[EMOJI]batch
                 for i in range(0, len(groups_shuffled), 2):
                     gs = groups_shuffled[i:i+2]
                     if len(gs) < 2:
@@ -2636,18 +2474,15 @@ def run_training():
                     
                     batch = []
                     for g in gs:
-                        # [EMOJI]
                         group_samples = self.buckets[g].copy()
                         random.shuffle(group_samples)
-                        # [EMOJI]m[EMOJI]
                         batch.extend(group_samples[:self.m])
                     
-                    # [EMOJI]batch[EMOJI]
                     if len(batch) < self.batch_size:
                         remaining = self.batch_size - len(batch)
                         all_samples = []
                         for g, samples in self.buckets.items():
-                            if g not in gs:  # [EMOJI]
+                            if g not in gs:  
                                 all_samples.extend(samples)
                         if all_samples:
                             random.shuffle(all_samples)
@@ -2658,17 +2493,15 @@ def run_training():
             def __len__(self):
                 return max(1, len(self.groups) // 2)
         
-        # [EMOJI]balanced sampler
         m_per_group = bs // 4
         sampler = BalancedBatchSampler(matched_dict, list(global_prototypes.keys()), 
                                      m_per_group=m_per_group, batch_size=bs)
         
-        print(f"[INFO] [EMOJI]: {list(global_prototypes.keys())}")
-        print(f"[INFO] [EMOJI]Balanced Batch[EMOJI]{m_per_group}[EMOJI]")
+        print(f"Balanced Batch: {list(global_prototypes.keys())}")
+        print(f"Balanced Batch: {m_per_group}")
         
         encoder.train()
         for ep in range(epochs):
-            total_sep_loss = 0
             total_center_loss = 0
             total_loss = 0
             steps = 0
@@ -2676,79 +2509,55 @@ def run_training():
             for batch_indices in sampler:
                 batch_texts = [all_texts[i] for i in batch_indices]
                 
-                # [EMOJI]batch
                 inputs = tokenizer(batch_texts, return_tensors='pt', padding=True, 
                                  truncation=True, max_length=256).to(device)
                 outputs = encoder.encode_tokens(inputs)
                 z_batch = nn.functional.normalize(outputs, p=2, dim=-1)
                 
-                # [EMOJI]batch[EMOJI]
                 batch_group_means = {}
                 for group_name, indices in matched_dict.items():
                     if group_name == "Other":
                         continue
                     
-                    # [EMOJI]batch[EMOJI]
                     group_mask = torch.tensor([i in indices for i in batch_indices], device=device)
                     if group_mask.sum() > 0:
                         group_embeddings = z_batch[group_mask]
                         batch_group_means[group_name] = group_embeddings.mean(dim=0)
+
                 
-                # 1. Proto-level separation loss ([EMOJI]batch[EMOJI])
-                separation_loss = torch.tensor(0.0, device=device)
-                if len(batch_group_means) >= 2:
-                    group_names = list(batch_group_means.keys())
-                    means = torch.stack([batch_group_means[g] for g in group_names], dim=0)
-                    
-                    # [EMOJI]pairwise[EMOJI]
-                    dists = torch.cdist(means, means, p=2)
-                    mask = torch.triu(torch.ones_like(dists, dtype=torch.bool), diagonal=1)
-                    upper_dists = dists[mask]
-                    
-                    # [EMOJI] → [EMOJI]relu[EMOJI]
-                    penalties = F.relu(min_separation - upper_dists)
-                    separation_loss = penalties.sum()
-                
-                # 2. Center-pull loss ([EMOJI])
                 center_loss = torch.tensor(0.0, device=device)
                 for group_name, indices in matched_dict.items():
                     if group_name == "Other" or group_name not in global_prototypes:
                         continue
                     
-                    # [EMOJI]batch[EMOJI]
                     group_mask = torch.tensor([i in indices for i in batch_indices], device=device)
                     if group_mask.sum() > 0:
                         group_embeddings = z_batch[group_mask]
                         prototype = global_prototypes[group_name]
                         
-                        # [EMOJI]
                         distances = torch.norm(group_embeddings - prototype, p=2, dim=1)
                         center_loss += distances.mean()
                 
-                # [EMOJI]loss
-                total_batch_loss = separation_loss + 0.1 * center_loss
+                total_batch_loss = center_loss
                 
-                # [EMOJI]
                 if total_batch_loss > 0:
                     opt.zero_grad()
                     total_batch_loss.backward()
                     opt.step()
                     
-                    total_sep_loss += separation_loss.item()
+                    print(f"[CenterPull] Epoch {ep+1} Step {steps+1} Center Loss: {center_loss.item():.4f}")
+                    
                     total_center_loss += center_loss.item()
                     total_loss += total_batch_loss.item()
                     steps += 1
             
             if steps > 0:
-                avg_sep = total_sep_loss / steps
                 avg_center = total_center_loss / steps
                 avg_total = total_loss / steps
-                print(f"[PrototypeSep] Epoch {ep+1}/{epochs} Sep={avg_sep:.4f} Center={avg_center:.4f} Total={avg_total:.4f}")
+                print(f"[PrototypeSep] Epoch {ep+1}/{epochs} Center={avg_center:.4f} Total={avg_total:.4f}")
             
-            # [EMOJI]epoch[EMOJI]EMA[EMOJI]
-            print(f"  Epoch {ep+1}[EMOJI]...")
+            print(f"  Epoch {ep+1}...")
             with torch.no_grad():
-                # [EMOJI]
                 encoder.eval()
                 Z_all = []
                 for i in range(0, len(all_texts), bs):
@@ -2757,35 +2566,31 @@ def run_training():
                                      truncation=True, max_length=256).to(device)
                     outputs = encoder.encode_tokens(inputs)
                     Z_all.append(outputs.detach())
-                Z_all = torch.cat(Z_all, dim=0)  # [N, D]
+                Z_all = torch.cat(Z_all, dim=0) 
                 Z_all = nn.functional.normalize(Z_all, p=2, dim=-1)
                 
-                # [EMOJI]EMA[EMOJI]
-                ema_alpha = get_config("ema_alpha")  # EMA[EMOJI]
+                ema_alpha = get_config("ema_alpha")  
                 for group_name, indices in matched_dict.items():
                     if group_name != "Other" and group_name in global_prototypes:
                         valid_indices = [i for i in indices if 0 <= i < len(Z_all)]
                         if len(valid_indices) > 0:
-                            # [EMOJI]epoch[EMOJI]
+
                             current_proto = Z_all[valid_indices].mean(dim=0)
                             current_proto = nn.functional.normalize(current_proto, p=2, dim=-1)
-                            
-                            # EMA[EMOJI]
+
                             global_prototypes[group_name] = (1 - ema_alpha) * global_prototypes[group_name] + ema_alpha * current_proto
                             global_prototypes[group_name] = nn.functional.normalize(global_prototypes[group_name], p=2, dim=-1)
                 
-                encoder.train()  # [EMOJI]
+                encoder.train() 
         
         return encoder
 
     def evaluate_clustering_quality(Z, true_labels, matched_dict, group_names):
-        """[EMOJI]"""
+
         from sklearn.metrics import silhouette_score
         
-        # [EMOJI]silhouette score
         silhouette = silhouette_score(Z, true_labels)
         
-        # [EMOJI]BM25[EMOJI]silhouette score
         group_labels = []
         for i in range(len(true_labels)):
             assigned = False
@@ -2799,7 +2604,6 @@ def run_training():
         
         group_silhouette = silhouette_score(Z, group_labels)
         
-        # [EMOJI]
         group_stats = {}
         for group_name in group_names:
             if group_name in matched_dict:
@@ -2807,7 +2611,6 @@ def run_training():
                 if len(group_indices) > 1:
                     group_embeddings = Z[group_indices]
                     
-                    # [EMOJI]
                     intra_distances = []
                     for i in range(len(group_embeddings)):
                         for j in range(i+1, len(group_embeddings)):
@@ -2815,7 +2618,6 @@ def run_training():
                             intra_distances.append(dist)
                     intra_cohesion = np.mean(intra_distances) if intra_distances else 0
                     
-                    # [EMOJI]
                     other_indices = []
                     for other_group in group_names:
                         if other_group != group_name and other_group in matched_dict:
@@ -2829,7 +2631,6 @@ def run_training():
                     else:
                         inter_separation = 0
                     
-                    # [EMOJI]/[EMOJI]
                     separation_ratio = inter_separation / intra_cohesion if intra_cohesion > 0 else 0
                     
                     group_stats[group_name] = {
@@ -2845,39 +2646,33 @@ def run_training():
             'group_stats': group_stats
         }
 
-    # ===================== [EMOJI] =====================
     
-    # [EMOJI]
-    print("\n=== [EMOJI] ===")
+
     for group_name, indices in matched_dict.items():
         if group_name == "Other":
-            print(f"{group_name}: {len(indices)} docs ([EMOJI])")
+            print(f"{group_name}: {len(indices)} docs ")
             continue
         
         if len(indices) == 0:
             print(f"{group_name}: 0 docs")
             continue
             
-        # [EMOJI]
         group_labels = [all_labels[i] for i in indices if i < len(all_labels)]
         if len(group_labels) == 0:
-            print(f"{group_name}: 0 docs ([EMOJI])")
+            print(f"{group_name}: 0 docs ")
             continue
             
-        # [EMOJI]
         from collections import Counter
         label_counts = Counter(group_labels)
         most_common_label, most_common_count = label_counts.most_common(1)[0]
         purity = most_common_count / len(group_labels)
         
-        print(f"{group_name}: {len(indices)} docs, [EMOJI]={purity:.3f} ([EMOJI]: {most_common_label}, {most_common_count}/{len(group_labels)})")
+        print(f"{group_name}: {len(indices)} docs, {purity:.3f} ({most_common_label}, {most_common_count}/{len(group_labels)})")
     
-    # [EMOJI]ID[EMOJI]Other[EMOJI]
-    print("\n=== [EMOJI] ===")
-    doc_to_group = {}  # [EMOJI]
+
+    doc_to_group = {}  
     final_matched_dict = {}
     
-    # [EMOJI]Other[EMOJI]
     for group_name, indices in matched_dict.items():
         if group_name == "Other":
             continue
@@ -2888,61 +2683,50 @@ def run_training():
                 doc_to_group[doc_id] = group_name
                 final_matched_dict[group_name].append(doc_id)
             else:
-                print(f"[[EMOJI]] [EMOJI] {doc_id} [EMOJI] {doc_to_group[doc_id]} [EMOJI]")
-    
-    # [EMOJI]Other[EMOJI]
+                print(f"Duplicate document ID: {doc_id} found in multiple groups")
+
+
     if "Other" in matched_dict:
         final_matched_dict["Other"] = []
         for doc_id in matched_dict["Other"]:
             if doc_id in doc_to_group:
-                # [EMOJI]
                 original_group = doc_to_group[doc_id]
                 final_matched_dict[original_group].remove(doc_id)
-                print(f"[[EMOJI]] [EMOJI] {doc_id} [EMOJI] {original_group} [EMOJI] Other [EMOJI]")
+                print(f"{doc_id} {original_group} Other")
             
             doc_to_group[doc_id] = "Other"
             final_matched_dict["Other"].append(doc_id)
     
-    # [EMOJI]matched_dict
     matched_dict = final_matched_dict
     
-    # [EMOJI]
-    print("\n=== [EMOJI] ===")
+
     for group_name, indices in matched_dict.items():
         print(f"{group_name}: {len(indices)} docs")
     
-    # [EMOJI]BERT embedding[EMOJI]
-    print("\n=== [EMOJI]BERT embedding ===")
+
     Z_raw = encode_corpus(encoder, tokenizer, all_texts, device)
     
-    # [EMOJI]
     label_map, cur = {}, 0
     for g in ["Group 1", "Group 2", "Group 3"]:
         if g in matched_dict:
             label_map[g] = cur; cur += 1
     other_label = cur; label_map["Other"] = other_label
     
-    # [EMOJI]BM25[EMOJI]
     import copy
     bm25_results = copy.deepcopy(matched_dict)
-    
-    # ===================== [EMOJI]Gap-based[EMOJI] =====================
-    print("\n=== [EMOJI]Gap-based[EMOJI] ===")
     clean_matched_dict = gap_based_group_filtering(Z_raw, matched_dict, label_map, alpha=0.5)
     
-    # [EMOJI]
-    print("\n=== [EMOJI] ===")
-    matched_dict_for_display = copy.deepcopy(matched_dict)  # [EMOJI] BM25 [EMOJI]
-    matched_dict = clean_matched_dict  # [EMOJI]
+
+    matched_dict_for_display = copy.deepcopy(matched_dict)  
+    matched_dict = clean_matched_dict  
     
-    # [EMOJI] finetune mode[EMOJI]
-    print("\n=== [EMOJI] ===")
+
     with open(os.path.join(out_dir, "filtered_group_assignment.json"), "w", encoding="utf-8") as f:
         json.dump(matched_dict, f, ensure_ascii=False, indent=2)
-    print(f"[SAVE] [EMOJI]: {os.path.join(out_dir, 'filtered_group_assignment.json')}")
+    print(f"[SAVE] Filtered group assignment: {os.path.join(out_dir, 'filtered_group_assignment.json')}")
     
-    # [EMOJI]gap-based[EMOJI]
-    print("\n=== [EMOJI]Gap-based[EMOJI] ===")
+
+
     with open(os.path.join(out_dir, "gap_based_filter_results.json"), "w", encoding="utf-8") as f:
         json.dump({
             "original_sizes": {k: len(v) for k, v in bm25_results.items()},
@@ -2951,83 +2735,73 @@ def run_training():
             "alpha": 0.5,
             "threshold_method": "mean_minus_alpha_std_with_fallback"
         }, f, ensure_ascii=False, indent=2)
-    print(f"[SAVE] Gap-based[EMOJI]: {os.path.join(out_dir, 'gap_based_filter_results.json')}")
+    print(f"[SAVE] Gap-based: {os.path.join(out_dir, 'gap_based_filter_results.json')}")
     
-    # ===================== [EMOJI] =====================
-    print("\n=== [EMOJI] ===")
+
     group_prototypes = build_group_prototypes(encoder, tokenizer, all_texts, matched_dict, device)
-    print(f"[INFO] [EMOJI] {len(group_prototypes)} [EMOJI]: {list(group_prototypes.keys())}")
+    print(f"[INFO] {len(group_prototypes)}: {list(group_prototypes.keys())}")
     
-    # [EMOJI]
-    print("\n=== [EMOJI] ===")
+
+
     for group_name, indices in matched_dict.items():
         if group_name == "Other":
-            print(f"{group_name}: {len(indices)} docs ([EMOJI])")
+            print(f"{group_name}: {len(indices)} docs")
             continue
         
         if len(indices) == 0:
             print(f"{group_name}: 0 docs")
             continue
             
-        # [EMOJI]
         group_labels = [all_labels[i] for i in indices if i < len(all_labels)]
         if len(group_labels) == 0:
-            print(f"{group_name}: 0 docs ([EMOJI])")
+            print(f"{group_name}: 0 docs")
             continue
             
-        # [EMOJI]
         from collections import Counter
         label_counts = Counter(group_labels)
         most_common_label, most_common_count = label_counts.most_common(1)[0]
         purity = most_common_count / len(group_labels)
         
-        print(f"{group_name}: {len(indices)} docs, [EMOJI]={purity:.3f} ([EMOJI]: {most_common_label}, {most_common_count}/{len(group_labels)})")
+        print(f"{group_name}: {len(indices)} docs, {purity:.3f} ({most_common_label}, {most_common_count}/{len(group_labels)})")
 
-    # ===================== [EMOJI]Triplet[EMOJI]=====================
-    print("\n=== [EMOJI]Triplet[EMOJI] ===")
-    # [EMOJI]matched_dict[EMOJI]Other[EMOJI]
     print(f"[DEBUG] matched_dict keys: {list(matched_dict.keys())}")
     for g, idxs in matched_dict.items():
         print(f"[DEBUG] {g}: {len(idxs)} docs")
     
-    print(f"    DEBUG: Generating triplets from groups...")
+
     try:
         triplets = generate_triplets_from_groups(matched_dict)
         print(f"    DEBUG: Generated {len(triplets)} triplets")
         
         if len(triplets) > 0:
-            print(f"[INFO] [EMOJI] {len(triplets)} [EMOJI]triplets[EMOJI]")
+            print(f"[INFO] {len(triplets)} triplets")
             print(f"    DEBUG: Starting triplet training...")
             encoder = train_triplet_text(encoder, tokenizer, triplets, all_texts, device)
-            print("[INFO] Triplet[EMOJI]embedding[EMOJI]")
+            print("[INFO] Triplet embedding")
         else:
-            print("[WARN] Triplets [EMOJI] Triplet[EMOJI]")
+            print("[WARN] Triplets Triplet")
     except Exception as e:
         print(f"    ERROR: Triplet generation/training failed: {e}")
         import traceback
         traceback.print_exc()
         return None, None
     
-    # ===================== [EMOJI]Prototype Separation[EMOJI] =====================
-    print("\n=== Prototype Separation [EMOJI] ===")
-    print(f"    DEBUG: Starting prototype separation training...")
+
+
     try:
         encoder = prototype_separation_training(encoder, tokenizer, all_texts, group_prototypes, device,
                                               matched_dict=clean_matched_dict)
-        print("[INFO] Prototype Separation[EMOJI]")
+
     except Exception as e:
-        print(f"    ERROR: Prototype separation training failed: {e}")
+    
         import traceback
         traceback.print_exc()
         return None, None
     
-    # ===================== [EMOJI]EMA[EMOJI] =====================
-    print("\n=== EMA[EMOJI] ===")
-    
+
     def l2norm(X): 
         return X / (np.linalg.norm(X, axis=1, keepdims=True) + 1e-8)
     
-    # [EMOJI]embedding[EMOJI]EMA[EMOJI]
     print(f"    DEBUG: Encoding corpus with {len(all_texts)} texts...")
     try:
         Z_current = encode_corpus(encoder, tokenizer, all_texts, device)
@@ -3040,9 +2814,8 @@ def run_training():
         traceback.print_exc()
         return None, None
     
-    # [EMOJI]
     group_stats = {}
-    ema_alpha = get_config("ema_alpha")  # EMA[EMOJI]
+    ema_alpha = get_config("ema_alpha")  
     
     for g, train_idxs in matched_dict.items():
         if g == "Other" or len(train_idxs) < 5: 
@@ -3051,11 +2824,11 @@ def run_training():
         if len(train_idxs) < 5: 
             continue
 
-        # [EMOJI]
+  
         proto = Zn[train_idxs].mean(axis=0)
         proto = proto / (np.linalg.norm(proto) + 1e-8)
         
-        # [EMOJI]
+
         d_train = np.linalg.norm(Zn[train_idxs] - proto, axis=1)
         r_core = np.quantile(d_train, 0.50)
         r_near = np.quantile(d_train, 0.80)
@@ -3067,49 +2840,40 @@ def run_training():
             "r_core": float(r_core), 
             "r_near": float(r_near), 
             "r_edge": float(r_edge),
-            "ema_proto": proto.copy(),  # EMA[EMOJI]
-            "ema_r_core": float(r_core),  # EMA[EMOJI]
+            "ema_proto": proto.copy(),  
+            "ema_r_core": float(r_core),  
             "ema_r_near": float(r_near),
             "ema_r_edge": float(r_edge)
         }
     
-    # [EMOJI]EMA[EMOJI]
-    print("[EMOJI]EMA[EMOJI]...")
-    
+
     for g, stat in group_stats.items():
         train_set = set(stat["train_idxs"])
         proto = stat["ema_proto"]
         r_core = stat["ema_r_core"]
         
-        # [EMOJI]
         d_all = np.linalg.norm(Zn - proto, axis=1)
         
-        # [EMOJI] ≤ r_core [EMOJI]
         high_conf_new = []
         for i, d in enumerate(d_all):
             if i not in train_set and d <= r_core:
                 high_conf_new.append((i, d))
         
         if len(high_conf_new) > 0:
-            print(f"  {g}: [EMOJI] {len(high_conf_new)} [EMOJI]")
+            print(f"  {g}: {len(high_conf_new)}")
             
-            # [EMOJI]embedding
             high_conf_indices = [i for i, _ in high_conf_new]
             high_conf_embeddings = Zn[high_conf_indices]
             
-            # EMA[EMOJI]
             new_proto = high_conf_embeddings.mean(axis=0)
             new_proto = new_proto / (np.linalg.norm(new_proto) + 1e-8)
             
-            # [EMOJI] + [EMOJI]
             stat["ema_proto"] = (1 - ema_alpha) * stat["ema_proto"] + ema_alpha * new_proto
             stat["ema_proto"] = stat["ema_proto"] / (np.linalg.norm(stat["ema_proto"]) + 1e-8)
             
-            # [EMOJI]
             all_relevant_indices = stat["train_idxs"] + high_conf_indices
             d_combined = np.linalg.norm(Zn[all_relevant_indices] - stat["ema_proto"], axis=1)
             
-            # EMA[EMOJI]
             new_r_core = np.quantile(d_combined, 0.50)
             new_r_near = np.quantile(d_combined, 0.80) 
             new_r_edge = np.quantile(d_combined, 0.90)
@@ -3118,15 +2882,11 @@ def run_training():
             stat["ema_r_near"] = (1 - ema_alpha) * stat["ema_r_near"] + ema_alpha * new_r_near
             stat["ema_r_edge"] = (1 - ema_alpha) * stat["ema_r_edge"] + ema_alpha * new_r_edge
             
-            print(f"    [EMOJI]EMA[EMOJI]: core={stat['ema_r_core']:.3f}, near={stat['ema_r_near']:.3f}, edge={stat['ema_r_edge']:.3f}")
+            print(f"    EMA: core={stat['ema_r_core']:.3f}, near={stat['ema_r_near']:.3f}, edge={stat['ema_r_edge']:.3f}")
         else:
-            print(f"  {g}: [EMOJI]")
+            print(f"  {g}:")
     
-    print("[INFO] EMA[EMOJI]")
 
-    # [EMOJI]embedding
-    print("\n=== [EMOJI]embedding ===")
-    print(f"    DEBUG: Encoding final trained embeddings...")
     try:
         Z_trained = encode_corpus(encoder, tokenizer, all_texts, device)
         print(f"    DEBUG: Final embeddings shape: {Z_trained.shape}")
@@ -3135,24 +2895,16 @@ def run_training():
         import traceback
         traceback.print_exc()
         return None, None
-    
-    # [EMOJI]main_categories[EMOJI]
+
     main_categories = [get_main_category(label) for label in all_labels]
     
-    # [EMOJI]embedding[EMOJI]BM25[EMOJI]
-    print("\n=== [EMOJI]embedding[EMOJI] ===")
-    cluster_eval_raw = evaluate_clustering_quality(Z_raw, main_categories, bm25_results, list(bm25_results.keys()))
-    
-    # [EMOJI]embedding[EMOJI]
-    print("\n=== [EMOJI]embedding[EMOJI] ===")
-    cluster_eval_trained = evaluate_clustering_quality(Z_trained, main_categories, matched_dict, list(matched_dict.keys()))
 
-    # [EMOJI]
-    print("\n=== [EMOJI] ===")
-    print(f"Silhouette Score ([EMOJI]): {cluster_eval_raw['silhouette_true_labels']:.4f} → {cluster_eval_trained['silhouette_true_labels']:.4f}")
-    print(f"Silhouette Score (BM25[EMOJI]): {cluster_eval_raw['silhouette_group_labels']:.4f} → {cluster_eval_trained['silhouette_group_labels']:.4f}")
-    
-    # [EMOJI]numpy[EMOJI]Python[EMOJI]
+    cluster_eval_raw = evaluate_clustering_quality(Z_raw, main_categories, bm25_results, list(bm25_results.keys()))
+
+    cluster_eval_trained = evaluate_clustering_quality(Z_trained, main_categories, matched_dict, list(matched_dict.keys()))
+    print(f"Silhouette Score : {cluster_eval_raw['silhouette_true_labels']:.4f} → {cluster_eval_trained['silhouette_true_labels']:.4f}")
+    print(f"Silhouette Score (BM25): {cluster_eval_raw['silhouette_group_labels']:.4f} → {cluster_eval_trained['silhouette_group_labels']:.4f}")
+
     def convert_numpy_types(obj):
         if isinstance(obj, np.float32):
             return float(obj)
@@ -3181,16 +2933,14 @@ def run_training():
             "margin": 0.8
         }, f, ensure_ascii=False, indent=2)
 
-    # 2D[EMOJI]
-    print("\n=== 2D[EMOJI] ===")
-    print(f"    DEBUG: Starting 2D visualization with {len(Z_raw)} documents...")
+
     try:
-        # [EMOJI]perplexity
+
         n = len(Z_raw)
         perp = max(2, min(30, (n - 1) // 3))
         print(f"    DEBUG: Using perplexity: {perp}")
         
-        # [EMOJI]embedding[EMOJI]t-SNE
+ 
         print(f"    DEBUG: Computing t-SNE for raw embeddings...")
         X2_raw = TSNE(
             n_components=2, 
@@ -3200,7 +2950,6 @@ def run_training():
         ).fit_transform(Z_raw)
         print(f"    DEBUG: Raw t-SNE shape: {X2_raw.shape}")
         
-        # [EMOJI]embedding[EMOJI]t-SNE
         print(f"    DEBUG: Computing t-SNE for trained embeddings...")
         X2_trained = TSNE(
             n_components=2, 
@@ -3210,15 +2959,12 @@ def run_training():
         ).fit_transform(Z_trained)
         print(f"    DEBUG: Trained t-SNE shape: {X2_trained.shape}")
         
-        # [EMOJI]
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 8))
         
-        # [EMOJI]
         unique_main_cats = sorted(list(set(main_categories)))
         colors = plt.cm.Set3(np.linspace(0, 1, len(unique_main_cats)))
         color_map = dict(zip(unique_main_cats, colors))
         
-        # [EMOJI]embedding
         for main_cat in unique_main_cats:
             cat_mask = [cat == main_cat for cat in main_categories]
             cat_indices = np.where(cat_mask)[0]
@@ -3229,12 +2975,11 @@ def run_training():
                            c=[color_map[main_cat]], alpha=0.8, s=60, 
                            marker='o', label=f'{main_cat}')
         
-        ax1.set_title(f"[EMOJI]BERT Embedding (Silhouette: {cluster_eval_raw['silhouette_true_labels']:.3f})", 
+        ax1.set_title(f"BERT Embedding (Silhouette: {cluster_eval_raw['silhouette_true_labels']:.3f})", 
                      fontsize=14, fontweight='bold')
         ax1.set_xlabel('t-SNE Dimension 1'); ax1.set_ylabel('t-SNE Dimension 2')
         ax1.legend(); ax1.grid(True, alpha=0.3)
-        
-        # [EMOJI]embedding
+
         for main_cat in unique_main_cats:
             cat_mask = [cat == main_cat for cat in main_categories]
             cat_indices = np.where(cat_mask)[0]
@@ -3245,16 +2990,15 @@ def run_training():
                            c=[color_map[main_cat]], alpha=0.8, s=60, 
                            marker='o', label=f'{main_cat}')
         
-        ax2.set_title(f"Triplet[EMOJI]Embedding (Silhouette: {cluster_eval_trained['silhouette_true_labels']:.3f})", 
+        ax2.set_title(f"Triplet Embedding (Silhouette: {cluster_eval_trained['silhouette_true_labels']:.3f})", 
                      fontsize=14, fontweight='bold')
         ax2.set_xlabel('t-SNE Dimension 1'); ax2.set_ylabel('t-SNE Dimension 2')
         ax2.legend(); ax2.grid(True, alpha=0.3)
         
         plt.tight_layout()
         plt.savefig(os.path.join(out_dir, "triplet_training_comparison.png"), dpi=300, bbox_inches='tight')
-        print(f"[SAVE] Triplet[EMOJI]: {os.path.join(out_dir, 'triplet_training_comparison.png')}")
+        print(f"[SAVE] Triplet: {os.path.join(out_dir, 'triplet_training_comparison.png')}")
         
-        # [EMOJI]t-SNE[EMOJI]
         with open(os.path.join(out_dir, "triplet_tsne_comparison.json"), "w", encoding="utf-8") as f:
             json.dump({
                 "raw_tsne": {
@@ -3274,9 +3018,8 @@ def run_training():
             }, f, ensure_ascii=False, indent=2)
         
     except Exception as e:
-        print("[WARN] 2D[EMOJI]:", e)
+        print("[WARN] 2D:", e)
 
-    # [EMOJI]embedding
     print(f"    DEBUG: Saving trained embeddings and model...")
     try:
         np.save(os.path.join(out_dir, "embeddings_trained.npy"), Z_trained)
@@ -3299,58 +3042,43 @@ def run_training():
             "silhouette_improvement": float(cluster_eval_trained['silhouette_true_labels'] - cluster_eval_raw['silhouette_true_labels'])
         }, f, ensure_ascii=False, indent=2)
     
-    print("\n=== [EMOJI] ===")
-    print(f"Silhouette Score[EMOJI]: {cluster_eval_trained['silhouette_true_labels'] - cluster_eval_raw['silhouette_true_labels']:+.4f}")
-    print("=== DONE ===")
 
-    # [EMOJI]2D[EMOJI]UI[EMOJI]
-    print("\n=== [EMOJI]2D[EMOJI] ===")
+    print(f"Silhouette Score: {cluster_eval_trained['silhouette_true_labels'] - cluster_eval_raw['silhouette_true_labels']:+.4f}")
+
+
     
-    # [EMOJI]embedding - [EMOJI]final[EMOJI]
-    df_articles = df_clean  # [EMOJI]
+    df_articles = df_clean  
     
-    # [EMOJI]
     model_original = BertModel.from_pretrained('bert-base-uncased').to(device)
     model_original.eval()
     
-    # [EMOJI]encoder[EMOJI]finetuned[EMOJI]
-    # [EMOJI]SentenceEncoder[EMOJI]get_all_cls_vectors[EMOJI]
     class SentenceEncoderAdapter:
         def __init__(self, sentence_encoder):
             self.sentence_encoder = sentence_encoder
             self.config = type('Config', (), {'hidden_size': sentence_encoder.out_dim})()
         
         def __call__(self, input_ids, attention_mask):
-            # [EMOJI]input_ids[EMOJI]attention_mask[EMOJI]tokenizer[EMOJI]
             tokens = {
                 'input_ids': input_ids,
                 'attention_mask': attention_mask
             }
-            # [EMOJI]SentenceEncoder[EMOJI]encode_tokens[EMOJI]
             encoded = self.sentence_encoder.encode_tokens(tokens)
-            # [EMOJI]BERT[EMOJI]
             class MockOutput:
                 def __init__(self, last_hidden_state):
                     self.last_hidden_state = last_hidden_state
-            # [EMOJI]get_all_cls_vectors[EMOJI](batch_size, seq_len, hidden_size)[EMOJI]tensor
-            # [EMOJI]encoded[EMOJI]
             batch_size = encoded.shape[0]
             hidden_size = encoded.shape[1]
-            # [EMOJI]
             seq_len = input_ids.shape[1]
-            # [EMOJI]encoded[EMOJI]
             repeated = encoded.unsqueeze(1).repeat(1, seq_len, 1)
             return MockOutput(repeated)
     
     model_finetuned_adapter = SentenceEncoderAdapter(encoder)
-    model_finetuned_adapter.eval = lambda: None  # [EMOJI]eval[EMOJI]
+    model_finetuned_adapter.eval = lambda: None  
     
-    # [EMOJI]embedding
     cls_vectors_before = get_all_cls_vectors(df_articles, model_original, tokenizer, device).cpu()
     cls_vectors_after = get_all_cls_vectors(df_articles, model_finetuned_adapter, tokenizer, device).cpu()
     cls_vectors_after_cpu = cls_vectors_after.cpu().numpy()
     
-    # [EMOJI]t-SNE[EMOJI]
     perplexity_before = min(30, max(5, len(cls_vectors_before) // 3))
     perplexity_after = min(30, max(5, len(cls_vectors_after_cpu) // 3))
     
@@ -3372,22 +3100,21 @@ def run_training():
     print(f"    DEBUG: projected_2d_before shape: {projected_2d_before.shape}")
     print(f"    DEBUG: projected_2d_after shape: {projected_2d_after.shape}")
     
-    # [EMOJI] - [EMOJI]final[EMOJI]
     group_centers = {}
-    print(f"    DEBUG: [EMOJI]matched_dict keys: {list(matched_dict.keys())}")
+    print(f"    DEBUG: matched_dict keys: {list(matched_dict.keys())}")
     print(f"    DEBUG: df_articles shape: {df_articles.shape}, index range: {df_articles.index.min()} - {df_articles.index.max()}")
     print(f"    DEBUG: projected_2d_after shape: {projected_2d_after.shape}")
     
     for group_name, indices in matched_dict.items():
         if group_name == "Other":
-            continue  # [EMOJI]Other[EMOJI]
+            continue  
             
         if len(indices) > 0:
-            print(f"    DEBUG: [EMOJI] {group_name}[EMOJI]: {indices[:5]}...")
+            print(f"    DEBUG: {group_name}: {indices[:5]}...")
             
-            # [EMOJI]2D[EMOJI]
+
             valid_indices = [i for i in indices if i < len(projected_2d_after)]
-            print(f"    DEBUG: {group_name} [EMOJI]: {len(valid_indices)} ([EMOJI]: {len(indices)})")
+            print(f"    DEBUG: {group_name}: {len(valid_indices)} ({len(indices)})")
             
             if len(valid_indices) > 0:
                 group_2d_points = projected_2d_after[valid_indices]
@@ -3395,13 +3122,12 @@ def run_training():
                 group_centers[group_name] = group_center_2d
                 print(f"     Group {group_name} center: {group_center_2d}")
             else:
-                print(f"        {group_name} [EMOJI]2D[EMOJI]")
+                print(f"        {group_name} 2D")
         else:
-            print(f"        {group_name} [EMOJI]")
+            print(f"        {group_name} ")
     
-    print(f"    DEBUG: [EMOJI] group_centers: {group_centers}")
+    print(f"    DEBUG: group_centers: {group_centers}")
 
-    # [EMOJI]create_plotly_figure[EMOJI] - [EMOJI]
     def create_plotly_figure(projected_2d, title, is_after=False, highlighted_indices=None, group_centers=None, matched_dict_param=None):
         print(f"    DEBUG: create_plotly_figure called with projected_2d shape: {projected_2d.shape}")
         print(f"    DEBUG: projected_2d length: {len(projected_2d)}")
@@ -3409,7 +3135,7 @@ def run_training():
         
         fig = go.Figure()
         
-        # Before [EMOJI] After training [EMOJI]
+
         article_indices = list(range(len(projected_2d)))
         hover_texts = [f"Article {idx}" for idx in article_indices]
         custom_data = [[idx] for idx in article_indices]
@@ -3424,7 +3150,7 @@ def run_training():
                 color=bg_style["color"],
                 size=bg_style["size"],
                 opacity=bg_style["opacity"],
-                symbol="circle",  # [EMOJI] circle
+                symbol="circle",  
                 line=dict(width=bg_style["line_width"], color=bg_style["line_color"])
             ),
             customdata=custom_data,
@@ -3432,9 +3158,9 @@ def run_training():
             hovertext=hover_texts
         ))
         
-        # Add highlighted points if provided ([EMOJI])
+
         if highlighted_indices:
-            # [EMOJI]
+
             all_x = projected_2d[:, 0]
             all_y = projected_2d[:, 1]
             
@@ -3458,16 +3184,16 @@ def run_training():
                     hovertemplate='<b>Article %{customdata[0]}</b><extra></extra>'
                 ))
         
-        # If After Training plot, add group center points (using group colors)
+
         print(f"    DEBUG: is_after={is_after}, group_centers={group_centers}")
         if is_after and group_centers:
-            print(f"    DEBUG: [EMOJI] {len(group_centers)} [EMOJI]")
+            print(f"    DEBUG: {len(group_centers)} ")
             center_style = PLOT_STYLES["center"]
             print(f"    DEBUG: center_style = {center_style}")
             for group_name, center_2d in group_centers.items():
-                # [EMOJI]
+
                 color = get_group_color(group_name)
-                print(f"    DEBUG: [EMOJI] {group_name} [EMOJI]: {center_2d}, [EMOJI]: {color}")
+                print(f"    DEBUG: {group_name}: {center_2d}, {color}")
                 fig.add_trace(go.Scatter(
                     x=[center_2d[0]],
                     y=[center_2d[1]],
@@ -3486,9 +3212,8 @@ def run_training():
                     hovertemplate=f'<b>Group Center: {group_name}</b><br>X: %{{x:.2f}}<br>Y: %{{y:.2f}}<extra></extra>'
                 ))
         else:
-            print(f"    DEBUG: [EMOJI]is_after={is_after}, group_centers={group_centers}")
+            print(f"    DEBUG: is_after={is_after}, group_centers={group_centers}")
         
-        # [EMOJI]
         layout_style = PLOT_STYLES["layout"]
         fig.update_layout(
             title=dict(text=title, x=0.5, font=dict(size=16)),
@@ -3501,42 +3226,32 @@ def run_training():
             yaxis=dict(**layout_style["yaxis"], title="Y")
         )
         
-        # DEBUG: [EMOJI] layout [EMOJI]
         print(f"    DEBUG: fig.layout.xaxis.showgrid = {fig.layout.xaxis.showgrid}")
         print(f"    DEBUG: fig.layout.xaxis.showline = {fig.layout.xaxis.showline}")
         print(f"    DEBUG: fig.layout.xaxis.mirror = {fig.layout.xaxis.mirror}")
         
         return fig
 
-    # [EMOJI]UI[EMOJI]
-    # Before: [EMOJI]
     fig_before = create_plotly_figure(projected_2d_before, "2D Projection Before Finetuning", False, None, None, None)
-    # After: [EMOJI] BM25 [EMOJI]
     fig_after = create_plotly_figure(projected_2d_after, "2D Projection After Finetuning", True, None, group_centers, matched_dict_for_display)
     
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: TRAINING PROCESS COMPLETED SUCCESSFULLY")
-    print(f"    DEBUG: ==========================================")
+
     
     return fig_before, fig_after
 
-# Function to update training figures with highlights
+
 def run_training_with_highlights(highlighted_indices):
-    """Update training figures with highlighted indices without re-running training"""
+
     global df
     
-    # Convert highlighted_indices to list if it's a tuple
     if isinstance(highlighted_indices, tuple):
         highlighted_indices = list(highlighted_indices)
     
-    # Load the saved models instead of re-running training
     model_original = BertModel.from_pretrained('bert-base-uncased').to(device)
     model_finetuned = BertModel.from_pretrained('bert-base-uncased').to(device)
     
-    # Initialize tokenizer
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     
-    # Load the saved model
     model_save_path = "../Keyword_Group/bert_finetuned.pth"
     if os.path.exists(model_save_path):
         checkpoint = torch.load(model_save_path, map_location=device)
@@ -3548,7 +3263,6 @@ def run_training_with_highlights(highlighted_indices):
     else:
         df_articles = df
     
-    # Load matched_dict from saved file
     matched_dict = {}
     bm25_results_path = os.path.join("test_results", "bm25_search_results.json")
     if os.path.exists(bm25_results_path):
@@ -3558,12 +3272,12 @@ def run_training_with_highlights(highlighted_indices):
     else:
         print(f"    DEBUG: No bm25_search_results.json found at {bm25_results_path}")
     
-    # Get embeddings
+
     cls_vectors_before = get_all_cls_vectors(df_articles, model_original, tokenizer, device).cpu()
     cls_vectors_after = get_all_cls_vectors(df_articles, model_finetuned, tokenizer, device).cpu()
     cls_vectors_after_cpu = cls_vectors_after.cpu().numpy()
     
-    # Calculate TSNE
+
     perplexity_before = min(30, max(5, len(cls_vectors_before) // 3))
     perplexity_after = min(30, max(5, len(cls_vectors_after_cpu) // 3))
     
@@ -3582,16 +3296,15 @@ def run_training_with_highlights(highlighted_indices):
     projected_2d_before = tsne_before.fit_transform(cls_vectors_before.numpy())
     projected_2d_after = tsne_after.fit_transform(cls_vectors_after_cpu)
     
-    # Calculate group centers for After Training plot
+
     group_centers = {}
     if matched_dict:
         print(f"    DEBUG: Calculating group centers for highlights function")
         for group_name, indices in matched_dict.items():
             if group_name == "Other":
-                continue  # [EMOJI]Other[EMOJI]
+                continue  
                 
             if len(indices) > 0:
-                # [EMOJI]2D[EMOJI]
                 valid_indices = [i for i in indices if i < len(projected_2d_after)]
                 if len(valid_indices) > 0:
                     group_2d_points = projected_2d_after[valid_indices]
@@ -3601,11 +3314,11 @@ def run_training_with_highlights(highlighted_indices):
     
     print(f"    DEBUG: Final group_centers for highlights: {group_centers}")
     
-    # Create figures with highlights
+
     def create_plotly_figure_with_highlights(projected_2d, title, highlighted_indices=None, group_centers=None):
         fig = go.Figure()
         
-        # Add scatter plot - all points in same color
+
         article_indices = list(range(len(projected_2d)))
         hover_texts = [f"Article {idx}" for idx in article_indices]
         custom_data = [[idx] for idx in article_indices]
@@ -3620,7 +3333,7 @@ def run_training_with_highlights(highlighted_indices):
                 color=bg_style["color"],
                 size=bg_style["size"],
                 opacity=bg_style["opacity"],
-                symbol="circle",  # [EMOJI] circle
+                symbol="circle",  
                 line=dict(width=bg_style["line_width"], color=bg_style["line_color"])
             ),
             customdata=custom_data,
@@ -3628,7 +3341,7 @@ def run_training_with_highlights(highlighted_indices):
             hovertext=hover_texts
         ))
         
-        # Add highlighted points if provided
+
         if highlighted_indices:
             highlighted_x = []
             highlighted_y = []
@@ -3642,7 +3355,7 @@ def run_training_with_highlights(highlighted_indices):
                     highlighted_customdata.append([idx])
                     highlighted_hovertexts.append(f"Article {idx}")
             
-            if highlighted_x:  # Only add trace if there are highlighted points
+            if highlighted_x:  
                 core_style = PLOT_STYLES["core"]
                 fig.add_trace(go.Scatter(
                     x=highlighted_x,
@@ -3660,12 +3373,12 @@ def run_training_with_highlights(highlighted_indices):
                     hovertext=highlighted_hovertexts
                 ))
         
-        # Add group center points for After Training plot (using unified group colors and styles)
+
         if "After" in title and group_centers:
             print(f"    DEBUG: Adding {len(group_centers)} prototype centers to {title}")
             center_style = PLOT_STYLES["center"]
             for group_name, center_2d in group_centers.items():
-                color = get_group_color(group_name)  # [EMOJI]
+                color = get_group_color(group_name)  
                 print(f"    DEBUG: Adding {group_name} center: {center_2d}, color: {color}")
                 fig.add_trace(go.Scatter(
                     x=[center_2d[0]],
@@ -3685,7 +3398,6 @@ def run_training_with_highlights(highlighted_indices):
                     hovertemplate=f'<b>Group Center: {group_name}</b><br>X: %{{x:.2f}}<br>Y: %{{y:.2f}}<extra></extra>'
                 ))
         
-        # [EMOJI]
         layout_style = PLOT_STYLES["layout"]
         fig.update_layout(
             title=title,
@@ -3699,48 +3411,36 @@ def run_training_with_highlights(highlighted_indices):
         )
         
         return fig
-    
-    # Create figures
+
     fig_before = create_plotly_figure_with_highlights(projected_2d_before, "Before Training", highlighted_indices, None)
     fig_after = create_plotly_figure_with_highlights(projected_2d_after, "After Training", highlighted_indices, group_centers)
     
     return fig_before, fig_after
 
-# Global cache for keyword embeddings, t-SNE results, and text positions
+
 _KEYWORD_TSNE_CACHE = None
 
-# Global cache for recommended articles search results
+
 _ARTICLES_CACHE = {}
 
-# Global cache for documents 2D visualization results  
+
 _DOCUMENTS_2D_CACHE = {}
 
 def clear_caches():
-    """Clear all caches when data changes"""
+
     global _ARTICLES_CACHE, _DOCUMENTS_2D_CACHE
     _ARTICLES_CACHE.clear()
     _DOCUMENTS_2D_CACHE.clear()
     print("Cleared all caches due to data change")
 
 
-def print_performance_tips():
-    """Print performance optimization tips"""
-    print("\n    [EMOJI] PERFORMANCE OPTIMIZATION TIPS:")
-    print("    1. Document embeddings are pre-computed for faster keyword response")
-    print("    2. t-SNE results are cached to avoid recalculation")
-    print("    3. Semantic search is used when embeddings are available")
-    print("    4. Batch processing is optimized for your device type")
-    print("    5. Cache is automatically managed for optimal performance")
-    print("           First keyword click may still be slow due to model loading")
-    print("           Subsequent clicks should be 3-5x faster")
 
-# Add necessary 2D visualization callbacks - split into two callbacks for performance
+
 @app.callback(
     Output('keywords-2d-plot', 'figure'),
-    Input('keywords-2d-plot', 'id')  # Only initial load
+    Input('keywords-2d-plot', 'id')  
 )
 def update_keywords_2d_plot(plot_id):
-    """Update keyword 2D dimensionality reduction visualization chart with text labels - initial load only"""
     global GLOBAL_OUTPUT_DICT, GLOBAL_KEYWORDS, _KEYWORD_TSNE_CACHE
     
     if not GLOBAL_OUTPUT_DICT or not GLOBAL_KEYWORDS:
@@ -3758,30 +3458,29 @@ def update_keywords_2d_plot(plot_id):
             }
         }
     
-    # Get keyword embeddings and dimensionality reduction results
+
     try:
         def adjust_text_positions(x_coords, y_coords, keywords, min_distance=0.12):
-            """Smart text positioning: move overlapping texts to nearby empty spaces"""
+
             import numpy as np
             adjusted_x = x_coords.copy()
             adjusted_y = y_coords.copy()
             
-            # Calculate relative distances based on data range
+
             x_range = np.max(x_coords) - np.min(x_coords)
             y_range = np.max(y_coords) - np.min(y_coords)
             min_dist = min(x_range, y_range) * min_distance
             
             def find_empty_space(current_x, current_y, all_x, all_y, search_radius=0.3):
-                """Find an empty space near the current position"""
+
                 search_dist = min(x_range, y_range) * search_radius
                 
-                # Try different angles around the original position
-                for angle in np.linspace(0, 2*np.pi, 16):  # Try 16 directions
-                    for radius in np.linspace(min_dist, search_dist, 8):  # Try different distances
+
+                for angle in np.linspace(0, 2*np.pi, 16):  
+                    for radius in np.linspace(min_dist, search_dist, 8):  
                         test_x = current_x + radius * np.cos(angle)
                         test_y = current_y + radius * np.sin(angle)
                         
-                        # Check if this position is far enough from all other texts
                         too_close = False
                         for other_x, other_y in zip(all_x, all_y):
                             if abs(test_x - other_x) < min_dist and abs(test_y - other_y) < min_dist:
@@ -3791,15 +3490,12 @@ def update_keywords_2d_plot(plot_id):
                         if not too_close:
                             return test_x, test_y
                 
-                # If no good position found, return original with small offset
                 return current_x + np.random.normal(0, min_dist*0.5), current_y + np.random.normal(0, min_dist*0.5)
             
-            # Iteratively resolve overlaps
             for iteration in range(30):
                 overlaps_found = 0
                 
                 for i in range(len(adjusted_x)):
-                    # Check if current position overlaps with any other text
                     has_overlap = False
                     for j in range(len(adjusted_x)):
                         if i != j:
@@ -3808,40 +3504,33 @@ def update_keywords_2d_plot(plot_id):
                                 has_overlap = True
                                 break
                     
-                    # If overlap found, move to empty space
                     if has_overlap:
                         new_x, new_y = find_empty_space(
-                            x_coords[i], y_coords[i],  # Start from original position
+                            x_coords[i], y_coords[i],  
                             adjusted_x, adjusted_y
                         )
                         adjusted_x[i] = new_x
                         adjusted_y[i] = new_y
                         overlaps_found += 1
                 
-                # If no overlaps found, we're done
                 if overlaps_found == 0:
                     print(f"Text positioning converged after {iteration + 1} iterations")
                     break
             
             return adjusted_x, adjusted_y
         
-        # Use cache if available to avoid recalculation
         if _KEYWORD_TSNE_CACHE is None:
             print("Computing t-SNE for keywords (first time)...")
-            # Calculate keyword embeddings
             keyword_embeddings = embedding_model_kw.encode(GLOBAL_KEYWORDS, convert_to_tensor=True).to(device).cpu().numpy()
             
-            # Calculate t-SNE
             perplexity = min(30, max(5, len(keyword_embeddings) // 3))
             tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
             reduced_embeddings = tsne.fit_transform(keyword_embeddings)
             
-            # Smart text positioning to avoid overlaps
             x_coords = reduced_embeddings[:, 0]
             y_coords = reduced_embeddings[:, 1]
             x_coords_adjusted, y_coords_adjusted = adjust_text_positions(x_coords, y_coords, GLOBAL_KEYWORDS)
             
-            # Cache the results including adjusted positions
             _KEYWORD_TSNE_CACHE = {
                 'keywords': GLOBAL_KEYWORDS.copy(),
                 'embeddings': reduced_embeddings.copy(),
@@ -3855,37 +3544,34 @@ def update_keywords_2d_plot(plot_id):
             x_coords_adjusted = _KEYWORD_TSNE_CACHE['adjusted_x']
             y_coords_adjusted = _KEYWORD_TSNE_CACHE['adjusted_y']
         
-        # Simple hover text for all keywords
         hover_texts = GLOBAL_KEYWORDS
         
-        # Use default blue color for all keywords in initial load
         keyword_colors = ['#2196F3'] * len(GLOBAL_KEYWORDS)
         
 
         
-        # Create simple scatter plot with text labels
         fig = {
             'data': [{
                 'x': x_coords_adjusted,
                 'y': y_coords_adjusted,
-                'mode': 'markers+text',  # Use markers+text mode for clickable elements
+                'mode': 'markers+text',  
                 'type': 'scatter',
                 'marker': {
-                    'size': 1,  # Very small markers (invisible)
+                    'size': 1,  
                     'color': keyword_colors,
-                    'opacity': 0.0  # Make markers invisible
+                    'opacity': 0.0  
                 },
-                'text': GLOBAL_KEYWORDS,  # Display keyword text
+                'text': GLOBAL_KEYWORDS,  
                 'textfont': {
-                    'size': 10,  # Smaller font to reduce overlap
-                    'color': keyword_colors  # Dynamic colors based on group assignment
+                    'size': 10,  
+                    'color': keyword_colors  
                 },
                 'textposition': 'middle center',
                 'hovertext': hover_texts,
                 'hoverinfo': 'text',
-                'customdata': GLOBAL_KEYWORDS,  # For click events
+                'customdata': GLOBAL_KEYWORDS,  
                 'hovertemplate': '<b>%{hovertext}</b><extra></extra>',
-                'opacity': 1.0  # Prevent any fading effects
+                'opacity': 1.0  
             }],
             'layout': {
                 'title': 'Keywords 2D Visualization',
@@ -3900,13 +3586,13 @@ def update_keywords_2d_plot(plot_id):
                     'gridcolor': '#f0f0f0'
                 },
                 'hovermode': 'closest',
-                'clickmode': 'event',  # Remove 'select' to prevent selection-based fading
+                'clickmode': 'event',  
                 'dragmode': 'pan',
                 'showlegend': False,
-                'margin': {'l': 60, 'r': 60, 't': 60, 'b': 60},  # Larger margins
+                'margin': {'l': 60, 'r': 60, 't': 60, 'b': 60},  
                 'plot_bgcolor': 'white',
                 'paper_bgcolor': 'white',
-                'font': {'size': 10}  # Smaller overall font size
+                'font': {'size': 10}  
             }
         }
         
@@ -3954,7 +3640,7 @@ def update_keywords_2d_plot(plot_id):
             }
         }
 
-# Add a clientside callback for fast color updates without server computation
+
 app.clientside_callback(
     """
     function(group_data) {
@@ -4019,42 +3705,20 @@ app.clientside_callback(
 
 
 
-# Add initial callback for documents 2D visualization
-print("    DEBUG: ==========================================")
-print("    DEBUG: REGISTERING CALLBACK: update_documents_2d_plot_initial")
-print("    DEBUG: ==========================================")
-print("    DEBUG: Output: documents-2d-plot.figure")
-print("    DEBUG: Input: main-visualization-area.children")
-print("    DEBUG: States: display-mode.data, training-figures.data")
-print("    DEBUG: prevent_initial_call: True")
+
 
 @app.callback(
     Output('documents-2d-plot', 'figure'),
-    Input('main-visualization-area', 'children'),  # Trigger when layout changes
+    Input('main-visualization-area', 'children'),  
     [State('display-mode', 'data'),
-     State('training-figures', 'data')],  # Add training-figures to check if we're in training mode
+     State('training-figures', 'data')],  
     prevent_initial_call=True
 )
 def update_documents_2d_plot_initial(layout_children, display_mode, training_figures):
-    """Initial load of documents 2D visualization - show all documents"""
+
     global df
+
     
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: update_documents_2d_plot_initial CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
-    print(f"    DEBUG:     INPUT PARAMETERS:")
-    print(f"    DEBUG:   layout_children type: {type(layout_children)}")
-    print(f"    DEBUG:   layout_children length: {len(layout_children) if layout_children else 'None'}")
-    print(f"    DEBUG:   display_mode: {display_mode}")
-    print(f"    DEBUG:   training_figures: {training_figures}")
-    print(f"    DEBUG:     PARAMETER TYPES:")
-    print(f"    DEBUG:   display_mode type: {type(display_mode)}")
-    print(f"    DEBUG:   training_figures type: {type(training_figures)}")
-    
-    print(f"    DEBUG:     SAFETY CHECKS:")
-    
-    # Only process if we're in keywords mode
     if display_mode != "keywords":
         print(f"    DEBUG:         NOT IN KEYWORDS MODE:")
         print(f"    DEBUG:   display_mode '{display_mode}' != 'keywords'")
@@ -4063,8 +3727,6 @@ def update_documents_2d_plot_initial(layout_children, display_mode, training_fig
     
     print(f"    DEBUG:      KEYWORDS MODE CONFIRMED")
     
-    # Additional safety check: ensure we're not in training mode
-    # This prevents any accidental updates when the component doesn't exist
     if display_mode == "training":
         print(f"    DEBUG:         TRAINING MODE DETECTED:")
         print(f"    DEBUG:   This should prevent the 'nonexistent object' error")
@@ -4073,8 +3735,6 @@ def update_documents_2d_plot_initial(layout_children, display_mode, training_fig
     
     print(f"    DEBUG:      NOT IN TRAINING MODE")
     
-    # Extra safety: check if we're in any mode other than keywords
-    # This catches any edge cases where display_mode might be None or unexpected values
     if display_mode is None or display_mode not in ["keywords"]:
         print(f"    DEBUG:         UNEXPECTED DISPLAY MODE:")
         print(f"    DEBUG:   display_mode: {display_mode}")
@@ -4097,15 +3757,13 @@ def update_documents_2d_plot_initial(layout_children, display_mode, training_fig
         }
     
     try:
-        # Calculate document embeddings
+
         print("    Initial documents 2D visualization calculation...")
         all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
         
-        # Truncate long texts to prevent token length issues
         print("    Truncating long texts to fit within model limits...")
         truncated_articles = [truncate_text_for_model(text, max_length=500) for text in all_articles_text]
         
-        # Calculate embeddings in batches
         batch_size = 32
         all_embeddings = []
         
@@ -4113,40 +3771,33 @@ def update_documents_2d_plot_initial(layout_children, display_mode, training_fig
             batch_texts = truncated_articles[i:i + batch_size]
             print(f"    Processing batch {i//batch_size + 1}/{(len(truncated_articles) + batch_size - 1)//batch_size}")
             
-            # Use safe encoding function with better error handling
             batch_embeddings = safe_encode_batch(batch_texts, embedding_model_kw, device)
             all_embeddings.extend(batch_embeddings)
         
         document_embeddings = np.array(all_embeddings)
         
-        # Calculate TSNE for documents
         print("    Calculating TSNE for initial documents visualization...")
         perplexity = min(30, max(5, len(document_embeddings) // 3))
         tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
         document_2d = tsne.fit_transform(document_embeddings)
         document_2d = document_2d.tolist()
         
-        # Check if document_2d length matches df length
         print(f"    Initial document_2d length: {len(document_2d)}")
         print(f"    df length: {len(df)}")
         
-        # Ensure document_2d and df have the same length
         if len(document_2d) != len(df):
             print(f"    WARNING: Initial length mismatch! Adjusting...")
-            # If document_2d is shorter, pad with zeros
             if len(document_2d) < len(df):
                 padding_needed = len(df) - len(document_2d)
                 print(f"    Padding initial document_2d with {padding_needed} zero points")
                 for _ in range(padding_needed):
                     document_2d.append([0.0, 0.0])
-            # If document_2d is longer, truncate
             elif len(document_2d) > len(df):
                 print(f"    Truncating initial document_2d from {len(document_2d)} to {len(df)}")
                 document_2d = document_2d[:len(df)]
         
         print(f"    Final initial document_2d length: {len(document_2d)}")
         
-        # Show all documents in one color - [EMOJI]
         bg_style = PLOT_STYLES["background"]
         traces = [{
             'x': [document_2d[i][0] for i in range(len(df))],
@@ -4165,7 +3816,6 @@ def update_documents_2d_plot_initial(layout_children, display_mode, training_fig
             'hovertemplate': '<b>%{text}</b><extra></extra>'
         }]
         
-        # [EMOJI]
         layout_style = PLOT_STYLES["layout"]
         fig = {
             'data': traces,
@@ -4230,71 +3880,33 @@ def update_documents_2d_plot_initial(layout_children, display_mode, training_fig
             }
         }
 
-print("    DEBUG: ==========================================")
-print("    DEBUG: REGISTERING CALLBACK: update_documents_2d_plot")
-print("    DEBUG: ==========================================")
-print("    DEBUG: Outputs: documents-2d-plot.figure, highlighted-indices.data")
-print("    DEBUG: Inputs: selected-keyword.data, selected-group.data, selected-article.data")
-print("    DEBUG: States: group-order.data, display-mode.data")
-print("    DEBUG: allow_duplicate: True (for documents-2d-plot.figure)")
-print("    DEBUG: prevent_initial_call: True")
-print("    DEBUG:      WARNING: This callback outputs to documents-2d-plot")
-print("    DEBUG:      WARNING: This callback should NEVER run in training mode")
+
 
 @app.callback(
     [Output('documents-2d-plot', 'figure', allow_duplicate=True),
      Output('highlighted-indices', 'data', allow_duplicate=True)],
     [Input('selected-keyword', 'data'),
-     Input('selected-group', 'data'),  # Also update when group is selected
-     Input('selected-article', 'data')],  # Keep as Input for keywords mode highlighting
-    State('group-order', 'data'),  # Add group_order as State parameter
+     Input('selected-group', 'data'),  
+     Input('selected-article', 'data')],  
+    State('group-order', 'data'),  
     State('display-mode', 'data'),
     prevent_initial_call=True
 )
 def update_documents_2d_plot(selected_keyword, selected_group, selected_article, group_order, display_mode):
-    """Update documents 2D visualization chart"""
+
     global df, _DOCUMENTS_2D_CACHE
-    
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: update_documents_2d_plot CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
-    print(f"    DEBUG:     INPUT PARAMETERS:")
-    print(f"    DEBUG:   display_mode: {display_mode}")
-    print(f"    DEBUG:   selected_keyword: {selected_keyword}")
-    print(f"    DEBUG:   selected_group: {selected_group}")
-    print(f"    DEBUG:   selected_article: {selected_article}")
-    print(f"    DEBUG:   group_order: {group_order}")
-    print(f"    DEBUG:     PARAMETER TYPES:")
-    print(f"    DEBUG:   display_mode type: {type(display_mode)}")
-    print(f"    DEBUG:   selected_keyword type: {type(selected_keyword)}")
-    print(f"    DEBUG:   selected_group type: {type(selected_group)}")
-    print(f"    DEBUG:   selected_article type: {type(selected_article)}")
-    
-    print(f"    DEBUG:     SAFETY CHECKS:")
-    
-    # Only process if we're in keywords mode
+
     if display_mode != "keywords":
-        print(f"    DEBUG:         NOT IN KEYWORDS MODE:")
-        print(f"    DEBUG:   display_mode '{display_mode}' != 'keywords'")
-        print(f"    DEBUG:   Preventing update")
+
         raise PreventUpdate
+
     
-    print(f"    DEBUG:      KEYWORDS MODE CONFIRMED")
-    
-    # Additional safety check: ensure we're not in training mode
-    # This prevents any accidental updates when the component doesn't exist
     if display_mode == "training":
-        print(f"    DEBUG:         TRAINING MODE DETECTED:")
-        print(f"    DEBUG:   This should prevent the 'nonexistent object' error")
-        print(f"    DEBUG:   Preventing update")
-        print(f"    DEBUG:   This callback should NEVER run in training mode")
+
         raise PreventUpdate
     
     print(f"    DEBUG:      NOT IN TRAINING MODE")
-    
-    # Extra safety: check if we're in any mode other than keywords
-    # This catches any edge cases where display_mode might be None or unexpected values
+
     if display_mode is None or display_mode not in ["keywords"]:
         print(f"    DEBUG:         UNEXPECTED DISPLAY MODE:")
         print(f"    DEBUG:   display_mode: {display_mode}")
@@ -4323,16 +3935,13 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             }
         }, []
     
-    # Create cache key for documents 2D visualization
     cache_key = None
     if selected_keyword:
         cache_key = f"docs_keyword:{selected_keyword}"
         print(f"    DEBUG: Created cache key for keyword: {cache_key}")
     elif selected_group and group_order:
-        # For groups, create cache key based on group keywords
         for group_name, keywords in group_order.items():
             if group_name == selected_group:
-                # Sort keywords for consistent cache key
                 cache_key = f"docs_group:{group_name}:{':'.join(sorted(keywords))}"
                 print(f"    DEBUG: Created cache key for group: {cache_key}")
                 break
@@ -4340,7 +3949,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         cache_key = "docs_default"
         print(f"    DEBUG: Using default cache key: {cache_key}")
     
-    # Add selected article to cache key
     if selected_article is not None:
         cache_key = f"{cache_key}_article:{selected_article}"
         print(f"    DEBUG: Added article to cache key: {cache_key}")
@@ -4348,18 +3956,14 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
     print(f"    DEBUG: Final cache key: {cache_key}")
     print(f"    DEBUG: Cache contains key: {cache_key in _DOCUMENTS_2D_CACHE}")
     
-    # Check cache first
     if cache_key and cache_key in _DOCUMENTS_2D_CACHE:
         print(f"    DEBUG: Using cached documents 2D plot for: {cache_key}")
         cached_fig = _DOCUMENTS_2D_CACHE[cache_key]
-        # For cached results, we need to extract highlighted indices
         highlighted_indices = []
         if selected_keyword or selected_group or selected_article is not None:
-            # Try to extract indices from the cached figure
             try:
                 for trace in cached_fig.get('data', []):
                     if trace.get('name') in ['Keyword/Group matches', 'Selected Article']:
-                        # Extract indices from customdata if available
                         if 'customdata' in trace:
                             for data in trace['customdata']:
                                 if isinstance(data, list) and len(data) > 0:
@@ -4372,7 +3976,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         print(f"    DEBUG: Cache miss for key: {cache_key}")
     
     try:
-        # Use pre-computed document embeddings and t-SNE results
         print("    Using pre-computed document embeddings and t-SNE...")
         
         if _GLOBAL_DOCUMENT_EMBEDDINGS_READY:
@@ -4381,37 +3984,30 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             print(f"    Using cached embeddings, shape: {document_embeddings.shape}")
             print(f"    Using cached t-SNE, shape: {_GLOBAL_DOCUMENT_TSNE.shape}")
             
-            # Check if cached document_2d length matches df length
             print(f"    Cached document_2d length: {len(document_2d)}")
             print(f"    df length: {len(df)}")
             
-            # Ensure document_2d and df have the same length
             if len(document_2d) != len(df):
                 print(f"    WARNING: Cached length mismatch! Adjusting...")
-                # If document_2d is shorter, pad with zeros
                 if len(document_2d) < len(df):
                     padding_needed = len(df) - len(document_2d)
                     print(f"    Padding cached document_2d with {padding_needed} zero points")
                     for _ in range(padding_needed):
                         document_2d.append([0.0, 0.0])
-                # If document_2d is longer, truncate
                 elif len(document_2d) > len(df):
                     print(f"    Truncating cached document_2d from {len(document_2d)} to {len(df)}")
                     document_2d = document_2d[:len(df)]
             
             print(f"    Final cached document_2d length: {len(document_2d)}")
         else:
-            # Fallback to on-demand computation if pre-computation failed
             print("    Pre-computed embeddings not available, computing on-demand...")
         print(f"    df shape: {df.shape}")
         all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
         print(f"    Number of articles: {len(all_articles_text)}")
         
-        # Truncate long texts to prevent token length issues
         print("    Truncating long texts to fit within model limits...")
         truncated_articles = [truncate_text_for_model(text, max_length=500) for text in all_articles_text]
         
-        # Calculate embeddings in batches
         batch_size = 64 if device == "cpu" else 128
         all_embeddings = []
         
@@ -4419,13 +4015,11 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             batch_texts = truncated_articles[i:i + batch_size]
             print(f"    Processing batch {i//batch_size + 1} for documents 2D visualization")
             
-            # Use safe encoding function with better error handling
             batch_embeddings = safe_encode_batch(batch_texts, embedding_model_kw, device)
             all_embeddings.extend(batch_embeddings)
         
         document_embeddings = np.array(all_embeddings)
         
-        # Calculate TSNE for documents
         print("    Calculating TSNE for documents...")
         print(f"    Embeddings shape: {document_embeddings.shape}")
         perplexity = min(30, max(5, len(document_embeddings) // 3))
@@ -4435,36 +4029,29 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         print(f"    TSNE result shape: {document_2d.shape}")
         print(f"    TSNE result type: {type(document_2d)}")
         print(f"    TSNE result dtype: {document_2d.dtype}")
-        # Convert to list for Plotly compatibility
         document_2d = document_2d.tolist()
         
-        # Check if document_2d length matches df length
         print(f"    document_2d length: {len(document_2d)}")
         print(f"    df length: {len(df)}")
         print(f"    all_articles_text length: {len(all_articles_text)}")
         
-        # Ensure document_2d and df have the same length
         if len(document_2d) != len(df):
             print(f"    WARNING: Length mismatch! Adjusting...")
-            # If document_2d is shorter, pad with zeros
             if len(document_2d) < len(df):
                 padding_needed = len(df) - len(document_2d)
                 print(f"    Padding document_2d with {padding_needed} zero points")
                 for _ in range(padding_needed):
                     document_2d.append([0.0, 0.0])
-            # If document_2d is longer, truncate
             elif len(document_2d) > len(df):
                 print(f"    Truncating document_2d from {len(document_2d)} to {len(df)}")
                 document_2d = document_2d[:len(df)]
         
         print(f"    Final document_2d length: {len(document_2d)}")
         
-        # Determine which documents to highlight
         highlight_mask = []
         highlight_reason = ""
         
         if selected_keyword:
-            # Highlight documents containing the selected keyword
             print(f"    Processing keyword: '{selected_keyword}'")
             for i in range(len(df)):
                 text = str(df.iloc[i, 1]).lower()
@@ -4476,7 +4063,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             print(f"    Found {sum(highlight_mask)} documents containing keyword '{selected_keyword}'")
         
         elif selected_group and group_order:
-            # Highlight documents containing any keywords from the selected group
             group_keywords = []
             for group_name, keywords in group_order.items():
                 if group_name == selected_group:
@@ -4487,34 +4073,27 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             
             for i in range(len(df)):
                 text = str(df.iloc[i, 1]).lower()
-                # Check if any keyword from the group is in the document
                 contains_group_keyword = any(keyword.lower() in text for keyword in group_keywords)
                 highlight_mask.append(contains_group_keyword)
             
             highlight_reason = f"Documents containing keywords from group '{selected_group}'"
         
         else:
-            # No highlighting - show all documents in default color
             highlight_mask = [False] * len(df)
             highlight_reason = ""
         
-        # Create selected article mask
         selected_article_mask = [False] * len(df)
         if selected_article is not None and selected_article < len(df):
             selected_article_mask[selected_article] = True
         
-        # Create traces
         traces = []
         
-        # Get indices for different types of documents
         keyword_group_indices = np.where(np.array(highlight_mask))[0]
         selected_article_indices = np.where(np.array(selected_article_mask))[0]
         
-        # Create a combined mask for all highlighted documents
         all_highlighted = np.logical_or(np.array(highlight_mask), np.array(selected_article_mask))
         other_indices = np.where(~all_highlighted)[0]
         
-                # Add trace for keyword/group highlighted documents - [EMOJI]
         if len(keyword_group_indices) > 0:
             core_style = PLOT_STYLES["core"]
             traces.append({
@@ -4534,7 +4113,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                 'hovertemplate': '<b>%{text}</b><extra></extra>'
             })
         
-        # Add trace for selected article (highest priority, will overlay on top)
         if len(selected_article_indices) > 0:
             traces.append({
                 'x': [document_2d[i][0] for i in selected_article_indices],
@@ -4544,7 +4122,7 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                 'name': 'Selected Article',
                 'marker': {
                     'size': 20,
-                    'color': '#FF0000',  # Red color for selected article
+                    'color': '#FF0000',  
                     'symbol': 'star',
                     'line': {'width': 3, 'color': 'white'}
                 },
@@ -4553,7 +4131,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                 'hovertemplate': '<b>%{text}</b><extra></extra>'
             })
         
-        # Add trace for other documents - [EMOJI]
         if len(other_indices) > 0:
             bg_style = PLOT_STYLES["background"]
             traces.append({
@@ -4572,7 +4149,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                 'customdata': [[i] for i in other_indices],
                 'hovertemplate': '<b>%{text}</b><extra></extra>'
             })
-        # If no traces created, show all documents in one color - [EMOJI]
         if not traces:
             bg_style = PLOT_STYLES["background"]
             traces = [{
@@ -4592,7 +4168,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
                 'hovertemplate': '<b>%{text}</b><extra></extra>'
             }]
         
-        # Create title
         title_parts = []
         
         if selected_keyword:
@@ -4641,7 +4216,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
             }
         }
         
-        # Collect highlighted indices for training plots
         highlighted_indices = []
         if len(keyword_group_indices) > 0:
             highlighted_indices.extend(keyword_group_indices.tolist())
@@ -4658,7 +4232,6 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
         print(f"  First trace x sample: {traces[0]['x'][:3] if traces and 'x' in traces[0] and len(traces[0]['x']) > 0 else 'No x data'}")
         print(f"  First trace y sample: {traces[0]['y'][:3] if traces and 'y' in traces[0] and len(traces[0]['y']) > 0 else 'No y data'}")
         
-        # Cache the result for future use
         if cache_key:
             _DOCUMENTS_2D_CACHE[cache_key] = fig
             print(f"Cached documents 2D plot for: {cache_key}")
@@ -4717,7 +4290,7 @@ def update_documents_2d_plot(selected_keyword, selected_group, selected_article,
     prevent_initial_call=True
 )
 def handle_plot_click(click_data, selected_group, group_data, display_mode):
-    """Handle chart click events, select keyword for highlighting documents"""
+
     print(f"    DEBUG: handle_plot_click called")
     print(f"    DEBUG: click_data: {click_data}")
     print(f"    DEBUG: selected_group: {selected_group}")
@@ -4731,11 +4304,9 @@ def handle_plot_click(click_data, selected_group, group_data, display_mode):
         raise PreventUpdate
     
     try:
-        # Get clicked keyword
         clicked_keyword = click_data['points'][0]['customdata']
         print(f"Clicked keyword: {clicked_keyword}")
         
-        # If a group is selected, add keyword to that group
         if selected_group:
             new_data = dict(group_data) if group_data else {}
             if clicked_keyword in new_data and new_data[clicked_keyword]:
@@ -4747,17 +4318,14 @@ def handle_plot_click(click_data, selected_group, group_data, display_mode):
                 print(f"Added keyword '{clicked_keyword}' to group '{selected_group}'")
             new_data[clicked_keyword] = selected_group
             
-            # In training mode, don't update selected-keyword to avoid triggering documents-2d-plot
             if display_mode == "training":
                 print(f"    Training mode: not updating selected-keyword to avoid documents-2d-plot error")
                 return new_data, dash.no_update
             else:
-                return new_data, clicked_keyword  # Return both group data and selected keyword
+                return new_data, clicked_keyword  
         else:
-            # No group selected, just select the keyword for highlighting
             print(f"Selected keyword for highlighting: {clicked_keyword}")
             
-            # In training mode, don't update selected-keyword to avoid triggering documents-2d-plot
             if display_mode == "training":
                 print(f"    Training mode: not updating selected-keyword to avoid documents-2d-plot error")
                 return group_data, dash.no_update
@@ -4780,7 +4348,7 @@ def handle_plot_click(click_data, selected_group, group_data, display_mode):
     prevent_initial_call=True
 )
 def handle_train_button(n_clicks, group_order):
-    """Handle Train button click event"""
+    
     print("=" * 60)
     print("TRAIN BUTTON CALLBACK TRIGGERED!")
     print("=" * 60)
@@ -4788,7 +4356,6 @@ def handle_train_button(n_clicks, group_order):
     print(f"Group order data: {group_order}")
     print(f"Current time: {__import__('datetime').datetime.now()}")
     
-    # Force print to ensure it shows up
     import sys
     sys.stdout.flush()
     
@@ -4796,7 +4363,6 @@ def handle_train_button(n_clicks, group_order):
         print("No clicks, preventing update")
         raise PreventUpdate
     
-    # Define button styles
     normal_style = {
         "margin-top": "20px",
         "padding": "10px 20px",
@@ -4812,7 +4378,7 @@ def handle_train_button(n_clicks, group_order):
         "margin-top": "20px",
         "padding": "10px 20px",
         "fontSize": "16px",
-        "backgroundColor": "#FF9800",  # Orange color for training
+        "backgroundColor": "#FF9800",  
         "color": "white",
         "border": "none",
         "borderRadius": "5px",
@@ -4822,7 +4388,6 @@ def handle_train_button(n_clicks, group_order):
     
     if not group_order:
         print("No group data available")
-        # Return empty figures and keep training output hidden
         empty_fig = {
             'data': [],
             'layout': {
@@ -4838,13 +4403,11 @@ def handle_train_button(n_clicks, group_order):
         print(f"    DEBUG: Group order data: {group_order}")
         print(f"    DEBUG: Final list path: {final_list_path}")
         
-        # Save current group data to final_list.json
         print("Saving group data to final_list.json...")
         with open(final_list_path, "w", encoding="utf-8") as f:
             json.dump(group_order, f, indent=4, ensure_ascii=False)
         print(f"Group data saved to {final_list_path}")
         
-        # Verify the file was saved correctly
         if os.path.exists(final_list_path):
             with open(final_list_path, "r", encoding="utf-8") as f:
                 saved_data = json.load(f)
@@ -4853,7 +4416,6 @@ def handle_train_button(n_clicks, group_order):
             print(f"    ERROR: Failed to save group data to {final_list_path}")
             raise FileNotFoundError(f"Could not save group data to {final_list_path}")
         
-        # Show training in progress state immediately
         training_fig = {
             'data': [],
             'layout': {
@@ -4872,7 +4434,6 @@ def handle_train_button(n_clicks, group_order):
             }
         }
         
-        # Run training
         print("Running training function...")
         try:
             fig_before, fig_after = run_training()
@@ -4882,7 +4443,6 @@ def handle_train_button(n_clicks, group_order):
             import traceback
             traceback.print_exc()
             
-            # Return error state
             error_fig = {
                 'data': [],
                 'layout': {
@@ -4902,13 +4462,11 @@ def handle_train_button(n_clicks, group_order):
             }
             return {"display": "block"}, error_fig, error_fig, {"display": "block"}, "Train (Failed)", normal_style, False
         
-        # Save group information for model loading
         group_info_path = "test_results/training_group_info.json"
         with open(group_info_path, "w", encoding="utf-8") as f:
             json.dump(group_order, f, indent=4, ensure_ascii=False)
         print(f"Group information saved to {group_info_path} for model loading")
         
-        # DEBUG: [EMOJI]
         print(f"    DEBUG: fig_before type: {type(fig_before)}")
         print(f"    DEBUG: fig_after type: {type(fig_after)}")
         if hasattr(fig_before, 'data') and fig_before.data:
@@ -4927,19 +4485,17 @@ def handle_train_button(n_clicks, group_order):
                 print(f"    DEBUG: fig_after first trace y length: {len(first_trace.y) if hasattr(first_trace, 'y') else 'No y'}")
                 print(f"    DEBUG: fig_after first trace customdata length: {len(first_trace.customdata) if hasattr(first_trace, 'customdata') else 'No customdata'}")
         
-        # Training completed successfully - reset button to normal state
         completed_style = {
             "margin-top": "20px",
             "padding": "10px 20px",
             "fontSize": "16px",
-            "backgroundColor": "#2E7D32",  # Darker green for completed
+            "backgroundColor": "#2E7D32",  
             "color": "white",
             "border": "none",
             "borderRadius": "5px",
             "cursor": "pointer"
         }
         
-        # Show switch button after training completion
         switch_button_style = {
             "margin": "15px auto",
             "padding": "12px 30px",
@@ -4952,35 +4508,30 @@ def handle_train_button(n_clicks, group_order):
             "cursor": "pointer",
             "transition": "all 0.3s ease",
             "boxShadow": "0 3px 10px rgba(52, 152, 219, 0.3)",
-            "display": "block"  # Show the switch button
+            "display": "block"  
         }
         
-        # [EMOJI] Figure [EMOJI]
         print(f"    DEBUG: Converting figures to dict by manual extraction")
         
         import numpy as np
         
         def fig_to_serializable_dict(fig):
-            """[EMOJI] Plotly Figure [EMOJI]"""
             result = {
                 'data': [],
                 'layout': {}
             }
             
-            # [EMOJI] layout
             if hasattr(fig, 'layout'):
                 result['layout'] = fig.layout.to_plotly_json() if hasattr(fig.layout, 'to_plotly_json') else {}
             
-            # [EMOJI] trace
             for trace in fig.data:
                 trace_dict = {}
                 
-                # [EMOJI] trace [EMOJI]
                 for attr in ['x', 'y', 'mode', 'type', 'name', 'text', 'textposition', 'textfont', 'customdata', 'hovertemplate', 'hovertext']:
                     if hasattr(trace, attr):
                         val = getattr(trace, attr)
                         if val is not None:
-                            # [EMOJI] numpy [EMOJI]
+                 
                             if hasattr(val, 'tolist'):
                                 trace_dict[attr] = val.tolist()
                             elif hasattr(val, '__iter__') and not isinstance(val, str):
@@ -4988,7 +4539,6 @@ def handle_train_button(n_clicks, group_order):
                             else:
                                 trace_dict[attr] = val
                 
-                # [EMOJI] marker
                 if hasattr(trace, 'marker'):
                     marker_dict = {}
                     marker = trace.marker
@@ -5004,7 +4554,6 @@ def handle_train_button(n_clicks, group_order):
                                     marker_dict[m_attr] = m_val
                     trace_dict['marker'] = marker_dict
                 
-                # DEBUG
                 trace_name = trace_dict.get('name', 'Unknown')
                 x_len = len(trace_dict.get('x', []))
                 print(f"    DEBUG: Extracted trace '{trace_name}': {x_len} points")
@@ -5013,11 +4562,9 @@ def handle_train_button(n_clicks, group_order):
             
             return result
         
-        # [EMOJI]
         fig_before_dict = fig_to_serializable_dict(fig_before)
         fig_after_dict = fig_to_serializable_dict(fig_after)
         
-        # DEBUG: [EMOJI]
         if fig_after_dict.get('data'):
             for trace in fig_after_dict['data']:
                 trace_name = trace.get('name', 'Unknown')
@@ -5031,7 +4578,6 @@ def handle_train_button(n_clicks, group_order):
         print(f"    DEBUG: Manually built fig_before_dict type: {type(fig_before_dict)}")
         print(f"    DEBUG: Manually built fig_after_dict type: {type(fig_after_dict)}")
         
-        # DEBUG: [EMOJI]
         if isinstance(fig_before_dict, dict) and 'data' in fig_before_dict:
             print(f"    DEBUG: fig_before_dict data length: {len(fig_before_dict['data'])}")
             if len(fig_before_dict['data']) > 0:
@@ -5055,7 +4601,6 @@ def handle_train_button(n_clicks, group_order):
         import traceback
         traceback.print_exc()
         
-        # Return error figures
         error_fig = {
             'data': [],
             'layout': {
@@ -5074,24 +4619,21 @@ def handle_train_button(n_clicks, group_order):
             }
         }
         
-        # Training failed - show error state
         error_style = {
             "margin-top": "20px",
             "padding": "10px 20px",
             "fontSize": "16px",
-            "backgroundColor": "#F44336",  # Red for error
+            "backgroundColor": "#F44336",  
             "color": "white",
             "border": "none",
             "borderRadius": "5px",
             "cursor": "pointer"
         }
         
-        # Hide switch button on training failure
         switch_button_style = {"display": "none"}
         
         return "Training Failed", error_style, False, switch_button_style, "keywords", {"before": None, "after": None}
 
-# Add a separate callback to handle button state changes immediately when clicked
 @app.callback(
     [Output("train-btn", "children", allow_duplicate=True),
      Output("train-btn", "style", allow_duplicate=True),
@@ -5100,16 +4642,15 @@ def handle_train_button(n_clicks, group_order):
     prevent_initial_call=True
 )
 def update_train_button_immediately(n_clicks):
-    """Update button state immediately when clicked to show training status"""
+
     if not n_clicks or n_clicks == 0:
         raise PreventUpdate
     
-    # Show training state immediately
     training_style = {
         "margin-top": "20px",
         "padding": "10px 20px",
         "fontSize": "16px",
-        "backgroundColor": "#FF9800",  # Orange color for training
+        "backgroundColor": "#FF9800",  
         "color": "white",
         "border": "none",
         "borderRadius": "5px",
@@ -5132,13 +4673,12 @@ def update_train_button_immediately(n_clicks):
     prevent_initial_call=True
 )
 def display_article_content_training(click_data_before, click_data_after):
-    """Display article content when clicking on training plots (before/after)"""
+
     ctx = dash.callback_context
     
     if not ctx.triggered:
         raise PreventUpdate
     
-    # Determine which plot was clicked
     click_data = None
     if ctx.triggered[0]['prop_id'] == 'plot-before.clickData':
         click_data = click_data_before
@@ -5149,10 +4689,8 @@ def display_article_content_training(click_data_before, click_data_after):
         raise PreventUpdate
     
     try:
-        # Get article index from click data
         article_index = click_data['points'][0]['customdata'][0]
         
-        # Load article content
         global df
         if 'df' not in globals():
             df = pd.read_csv(csv_path)
@@ -5172,8 +4710,6 @@ def display_article_content_training(click_data_before, click_data_after):
                 })
             ])
             
-            # Return both content and article index for training mode highlighting
-            # In training mode, we add the clicked article to highlighted indices for special highlighting
             return content, [article_index]
         else:
             return html.P("Article not found", style={"color": "red"}), []
@@ -5181,7 +4717,6 @@ def display_article_content_training(click_data_before, click_data_after):
     except Exception as e:
         return html.P(f"Error loading article: {str(e)}", style={"color": "red"}), []
 
-# Load previous model callback removed - no longer needed
 
 @app.callback(
     [Output("display-mode", "data", allow_duplicate=True),
@@ -5191,7 +4726,7 @@ def display_article_content_training(click_data_before, click_data_after):
     prevent_initial_call=True
 )
 def switch_display_mode(n_clicks, current_mode):
-    """Switch between keywords view and training view"""
+
     if not n_clicks or n_clicks == 0:
         raise PreventUpdate
     
@@ -5202,14 +4737,12 @@ def switch_display_mode(n_clicks, current_mode):
         new_mode = "keywords"
         button_text = "Switch to Training View"
     else:
-        # [EMOJI] keywords
         new_mode = "keywords"
         button_text = "Switch to Training View"
     
     print(f"Switching display mode from {current_mode} to {new_mode}")
     return new_mode, button_text
 
-# [EMOJI] switch-view-btn [EMOJI] finetune [EMOJI]
 @app.callback(
     [Output("switch-view-btn", "style", allow_duplicate=True),
      Output("switch-view-btn", "children", allow_duplicate=True)],
@@ -5231,23 +4764,21 @@ def control_switch_view_btn_visibility(display_mode):
         "boxShadow": "0 3px 10px rgba(52, 152, 219, 0.3)",
     }
     
-    # [EMOJI] finetune [EMOJI]
     if display_mode == "finetune":
         base_style["display"] = "none"
-        button_text = "Switch to Training View"  # [EMOJI]
+        button_text = "Switch to Training View"  
     elif display_mode == "training":
         base_style["display"] = "block"
-        button_text = "Switch to Keywords View"  # [EMOJI] training[EMOJI] keywords [EMOJI]
+        button_text = "Switch to Keywords View"  
     elif display_mode == "keywords":
         base_style["display"] = "block"
-        button_text = "Switch to Training View"  # [EMOJI] keywords[EMOJI] training [EMOJI]
+        button_text = "Switch to Training View"  
     else:
         base_style["display"] = "block"
-        button_text = "Switch to Training View"  # [EMOJI]
+        button_text = "Switch to Training View"  
     
     return base_style, button_text
 
-# [EMOJI] Finetune [EMOJI]/[EMOJI]
 @app.callback(
     Output("switch-finetune-btn", "style"),
     [Input("display-mode", "data"), Input("training-figures", "data")]
@@ -5269,7 +4800,6 @@ def show_switch_finetune_btn(display_mode, training_figures):
     }
     try:
         has_after = isinstance(training_figures, dict) and bool(training_figures.get("after"))
-        # [EMOJI] training [EMOJI] finetune [EMOJI]
         if display_mode in ("training", "finetune") and has_after:
             base_style["display"] = "block"
         else:
@@ -5278,7 +4808,6 @@ def show_switch_finetune_btn(display_mode, training_figures):
         base_style["display"] = "none"
     return base_style
             
-# Save model callback removed - model is automatically saved after training
 
 @app.callback(
     [Output("main-visualization-area", "children"),
@@ -5290,37 +4819,19 @@ def show_switch_finetune_btn(display_mode, training_figures):
     prevent_initial_call=True
 )
 def update_main_visualization_area(display_mode, training_figures):
-    """Dynamically update the main visualization area based on display mode"""
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: update_main_visualization_area CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
-    print(f"    DEBUG:     INPUT PARAMETERS:")
-    print(f"    DEBUG:   display_mode: {display_mode}")
-    print(f"    DEBUG:   display_mode type: {type(display_mode)}")
-    print(f"    DEBUG:   training_figures: {training_figures is not None}")
-    print(f"    DEBUG:   training_figures type: {type(training_figures)}")
+   
     if training_figures:
         print(f"    DEBUG:   training_figures keys: {list(training_figures.keys()) if isinstance(training_figures, dict) else 'not dict'}")
     
-    print(f"    DEBUG:     CALLBACK LOGIC:")
-    print(f"    DEBUG:   About to check if display_mode == 'training'")
-    print(f"    DEBUG:   display_mode == 'training': {display_mode == 'training'}")
-    print(f"    DEBUG:   display_mode == 'keywords': {display_mode == 'keywords'}")
     
     if display_mode == "training":
-        print(f"    DEBUG:      ENTERING TRAINING MODE LAYOUT")
-        print(f"    DEBUG:   Will return training plots and hide keywords panels")
-        print(f"    DEBUG:   training_group_style will be: {{'display': 'flex', 'marginBottom': '30px'}}")
-        print(f"    DEBUG:   keywords_group_style will be: {{'display': 'none', 'marginBottom': '30px'}}")
-        # Show training plots and show training group management area
+       
         if training_figures:
             fig_before = training_figures.get("before", {})
             fig_after = training_figures.get("after", {})
             print(f"    Using existing training figures")
         else:
             print(f"    No training figures available, using placeholders")
-            # Show placeholder figures when no training data is available
             fig_before = {
                 'data': [],
                 'layout': {
@@ -5356,20 +4867,14 @@ def update_main_visualization_area(display_mode, training_figures):
                 }
             }
         
-        # Show training group management area
         training_group_style = {'display': 'flex', 'marginBottom': '30px'}
-        
-        # Force trigger training mode callbacks by updating their inputs
-        # This ensures the training interfaces are populated when switching to training mode
         
         print(f"    DEBUG:     RETURNING TRAINING MODE LAYOUT:")
         print(f"    DEBUG:   - main-visualization-area: training plots")
         print(f"    DEBUG:   - training-group-management-area: {{'display': 'flex'}}")
         print(f"    DEBUG:   - keywords-group-management-area: {{'display': 'none'}}")
         
-        # training [EMOJI] before/after [EMOJI] training [EMOJI] finetune [EMOJI]
         return [
-            # Left: Before Training
             html.Div([
                 html.H4("Before Training", style={
                     "color": "#2c3e50",
@@ -5399,7 +4904,6 @@ def update_main_visualization_area(display_mode, training_figures):
                 'marginRight': '1%'
             }),
             
-            # Right: After Training
             html.Div([
                 html.H4("After Training", style={
                     "color": "#2c3e50",
@@ -5433,7 +4937,6 @@ def update_main_visualization_area(display_mode, training_figures):
         print(f"    DEBUG:      ENTERING FINETUNE MODE LAYOUT")
         print(f"    DEBUG:   Will return finetune plot and show finetune panels")
         
-        # Show finetune plot (using after training figure) and show finetune group management area
         if training_figures:
             fig_after = training_figures.get("after", {})
             print(f"    Using existing training after figure for finetune")
@@ -5457,19 +4960,10 @@ def update_main_visualization_area(display_mode, training_figures):
                 }
             }
         
-        # Show finetune group management area
         finetune_group_style = {'display': 'flex', 'marginBottom': '30px'}
+
         
-        print(f"    DEBUG:     RETURNING FINETUNE MODE LAYOUT:")
-        print(f"    DEBUG:   - main-visualization-area: finetune plot")
-        print(f"    DEBUG:   - finetune-group-management-area: {{'display': 'flex'}}")
-        print(f"    DEBUG:   - training-group-management-area: {{'display': 'none'}}")
-        print(f"    DEBUG:   - keywords-group-management-area: {{'display': 'none'}}")
-        
-        # finetune [EMOJI] keywords/training [EMOJI] finetune [EMOJI]
-        # keywords [EMOJI] keywords [EMOJI] keywords [EMOJI] training/finetune [EMOJI]
         return [
-            # Finetune plot - maintain aspect ratio like keywords plot
             html.Div([
                 html.H4("Finetune Mode - Interactive 2D", style={
                     "color": "#2c3e50",
@@ -5488,33 +4982,24 @@ def update_main_visualization_area(display_mode, training_figures):
                 dcc.Graph(
                     id='finetune-2d-plot',
                     figure=fig_after if fig_after else {},
-                    style={'height': '800px'},  # Increased height for better aspect ratio
+                    style={'height': '800px'},  
                     config={'displayModeBar': True, 'displaylogo': False}
                 )
             ], className="modern-card", style={
                 'width': '100%',
-                'minHeight': '850px',  # Set minimum container height
+                'minHeight': '850px',  
                 'padding': '20px',
                 'margin': '0 auto',
                 'display': 'block'
             })
         ], {'display': 'none', 'marginBottom': '30px'}, {'display': 'none', 'marginBottom': '30px'}, finetune_group_style
     else:
-        print(f"    DEBUG:      ENTERING KEYWORDS MODE LAYOUT")
-        print(f"    DEBUG:   Will return keywords plots and show keywords panels")
-        print(f"    DEBUG:   training_group_style will be: {{'display': 'none', 'marginBottom': '30px'}}")
-        print(f"    DEBUG:   keywords_group_style will be: {{'display': 'flex', 'marginBottom': '30px'}}")
-        # In keywords mode, restore the original keywords view layout and hide training group management
+
+        
         training_group_style = {'display': 'none', 'marginBottom': '30px'}
         keywords_group_style = {'display': 'flex', 'marginBottom': '30px'}
         
-        print(f"    DEBUG:     RETURNING KEYWORDS MODE LAYOUT:")
-        print(f"    DEBUG:   - main-visualization-area: keywords plots")
-        print(f"    DEBUG:   - training-group-management-area: {{'display': 'none'}}")
-        print(f"    DEBUG:   - keywords-group-management-area: {{'display': 'flex'}}")
-        
         return [
-            # Left: Keywords 2D Visualization
             html.Div([
                 html.H4("Keywords 2D Visualization", style={
                     "color": "#2c3e50",
@@ -5543,7 +5028,6 @@ def update_main_visualization_area(display_mode, training_figures):
                 'marginRight': '1%'
             }),
             
-            # Right: Documents 2D Visualization
             html.Div([
                 html.H4("Documents 2D Visualization", style={
                     "color": "#2c3e50",
@@ -5573,7 +5057,7 @@ def update_main_visualization_area(display_mode, training_figures):
             })
         ], training_group_style, keywords_group_style, {'display': 'none', 'marginBottom': '30px'}
 
-# Add callback for training mode highlighting
+
 @app.callback(
     Output('highlighted-indices', 'data', allow_duplicate=True),
     [Input('training-selected-keyword', 'data'),
@@ -5584,21 +5068,9 @@ def update_main_visualization_area(display_mode, training_figures):
     prevent_initial_call=True
 )
 def update_training_highlights(selected_keyword, selected_group, group_order, training_figures, display_mode):
-    """Update highlighted indices for training mode - following keywords mode logic"""
     global df
-    
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: update_training_highlights CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
-    print(f"    DEBUG:     INPUT PARAMETERS:")
-    print(f"    DEBUG:   selected_keyword: {selected_keyword}")
-    print(f"    DEBUG:   selected_group: {selected_group}")
-    print(f"    DEBUG:   display_mode: {display_mode}")
-    print(f"    DEBUG:   group_order: {group_order}")
-    print(f"    DEBUG:   training_figures: {training_figures is not None}")
-    
-    # Only process if we're in training mode
+
+
     if display_mode != "training":
         print(f"    DEBUG:         NOT IN TRAINING MODE:")
         print(f"    DEBUG:   display_mode '{display_mode}' != 'training'")
@@ -5606,8 +5078,7 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
         raise PreventUpdate
     
     print(f"    DEBUG:      TRAINING MODE CONFIRMED")
-    
-    # Check if we have data
+
     if 'df' not in globals() or not training_figures:
         print(f"    DEBUG:         MISSING DATA OR TRAINING FIGURES:")
         print(f"    DEBUG:   df in globals: {'df' in globals()}")
@@ -5616,15 +5087,12 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
         return {"type": "none", "indices": []}
     
     print(f"    DEBUG:      DATA AND TRAINING FIGURES AVAILABLE")
-    
-    # Following keywords mode logic: keyword selection has priority over group selection
-    # But if no keyword is selected, then group selection should work
+
     
     if selected_keyword:
         print(f"    DEBUG:     KEYWORD SELECTION:")
         print(f"    DEBUG:   Processing keyword: {selected_keyword}")
-        
-        # Find documents containing the selected keyword
+
         keyword_indices = []
         for i, text in enumerate(df.iloc[:, 1]):
             if selected_keyword.lower() in str(text).lower():
@@ -5640,7 +5108,6 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
         print(f"    DEBUG:   Processing group: {selected_group}")
         print(f"    DEBUG:   Full group_order: {group_order}")
         
-        # Find documents containing any keyword in the selected group
         if selected_group in group_order:
             group_keywords = group_order[selected_group]
             print(f"    DEBUG:   Group keywords: {group_keywords}")
@@ -5651,8 +5118,8 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
             for i, text in enumerate(df.iloc[:, 1]):
                 text_lower = str(text).lower()
                 
-                # Special debug for document 57 when processing Group 1
-                if i == 56 and selected_group == "Group 1":  # Document 57 (0-indexed)
+
+                if i == 56 and selected_group == "Group 1":  
                     print(f"    DEBUG:     DOCUMENT 57 ANALYSIS FOR GROUP 1:")
                     print(f"    DEBUG:   Document index: {i+1} (1-indexed)")
                     print(f"    DEBUG:   Text preview: {str(text)[:300]}...")
@@ -5662,13 +5129,12 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
                         contains_kw = kw.lower() in text_lower
                         print(f"    DEBUG:   Contains '{kw}': {contains_kw}")
                         if contains_kw:
-                            # Find position of keyword in text
+
                             pos = text_lower.find(kw.lower())
                             context = text_lower[max(0, pos-50):pos+len(kw)+50]
                             print(f"    DEBUG:     Context: ...{context}...")
                     print(f"    DEBUG:   Overall match: {any(keyword.lower() in text_lower for keyword in group_keywords)}")
                 
-                # Check if any keyword from the group is in the document
                 if any(keyword.lower() in text_lower for keyword in group_keywords):
                         group_indices.append(i)
             
@@ -5680,12 +5146,10 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
             print(f"    DEBUG:           Group '{selected_group}' not found in group_order")
             return {"type": "group", "indices": [], "group": selected_group}
     
-    # If neither keyword nor group is selected
     print(f"    DEBUG:     NO SELECTION:")
     print(f"    DEBUG:   No keyword or group selected, returning empty")
     return {"type": "none", "indices": []}
 
-# Add callback for updating training plots with highlights
 @app.callback(
     [Output('plot-before', 'figure', allow_duplicate=True),
      Output('plot-after', 'figure', allow_duplicate=True)],
@@ -5697,21 +5161,12 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
     prevent_initial_call=True
 )
 def update_training_plots_with_highlights(highlighted_indices, training_selected_article, display_mode, training_figures, group_order):
-    """Update training plots with highlighted indices - following keywords mode logic"""
+
     global df
     
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: update_training_plots_with_highlights CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
-    print(f"    DEBUG:     INPUT PARAMETERS:")
-    print(f"    DEBUG:   highlighted_indices: {highlighted_indices}")
-    print(f"    DEBUG:   training_selected_article: {training_selected_article}")
-    print(f"    DEBUG:   display_mode: {display_mode}")
-    print(f"    DEBUG:   training_figures: {training_figures is not None}")
-    print(f"    DEBUG:   group_order: {group_order}")
+
     
-    # Only process if we're in training mode
+
     if display_mode != "training":
         print(f"    DEBUG:         NOT IN TRAINING MODE:")
         print(f"    DEBUG:   display_mode '{display_mode}' != 'training'")
@@ -5720,7 +5175,7 @@ def update_training_plots_with_highlights(highlighted_indices, training_selected
     
     print(f"    DEBUG:      TRAINING MODE CONFIRMED")
     
-    # Check if we have training figures
+
     if not training_figures:
         print(f"    DEBUG:         NO TRAINING FIGURES:")
         print(f"    DEBUG:   Returning empty figures")
@@ -5728,15 +5183,15 @@ def update_training_plots_with_highlights(highlighted_indices, training_selected
     
     print(f"    DEBUG:      TRAINING FIGURES AVAILABLE")
     
-    # Get original training figures
+
     fig_before = training_figures.get("before", {})
     fig_after = training_figures.get("after", {})
     
-    # Initialize highlight variables
+
     keyword_group_highlights = []
     selected_article_highlight = None
     
-    # Process highlights following keywords mode logic
+
     if isinstance(highlighted_indices, dict) and 'type' in highlighted_indices:
         highlight_type = highlighted_indices.get('type')
         highlight_indices = highlighted_indices.get('indices', [])
@@ -5746,27 +5201,26 @@ def update_training_plots_with_highlights(highlighted_indices, training_selected
         print(f"    DEBUG:   Highlight indices: {highlight_indices}")
         
         if highlight_type == "group":
-            # Group highlights - show all documents in the group
+
             keyword_group_highlights = highlight_indices
             print(f"    DEBUG:   Group highlights: {keyword_group_highlights}")
             
         elif highlight_type == "keyword":
-            # Keyword highlights - show only documents with this keyword
+
             keyword_group_highlights = highlight_indices
             print(f"    DEBUG:   Keyword highlights: {keyword_group_highlights}")
             
         elif highlight_type == "none":
-            # No highlights
+
             keyword_group_highlights = []
             print(f"    DEBUG:   No highlights")
     
-    # Process article selection (can coexist with group/keyword highlights)
+
     if training_selected_article is not None and training_selected_article < len(df):
         selected_article_highlight = training_selected_article
         print(f"    DEBUG:     ARTICLE SELECTION:")
         print(f"    DEBUG:   Selected article: {training_selected_article}")
         
-        # If we have group/keyword highlights, check if this article is part of them
         if keyword_group_highlights and training_selected_article not in keyword_group_highlights:
             print(f"    DEBUG:   Article {training_selected_article} is NOT in current highlights")
             print(f"    DEBUG:   This will show both highlights and article")
@@ -5776,18 +5230,16 @@ def update_training_plots_with_highlights(highlighted_indices, training_selected
         else:
             print(f"    DEBUG:   No current highlights, only showing article")
     
-    print(f"    DEBUG:     FINAL HIGHLIGHT STATE:")
     print(f"    DEBUG:   Keyword/Group highlights: {keyword_group_highlights}")
     print(f"    DEBUG:   Selected article highlight: {selected_article_highlight}")
     
-    # Apply highlights to both plots
     updated_fig_before = apply_highlights_to_training_plot(fig_before, keyword_group_highlights, selected_article_highlight, "before")
     updated_fig_after = apply_highlights_to_training_plot(fig_after, keyword_group_highlights, selected_article_highlight, "after")
     
     return updated_fig_before, updated_fig_after
 
 def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_article_highlight, plot_name):
-    """Apply highlights to a training plot - keeps base layer + centers, adds highlights on top"""
+
     if not fig or 'data' not in fig:
         return fig
     
@@ -5795,13 +5247,11 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
     print(f"    DEBUG:   Keyword/Group highlights: {keyword_group_highlights}")
     print(f"    DEBUG:   Selected article: {selected_article_highlight}")
     
-    # Create a copy of the figure
     updated_fig = fig.copy()
     
     if not updated_fig['data']:
         return updated_fig
     
-    # [EMOJI]
     traces = []
     main_trace = None
     center_traces = []
@@ -5816,32 +5266,26 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
         
         print(f"    DEBUG:     Trace {i}: name='{trace_name}', symbol='{symbol}', points={x_len}")
         
-        # [EMOJI]diamond[EMOJI] [EMOJI] [EMOJI] 'Center'[EMOJI]
         if symbol == 'diamond' or 'Center' in trace_name:
             center_traces.append(trace)
             print(f"    DEBUG:       → Keeping as center trace")
-        # [EMOJI]center trace[EMOJI] 'All Documents'[EMOJI]
         elif main_trace is None and x_len > 10 and symbol != 'star':
             main_trace = trace
             print(f"    DEBUG:       → Keeping as main document trace")
     
-    # [EMOJI]
+    
     if main_trace:
         traces.append(main_trace)
     else:
-        # [EMOJI]trace[EMOJI]
         print(f"    DEBUG:           No main trace found, returning original figure")
         return fig
     
-    # [EMOJI]
     traces.extend(center_traces)
     print(f"    DEBUG:   Added {len(center_traces)} center traces")
     
-    # [EMOJI]
     x_data = main_trace['x'] if isinstance(main_trace['x'], (list, tuple)) else list(main_trace['x'])
     y_data = main_trace['y'] if isinstance(main_trace['y'], (list, tuple)) else list(main_trace['y'])
     
-    # [EMOJI]/[EMOJI] trace[EMOJI]
     if keyword_group_highlights:
         highlight_x = [x_data[i] for i in keyword_group_highlights if i < len(x_data)]
         highlight_y = [y_data[i] for i in keyword_group_highlights if i < len(y_data)]
@@ -5855,7 +5299,7 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
                 'name': 'Selected Group',
                 'marker': {
                     'size': 15,
-                    'color': '#FFD700',  # Gold color
+                    'color': '#FFD700',  
                     'symbol': 'star',
                     'line': {'width': 2, 'color': 'white'}
                 },
@@ -5865,7 +5309,6 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
             })
             print(f"    DEBUG:   Added keyword/group highlight trace with {len(highlight_x)} points")
     
-    # [EMOJI] trace[EMOJI]
     if selected_article_highlight is not None and selected_article_highlight < len(x_data):
         article_x = [x_data[selected_article_highlight]]
         article_y = [y_data[selected_article_highlight]]
@@ -5878,7 +5321,7 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
             'name': 'Selected Article',
             'marker': {
                 'size': 20,
-                'color': '#FF0000',  # Red color
+                'color': '#FF0000',  
                 'symbol': 'star',
                 'line': {'width': 3, 'color': 'white'}
             },
@@ -5888,7 +5331,6 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
         })
         print(f"    DEBUG:   Added selected article highlight trace")
     
-    # [EMOJI] traces
     updated_fig['data'] = traces
     
     print(f"    DEBUG:   Original trace count: {len(fig['data'])}")
@@ -5896,28 +5338,17 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
     
     return updated_fig
 
-# Add callback for rendering training group containers
 @app.callback(
     Output("training-group-containers", "children"),
     [Input("group-order", "data"),
      Input("training-selected-group", "data"),
-     Input("display-mode", "data")],  # Add display-mode as Input to trigger on mode change
+     Input("display-mode", "data")],  
     [State("training-selected-keyword", "data")],
-    prevent_initial_call=False  # Allow initial call to populate content
+    prevent_initial_call=False  
 )
 def render_training_groups(group_order, selected_group, display_mode, selected_keyword):
-    """Render training mode group containers - identical to render_groups but independent"""
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: render_training_groups CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
-    print(f"    DEBUG:     INPUT PARAMETERS:")
-    print(f"    DEBUG:   group_order: {group_order}")
-    print(f"    DEBUG:   selected_group: {selected_group}")
-    print(f"    DEBUG:   selected_keyword: {selected_keyword}")
-    print(f"    DEBUG:   display_mode: {display_mode}")
+
     
-    # Only process if we're in training mode
     if display_mode != "training":
         print(f"    DEBUG:         NOT IN TRAINING MODE:")
         print(f"    DEBUG:   display_mode '{display_mode}' != 'training'")
@@ -5938,7 +5369,6 @@ def render_training_groups(group_order, selected_group, display_mode, selected_k
 
     children = []
     for grp_name, kw_list in group_order.items():
-        # Group header with number and color
         if grp_name == "Other":
             group_display_name = "Other (Exclude)"
             group_color = get_group_color(grp_name)
@@ -5947,19 +5377,18 @@ def render_training_groups(group_order, selected_group, display_mode, selected_k
             group_display_name = f"Training Group {group_number}"
             group_color = get_group_color(grp_name)
         
-        # Special styling for Other group in training mode
         if grp_name == "Other":
             header_style = {
                 "width": "100%",
                 "background": group_color if grp_name == selected_group else "#f0f0f0",
                 "color": "white" if grp_name == selected_group else "black",
-                "border": f"2px dashed {group_color}",  # Dashed border for exclusion
+                "border": f"2px dashed {group_color}",  
                 "padding": "10px",
                 "cursor": "pointer",
                 "fontWeight": "bold",
                 "marginBottom": "5px",
                 "borderRadius": "5px",
-                "opacity": "0.8"  # Slightly transparent
+                "opacity": "0.8"  
             }
         else:
             header_style = {
@@ -5980,13 +5409,11 @@ def render_training_groups(group_order, selected_group, display_mode, selected_k
             style=header_style
         )
 
-        # Keywords list
         group_keywords = []
         for i, kw in enumerate(kw_list):
-            # Check if this keyword is selected for Training Group Management highlighting
+
             is_selected = selected_keyword and kw == selected_keyword
             
-            # Use group color for keywords in this group with selection highlighting
             keyword_button = html.Button(
                 kw,
                 id={"type": "training-select-keyword", "keyword": kw, "group": grp_name},
@@ -5996,12 +5423,12 @@ def render_training_groups(group_order, selected_group, display_mode, selected_k
                     "border": f"1px solid {group_color}", 
                     "width": "100%",
                     "textAlign": "left",
-                    "backgroundColor": group_color if is_selected else f"{group_color}20",  # Highlight when selected
-                    "color": "white" if is_selected else group_color,  # White text when selected
+                    "backgroundColor": group_color if is_selected else f"{group_color}20",  
+                    "color": "white" if is_selected else group_color,  
                     "cursor": "pointer",
                     "borderRadius": "4px",
                     "fontSize": "12px",
-                    "fontWeight": "bold" if is_selected else "normal"  # Bold when selected
+                    "fontWeight": "bold" if is_selected else "normal"  
                 }
             )
             
@@ -6033,7 +5460,6 @@ def render_training_groups(group_order, selected_group, display_mode, selected_k
 
     return children
 
-# Add callback for training group selection
 @app.callback(
     [Output("training-selected-group", "data"),
      Output("training-selected-keyword", "data")],
@@ -6042,12 +5468,9 @@ def render_training_groups(group_order, selected_group, display_mode, selected_k
     prevent_initial_call=True
 )
 def select_training_group(n_clicks, display_mode):
-    """Handle training group selection - following keywords mode logic"""
+
     ctx = dash.callback_context
-    
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: select_training_group CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
+
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG: n_clicks: {n_clicks}")
     print(f"    DEBUG: display_mode: {display_mode}")
@@ -6065,24 +5488,12 @@ def select_training_group(n_clicks, display_mode):
     print(f"    DEBUG:   triggered_id: {triggered_id}")
     print(f"    DEBUG:   triggered_n_clicks: {triggered_n_clicks}")
     
-    # Check if this is a training group header click (only if n_clicks > 0)
     if "training-group-header" in triggered_id and triggered_n_clicks and (isinstance(triggered_n_clicks, (int, float)) and triggered_n_clicks > 0):
-        print(f"    DEBUG:      Valid training group header click detected!")
         try:
             import json
             parsed_id = json.loads(triggered_id.split('.')[0])
-            selected_group = parsed_id["index"]
-            print(f"    DEBUG:   Extracted training group: {selected_group}")
-            
-            # Following keywords mode logic: group selection clears keyword selection
-            print(f"    DEBUG:   Switching to training group: {selected_group}")
-            print(f"    DEBUG:   Clearing training selected keyword")
-            print(f"    DEBUG:       RETURN VALUES:")
-            print(f"    DEBUG:     training-selected-group: {selected_group}")
-            print(f"    DEBUG:     training-selected-keyword: None")
-            print(f"    DEBUG:        SUCCESS: About to return (selected_group, None)")
-            
-            return selected_group, None  # Return group and clear keyword
+            selected_group = parsed_id["index"]            
+            return selected_group, None  
                 
         except Exception as e:
             print(f"    DEBUG:         ERROR PARSING TRAINING GROUP HEADER ID:")
@@ -6096,7 +5507,6 @@ def select_training_group(n_clicks, display_mode):
     print(f"    DEBUG:         No valid conditions met, raising PreventUpdate")
     raise PreventUpdate
 
-# Add callback for training keyword selection
 @app.callback(
     [Output("training-selected-keyword", "data", allow_duplicate=True),
      Output("training-selected-group", "data", allow_duplicate=True)],
@@ -6106,16 +5516,9 @@ def select_training_group(n_clicks, display_mode):
     prevent_initial_call=True
 )
 def select_training_keyword_from_group(n_clicks, display_mode, group_order):
-    """Handle training keyword selection from group management - following keywords mode logic"""
+
     ctx = dash.callback_context
-    
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: select_training_keyword_from_group CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
-    print(f"    DEBUG: n_clicks: {n_clicks}")
-    print(f"    DEBUG: display_mode: {display_mode}")
-    print(f"    DEBUG: group_order: {group_order}")
+
     
     if not ctx.triggered:
         print(f"    DEBUG: No context triggered")
@@ -6127,7 +5530,6 @@ def select_training_keyword_from_group(n_clicks, display_mode, group_order):
     print(f"    DEBUG: triggered_id: {triggered_id}")
     print(f"    DEBUG: triggered_n_clicks: {triggered_n_clicks}")
     
-    # Check if this is a keyword selection
     if "training-select-keyword" in triggered_id:
         try:
             import json
@@ -6135,14 +5537,11 @@ def select_training_keyword_from_group(n_clicks, display_mode, group_order):
             keyword = btn_info.get("keyword")
             print(f"    DEBUG: Select training keyword from group management: {keyword}")
             
-            # Check if this is a direct keyword click (n_clicks > 0)
             if triggered_n_clicks and (isinstance(triggered_n_clicks, (int, float)) and triggered_n_clicks > 0):
                 print(f"    DEBUG: Direct training keyword click detected, selecting keyword: {keyword}")
                 
-                # Following keywords mode logic: keyword selection clears group selection
                 print(f"    DEBUG: Following the same logic as keywords mode: keyword selection clears group selection")
                 
-                # Find documents that contain this keyword
                 keyword_docs = []
                 
                 if 'df' in globals():
@@ -6157,8 +5556,6 @@ def select_training_keyword_from_group(n_clicks, display_mode, group_order):
                     print(f"    DEBUG:     2. Clear training-selected-group to None")
                     print(f"    DEBUG:   Following keywords mode logic: keyword selection clears group selection")
                     
-                    # Return keyword and clear group selection
-                    # This ensures mutual exclusivity between keyword and group selection
                     return keyword, None
                 else:
                     print(f"    DEBUG:         ERROR: No dataframe available")
@@ -6179,20 +5576,17 @@ def select_training_keyword_from_group(n_clicks, display_mode, group_order):
     print(f"    DEBUG:         No valid conditions met, raising PreventUpdate")
     raise PreventUpdate
 
-# Add callback for training recommended articles
+
 @app.callback(
     Output("training-articles-container", "children"),
     [Input("training-selected-keyword", "data"),
      Input("training-selected-group", "data"),
-     Input("display-mode", "data")],  # Add display-mode as Input to trigger on mode change
+     Input("display-mode", "data")],  
     [State("group-order", "data")],
-    prevent_initial_call=False  # Allow initial call to populate content
+    prevent_initial_call=False  
 )
 def display_training_recommended_articles(selected_keyword, selected_group, display_mode, group_order):
-    """Display training recommended articles - identical to display_recommended_articles but independent"""
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: display_training_recommended_articles CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
+
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG:     INPUT PARAMETERS:")
     print(f"    DEBUG:   selected_keyword: {selected_keyword}")
@@ -6206,7 +5600,6 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
     print(f"    DEBUG:     Both parameters present: {selected_keyword is not None and selected_group is not None}")
     print(f"    DEBUG:     This might indicate a callback chain issue")
     
-    # Only process if we're in training mode
     if display_mode != "training":
         print(f"    DEBUG:         NOT IN TRAINING MODE:")
         print(f"    DEBUG:   display_mode '{display_mode}' != 'training'")
@@ -6221,34 +5614,27 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
             print("Data not loaded")
             return html.P("Data not loaded")
         
-        # Create cache key based on search criteria (training specific)
         cache_key = None
         if selected_keyword:
             cache_key = f"training_keyword:{selected_keyword}"
         elif selected_group and group_order:
-            # For groups, create cache key based on group keywords
             for group_name, keywords in group_order.items():
                 if group_name == selected_group:
-                    # Sort keywords for consistent cache key
                     cache_key = f"training_group:{group_name}:{':'.join(sorted(keywords))}"
                     break
         
-        # Check cache first
         if cache_key and cache_key in _ARTICLES_CACHE:
             print(f"Using cached training articles for: {cache_key}")
             return _ARTICLES_CACHE[cache_key]
         
-        # Determine search criteria
         search_keywords = []
         search_title = ""
         
         if selected_keyword:
-            # Priority: specific keyword search
             search_keywords = [selected_keyword]
             search_title = f"Training Articles containing '{selected_keyword}'"
             print(f"Searching for training articles containing keyword: {selected_keyword}")
         elif selected_group:
-            # Secondary: group keyword search
             print(f"Training group selected: {selected_group}")
             print(f"group_order parameter received: {group_order}")
             
@@ -6279,20 +5665,17 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
                            style={"color": "#666", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
                 ])
         else:
-            # Show default content when no keyword or group is selected
             return html.Div([
                 html.H6("Training Recommended Articles", style={"color": "#2c3e50", "marginBottom": "10px"}),
                 html.P("Please select a training keyword or group to view recommended articles", 
                        style={"color": "#666", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
             ])
         
-        # Search for articles containing any of the search keywords
         matching_articles = []
         for idx, row in df.iterrows():
             text = str(row.iloc[1]) if len(row) > 1 else ""
             text_lower = text.lower()
             
-            # Check if any of the search keywords is in the text
             contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
             
             if contains_keyword:
@@ -6311,15 +5694,12 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
                 print(f"Cached 'no training articles' result for: {cache_key}")
             return result
         
-        # Create article display items
         article_items = [
             html.H6(f"{search_title} (Found {len(matching_articles)} articles)", 
                    style={"color": "#2c3e50", "marginBottom": "15px"})
         ]
         
-        # Create article items with file number and keywords
         for article_info in matching_articles:
-            # Create keyword tags
             keyword_tags = []
             for keyword in article_info['keywords']:
                 keyword_tag = html.Span(
@@ -6336,7 +5716,6 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
                 )
                 keyword_tags.append(keyword_tag)
             
-            # Create clickable article item with file number and keywords
             article_item = html.Div([
                 html.Button(
                     html.Div([
@@ -6367,7 +5746,6 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
             ])
             article_items.append(article_item)
         
-        # Cache the result for future use
         result = html.Div(article_items)
         if cache_key:
             _ARTICLES_CACHE[cache_key] = result
@@ -6379,7 +5757,6 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
         print(f"Error displaying training recommended articles: {e}")
         return html.P(f"Error displaying training recommended articles: {str(e)}")
 
-# Add callback for training article content display
 @app.callback(
     [Output("training-article-fulltext-container", "children"),
      Output("training-selected-article", "data")],
@@ -6388,12 +5765,9 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
     prevent_initial_call=True
 )
 def display_training_article_content(article_clicks, display_mode):
-    """Handle training article clicks - following keywords mode logic"""
+
     ctx = dash.callback_context
-    
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: display_training_article_content CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
+
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG:     INPUT PARAMETERS:")
     print(f"    DEBUG:   display_mode: {display_mode}")
@@ -6402,7 +5776,6 @@ def display_training_article_content(article_clicks, display_mode):
         print(f"    DEBUG:         No context triggered")
         raise PreventUpdate
     
-    # Handle training article item clicks
     article_index = None
     if 'training-article-item' in ctx.triggered[0]['prop_id']:
         try:
@@ -6419,7 +5792,6 @@ def display_training_article_content(article_clicks, display_mode):
         raise PreventUpdate
     
     try:
-        # Load article content
         global df
         if 'df' not in globals():
             df = pd.read_csv(csv_path)
@@ -6440,9 +5812,8 @@ def display_training_article_content(article_clicks, display_mode):
             ])
             
             print(f"    DEBUG:      SUCCESS: Training article content loaded for article {article_index}")
-            print(f"    DEBUG:   Training mode: updating training-selected-article, not triggering keywords mode callbacks")
+
             
-            # Update training-selected-article instead of selected-article to avoid triggering keywords mode callbacks
             return content, article_index
             
         else:
@@ -6457,7 +5828,6 @@ def display_training_article_content(article_clicks, display_mode):
 
 
 
-# Smart callback for handling article clicks in both modes
 @app.callback(
     [Output("article-fulltext-container", "children"),
      Output("selected-article", "data", allow_duplicate=True)],
@@ -6469,12 +5839,9 @@ def display_training_article_content(article_clicks, display_mode):
     prevent_initial_call=True
 )
 def display_article_content_smart(article_clicks, display_mode, current_keyword, current_group, group_order):
-    """Smart callback that handles article clicks in both keywords and training modes - following keywords mode logic"""
+
     ctx = dash.callback_context
-    
-    print(f"    DEBUG: ==========================================")
-    print(f"    DEBUG: display_article_content_smart CALLBACK TRIGGERED")
-    print(f"    DEBUG: ==========================================")
+
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG:     INPUT PARAMETERS:")
     print(f"    DEBUG:   display_mode: {display_mode}")
@@ -6486,7 +5853,6 @@ def display_article_content_smart(article_clicks, display_mode, current_keyword,
         print(f"    DEBUG:         No context triggered")
         raise PreventUpdate
     
-    # Handle article item clicks from recommended articles
     article_index = None
     if 'article-item' in ctx.triggered[0]['prop_id']:
         try:
@@ -6504,7 +5870,6 @@ def display_article_content_smart(article_clicks, display_mode, current_keyword,
         raise PreventUpdate
     
     try:
-        # Load article content
         global df
         if 'df' not in globals():
             df = pd.read_csv(csv_path)
@@ -6525,11 +5890,8 @@ def display_article_content_smart(article_clicks, display_mode, current_keyword,
             ])
             
             print(f"    DEBUG:      SUCCESS: Article content loaded for article {article_index}")
-            print(f"    DEBUG:   Following keywords mode logic: article click only updates selected-article")
-            print(f"    DEBUG:   This preserves existing Group/Keyword highlights")
+
             
-            # Following keywords mode logic: article click only updates selected-article
-            # This preserves existing Group/Keyword highlights and allows them to coexist
             return content, article_index
             
         else:
@@ -6540,16 +5902,7 @@ def display_article_content_smart(article_clicks, display_mode, current_keyword,
         print(f"    DEBUG:         Error loading article: {e}")
         return html.P(f"Error loading article: {str(e)}", style={"color": "red"}), None
 
-# Launch the Dash application
-print("    DEBUG: ==========================================")
-print("    DEBUG: CALLBACK REGISTRATION COMPLETE")
-print("    DEBUG: ==========================================")
-print("    DEBUG: All callbacks have been registered")
-print("    DEBUG: Application is ready to start")
 
-# ===================== Finetune Page Callbacks =====================
-
-# Show Finetune button after training figures are available
 @app.callback(
     [Output("display-mode", "data", allow_duplicate=True),
      Output("switch-finetune-btn", "children")],
@@ -6558,7 +5911,7 @@ print("    DEBUG: Application is ready to start")
     prevent_initial_call=True
 )
 def switch_to_finetune_mode(n_clicks, current_mode):
-    """Only toggle between training and finetune; ignore in other modes"""
+
     if not n_clicks:
         raise PreventUpdate
     if current_mode == "training":
@@ -6567,21 +5920,19 @@ def switch_to_finetune_mode(n_clicks, current_mode):
         return "training", "Switch to Finetune Mode"
     raise PreventUpdate
 
-# Render finetune group containers
 @app.callback(
     Output("finetune-group-containers", "children"),
     [Input("group-order", "data"),
-     Input("finetune-selected-group", "data"),  # [EMOJI] Input[EMOJI]
-     Input("finetune-selected-keyword", "data")]  # [EMOJI] selected_keyword
+     Input("finetune-selected-group", "data"),  
+     Input("finetune-selected-keyword", "data")]  
 )
 def render_finetune_groups(group_order, selected_group, selected_keyword):
-    """Render finetune groups - identical styling to render_groups"""
+
     if not group_order:
         return []
 
     children = []
     for grp_name, kw_list in group_order.items():
-        # Group header with number and color
         if grp_name == "Other":
             group_display_name = "Other (Exclude)"
             group_color = get_group_color(grp_name)
@@ -6590,19 +5941,18 @@ def render_finetune_groups(group_order, selected_group, selected_keyword):
             group_display_name = f"Group {group_number}"
             group_color = get_group_color(grp_name)
         
-        # Special styling for Other group
         if grp_name == "Other":
             header_style = {
                 "width": "100%",
                 "background": group_color if grp_name == selected_group else "#f0f0f0",
                 "color": "white" if grp_name == selected_group else "black",
-                "border": f"2px dashed {group_color}",  # Dashed border for exclusion
+                "border": f"2px dashed {group_color}",  
                 "padding": "10px",
                 "cursor": "pointer",
                 "fontWeight": "bold",
                 "marginBottom": "5px",
                 "borderRadius": "5px",
-                "opacity": "0.8"  # Slightly transparent
+                "opacity": "0.8"  
             }
         else:
             header_style = {
@@ -6623,13 +5973,10 @@ def render_finetune_groups(group_order, selected_group, selected_keyword):
             style=header_style
         )
 
-        # Keywords list - display as clickable buttons (like Training Mode)
         group_keywords = []
         for kw in kw_list:
-            # Check if this keyword is selected for highlighting
             is_selected = selected_keyword and kw == selected_keyword
             
-            # Display keyword as clickable button with group color
             keyword_button = html.Button(
                 kw,
                 id={"type": "finetune-select-keyword", "keyword": kw, "group": grp_name},
@@ -6639,12 +5986,12 @@ def render_finetune_groups(group_order, selected_group, selected_keyword):
                     "border": f"1px solid {group_color}", 
                     "width": "100%",
                     "textAlign": "left",
-                    "backgroundColor": group_color if is_selected else f"{group_color}20",  # Highlight when selected
-                    "color": "white" if is_selected else group_color,  # White text when selected
+                    "backgroundColor": group_color if is_selected else f"{group_color}20",  
+                    "color": "white" if is_selected else group_color,  
                     "cursor": "pointer",
                     "borderRadius": "4px",
                     "fontSize": "12px",
-                    "fontWeight": "bold" if is_selected else "normal"  # Bold when selected
+                    "fontWeight": "bold" if is_selected else "normal"  
                 }
             )
             group_keywords.append(keyword_button)
@@ -6670,7 +6017,6 @@ def render_finetune_groups(group_order, selected_group, selected_keyword):
 
     return children
 
-# Handle finetune group selection
 @app.callback(
     [Output("finetune-selected-group", "data"),
      Output("finetune-selected-keyword", "data", allow_duplicate=True),
@@ -6687,7 +6033,6 @@ def select_finetune_group(n_clicks, display_mode):
     print(f"   n_clicks: {n_clicks}")
     print(f"   ctx.triggered: {ctx.triggered}")
     
-    # Only process if we're in finetune mode
     if display_mode != "finetune":
         print(f"           Not in finetune mode, raising PreventUpdate")
         raise PreventUpdate
@@ -6703,14 +6048,13 @@ def select_finetune_group(n_clicks, display_mode):
     print(f"   triggered_value: {trig_value}")
     
     if "finetune-group-header" in trig:
-        # [EMOJI] n_clicks > 0 [EMOJI]
         if trig_value and (isinstance(trig_value, (int, float)) and trig_value > 0):
             try:
                 info = json.loads(trig.split('.')[0])
                 group_name = info.get("index")
                 print(f"        Finetune group header click: {group_name}")
                 print(f"   [CLEAN] Clearing keyword selection and selected document")
-                return group_name, None, None  # [EMOJI]
+                return group_name, None, None  
             except Exception as e:
                 print(f"           Error parsing group header: {e}")
                 raise PreventUpdate
@@ -6720,7 +6064,6 @@ def select_finetune_group(n_clicks, display_mode):
     print(f"           Not a valid group header click, raising PreventUpdate")
     raise PreventUpdate
 
-# Handle finetune keyword selection
 @app.callback(
     [Output("finetune-selected-keyword", "data", allow_duplicate=True),
      Output("finetune-selected-group", "data", allow_duplicate=True),
@@ -6730,13 +6073,12 @@ def select_finetune_group(n_clicks, display_mode):
     prevent_initial_call=True
 )
 def select_finetune_keyword_from_group(n_clicks, display_mode):
-    """Handle finetune keyword selection from group management - same logic as training mode"""
+
     ctx = dash.callback_context
     
     print(f"    DEBUG: select_finetune_keyword_from_group called")
     print(f"   display_mode: {display_mode}")
     
-    # Only process if we're in finetune mode
     if display_mode != "finetune":
         print(f"           Not in finetune mode, raising PreventUpdate")
         raise PreventUpdate
@@ -6747,41 +6089,36 @@ def select_finetune_keyword_from_group(n_clicks, display_mode):
     triggered_id = ctx.triggered[0]['prop_id']
     triggered_n_clicks = ctx.triggered[0]['value']
     
-    # Check if this is a keyword selection
     if "finetune-select-keyword" in triggered_id:
         try:
             import json
             btn_info = json.loads(triggered_id.split('.')[0])
             keyword = btn_info.get("keyword")
-            group = btn_info.get("group")  # [EMOJI]
+            group = btn_info.get("group")  
             
-            # Check if this is a direct keyword click (n_clicks > 0)
             if triggered_n_clicks and (isinstance(triggered_n_clicks, (int, float)) and triggered_n_clicks > 0):
                 print(f"    Finetune keyword click: {keyword} from group: {group}")
                 print(f"   Returning: keyword='{keyword}', group='{group}'")
-                print(f"   [EMOJI]")
-                print(f"   [CLEAN] Clearing selected document")
-                # Finetune Mode: [EMOJI]
-                return keyword, group, None  # [EMOJI]
+
+                return keyword, group, None  
         except Exception as e:
             print(f"        Error parsing finetune keyword click: {e}")
             raise PreventUpdate
     
     raise PreventUpdate
 
-# Display finetune articles list ([EMOJI])
 @app.callback(
     Output("finetune-articles-container", "children"),
     [Input("finetune-selected-group", "data"),
      Input("finetune-selected-keyword", "data"),
      Input("finetune-highlight-core", "data"),
      Input("finetune-highlight-gray", "data"),
-     Input("finetune-selected-article-index", "data")],  # [EMOJI] Input[EMOJI]
+     Input("finetune-selected-article-index", "data")],  
     [State("group-order", "data"),
      State("display-mode", "data")]
 )
 def display_finetune_articles(selected_group, selected_keyword, core_indices, gray_indices, selected_article_idx, group_order, display_mode):
-    """Display articles in finetune mode based on selected group/keyword"""
+
     if display_mode != "finetune":
         raise PreventUpdate
     
@@ -6794,9 +6131,8 @@ def display_finetune_articles(selected_group, selected_keyword, core_indices, gr
         if 'df' not in globals():
             return html.P("Data not loaded", style={"color": "#e74c3c", "textAlign": "center"})
         
-        # [EMOJI] core [EMOJI] gray [EMOJI]
         doc_indices = []
-        doc_types = {}  # {index: "core" or "gray"}
+        doc_types = {}  
         
         if core_indices:
             for idx in core_indices:
@@ -6812,7 +6148,6 @@ def display_finetune_articles(selected_group, selected_keyword, core_indices, gr
             return html.P("No documents to display", 
                          style={"color": "#7f8c8d", "fontStyle": "italic", "textAlign": "center", "padding": "20px"})
         
-        # [EMOJI]
         articles = []
         for i, idx in enumerate(sorted(doc_indices)):
             if idx >= len(df):
@@ -6822,13 +6157,13 @@ def display_finetune_articles(selected_group, selected_keyword, core_indices, gr
             
             doc_type = doc_types.get(idx, "background")
             
-            # [EMOJI]
+            
             if doc_type == "core":
                 type_label = "Core"
                 type_color = "#FFD700"
                 border_color = "#FFD700"
             elif doc_type == "gray":
-                type_label = "[EMOJI] Gray"
+                type_label = " Gray"
                 type_color = "#808080"
                 border_color = "#808080"
             else:
@@ -6836,23 +6171,21 @@ def display_finetune_articles(selected_group, selected_keyword, core_indices, gr
                 type_color = "#1f77b4"
                 border_color = "#1f77b4"
             
-            # [EMOJI]
             is_selected = (selected_article_idx is not None and selected_article_idx == idx)
             
-            # [EMOJI]
             if is_selected:
                 card_style = {
                     "padding": "12px",
                     "marginBottom": "10px",
                     "borderRadius": "6px",
-                    "border": "2px solid #FF4444",  # [EMOJI]
+                    "border": "2px solid #FF4444",  
                     "backgroundColor": "white",
                     "cursor": "pointer",
                     "transition": "all 0.2s ease",
-                    "boxShadow": "0 2px 6px rgba(255, 68, 68, 0.2)",  # [EMOJI]
+                    "boxShadow": "0 2px 6px rgba(255, 68, 68, 0.2)",  
                     "scrollMarginTop": "100px"
                 }
-                doc_label_style = {"fontWeight": "bold", "marginRight": "10px", "color": "#FF4444"}  # [EMOJI]
+                doc_label_style = {"fontWeight": "bold", "marginRight": "10px", "color": "#FF4444"}  
             else:
                 card_style = {
                     "padding": "12px",
@@ -6868,14 +6201,13 @@ def display_finetune_articles(selected_group, selected_keyword, core_indices, gr
             
             article_card = html.Div([
                 html.Div([
-                    html.Span(f"Doc {idx+1}", style=doc_label_style),  # [EMOJI] 1 [EMOJI]
+                    html.Span(f"Doc {idx+1}", style=doc_label_style),  
                     html.Span(type_label, style={"fontSize": "0.85rem", "color": type_color, "fontWeight": "bold"})
                 ], style={"marginBottom": "8px", "display": "flex", "justifyContent": "space-between", "alignItems": "center"}),
                 html.P(text, style={"color": "#34495e", "fontSize": "0.9rem", "margin": "0", "lineHeight": "1.4"})
             ], id={"type": "finetune-article-card", "index": idx}, className="finetune-doc-card", style=card_style)
             articles.append(article_card)
         
-        # [EMOJI]
         title_text = ""
         if selected_keyword and selected_group:
             title_text = f"Showing {len(doc_indices)} documents for '{selected_keyword}' in {selected_group}"
@@ -6895,7 +6227,6 @@ def display_finetune_articles(selected_group, selected_keyword, core_indices, gr
         traceback.print_exc()
         return html.P(f"Error: {str(e)}", style={"color": "#e74c3c", "textAlign": "center"})
 
-# Handle clicking on finetune article cards - [EMOJI]
 @app.callback(
     Output("finetune-selected-article-index", "data", allow_duplicate=True),
     Input({"type": "finetune-article-card", "index": ALL}, "n_clicks"),
@@ -6904,7 +6235,7 @@ def display_finetune_articles(selected_group, selected_keyword, core_indices, gr
     prevent_initial_call=True
 )
 def handle_finetune_article_click(n_clicks, display_mode, current_selected):
-    """Handle clicking on article cards in finetune mode"""
+
     if display_mode != "finetune":
         raise PreventUpdate
     
@@ -6919,7 +6250,6 @@ def handle_finetune_article_click(n_clicks, display_mode, current_selected):
         raise PreventUpdate
     
     try:
-        # Parse the card ID to get the document index
         import json
         card_info = json.loads(triggered_id.split('.')[0])
         article_idx = card_info.get("index")
@@ -6934,7 +6264,6 @@ def handle_finetune_article_click(n_clicks, display_mode, current_selected):
         traceback.print_exc()
         return current_selected
 
-# [EMOJI] - [EMOJI]
 @app.callback(
     Output("finetune-text-container", "children"),
     Input("finetune-selected-article-index", "data"),
@@ -6942,7 +6271,7 @@ def handle_finetune_article_click(n_clicks, display_mode, current_selected):
     prevent_initial_call=True
 )
 def update_finetune_text_preview(selected_idx, display_mode):
-    """[EMOJI]"""
+
     if display_mode != "finetune":
         raise PreventUpdate
     
@@ -6955,10 +6284,8 @@ def update_finetune_text_preview(selected_idx, display_mode):
         if 'df' not in globals() or selected_idx >= len(df):
             return html.P("Document not found", style={"color": "#e74c3c"})
         
-        # [EMOJI]
         full_text = str(df.iloc[selected_idx, 1])
         
-        # [EMOJI]
         preview = html.Div([
             html.H5(f"Document {selected_idx+1}", style={"color": "#2c3e50", "marginBottom": "10px", "fontSize": "1rem"}),
             html.P(full_text, style={
@@ -6978,14 +6305,13 @@ def update_finetune_text_preview(selected_idx, display_mode):
         traceback.print_exc()
         return html.P(f"Error: {str(e)}", style={"color": "#e74c3c"})
 
-# Compute finetune highlights using gap_based_group_filtering method
 @app.callback(
     [Output("finetune-highlight-core", "data"),
      Output("finetune-highlight-gray", "data"),
-     Output("finetune-operation-buttons", "children")],  # [EMOJI] dropdown options
+     Output("finetune-operation-buttons", "children")],  
     [Input("finetune-selected-group", "data"),
      Input("finetune-selected-keyword", "data"),
-     Input("finetune-selected-article-index", "data")],  # [EMOJI] Input[EMOJI]
+     Input("finetune-selected-article-index", "data")],  
     [State("group-order", "data")]
 )
 def compute_finetune_highlights(selected_group, selected_keyword, selected_article_idx, group_order):
@@ -6999,27 +6325,21 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
     print(f"   selected_article_idx: {selected_article_idx}")
     print(f"   group_order: {group_order}")
     
-    # [EMOJI]
-    # [EMOJI]
     excluded_group = None
     if selected_article_idx is not None and group_order:
-        # [EMOJI] filtered_group_assignment.json [EMOJI]
         try:
             matched_dict_path = "test_results/filtered_group_assignment.json"
             if os.path.exists(matched_dict_path):
                 with open(matched_dict_path, "r", encoding="utf-8") as f:
                     matched_dict = json.load(f)
                 
-                # [EMOJI]
                 for grp_name in matched_dict.keys():
                     if isinstance(matched_dict[grp_name], list) and len(matched_dict[grp_name]) > 0:
                         if isinstance(matched_dict[grp_name][0], str):
                             matched_dict[grp_name] = [int(x) for x in matched_dict[grp_name]]
                 
-                # [EMOJI]
                 for grp_name, indices in matched_dict.items():
                     try:
-                        # Safely convert indices to integers if needed
                         if isinstance(indices, list):
                             int_indices = []
                             for idx in indices:
@@ -7028,7 +6348,6 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
                                 except (ValueError, TypeError):
                                     continue
                             
-                            # Safely convert selected_article_idx to int
                             try:
                                 selected_idx = int(selected_article_idx)
                                 if selected_idx in int_indices:
@@ -7044,7 +6363,6 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         except Exception as e:
             print(f"       Could not determine document's group: {e}")
     
-    # [EMOJI]
     print(f"    DEBUG: Generating operation buttons...")
     print(f"   group_order: {group_order}")
     print(f"   selected_article_idx: {selected_article_idx}")
@@ -7065,18 +6383,16 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
             "marginBottom": "8px"
         }
         
-        # [EMOJI] "Move to Group X" [EMOJI]
         for group_name in group_order.keys():
-            if group_name != excluded_group:  # [EMOJI]
-                # [EMOJI]
+            if group_name != excluded_group:  
                 if group_name == "Group 1":
-                    bg_color = "#FF6B6B"  # [EMOJI]
+                    bg_color = "#FF6B6B"  
                 elif group_name == "Group 2":
-                    bg_color = "#32CD32"  # [EMOJI]
+                    bg_color = "#32CD32"  
                 elif group_name == "Other":
-                    bg_color = "#e74c3c"  # [EMOJI]
+                    bg_color = "#e74c3c"  
                 else:
-                    bg_color = "#3498db"  # [EMOJI]
+                    bg_color = "#3498db"  
                 
                 button_style = {**button_style_base, "backgroundColor": bg_color}
                 
@@ -7092,7 +6408,6 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         print(f"        Generated {len(operation_buttons)} operation buttons (excluding {excluded_group})")
     else:
         print(f"       Conditions not met, showing placeholder message")
-        # [EMOJI]
         operation_buttons = [
             html.P("Select a document to perform operations", 
                    style={"color": "#7f8c8d", "fontStyle": "italic", "textAlign": "center", "padding": "10px"})
@@ -7100,7 +6415,6 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
     
     print(f"    DEBUG: Returning {len(operation_buttons)} button(s)")
     
-    # [EMOJI]
     if selected_keyword and not selected_group:
         try:
             keyword_docs = []
@@ -7108,7 +6422,7 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
                 text_lower = str(df.iloc[i, 1]).lower()
                 if selected_keyword.lower() in text_lower:
                     keyword_docs.append(i)
-            print(f"    Finetune keyword '{selected_keyword}': {len(keyword_docs)} documents ([EMOJI])")
+            print(f"    Finetune keyword '{selected_keyword}': {len(keyword_docs)} documents ")
             return keyword_docs, [], operation_buttons
         except Exception as e:
             print(f"        Error highlighting keyword in finetune mode: {e}")
@@ -7118,93 +6432,76 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         return core, gray, operation_buttons
     
     try:
-        # Finetune Mode [EMOJI] gap [EMOJI]filtered_group_assignment.json[EMOJI]
-        # [EMOJI] filtered_group_assignment.json[EMOJI]
-        # Gap [EMOJI] core/gray[EMOJI]
-        # [EMOJI] gap [EMOJI]
         matched_dict_path = "test_results/filtered_group_assignment.json"
         if not os.path.exists(matched_dict_path):
-            print("      [EMOJI] BM25 [EMOJI]")
+            print("      BM25 ")
             matched_dict_path = "test_results/bm25_search_results.json"
             if not os.path.exists(matched_dict_path):
-                print("      [EMOJI]")
+                print("      ")
                 return core, gray, operation_buttons
         
         with open(matched_dict_path, "r", encoding="utf-8") as f:
             matched_dict = json.load(f)
         
-        # [EMOJI]
         for grp_name in matched_dict.keys():
             if isinstance(matched_dict[grp_name], list) and len(matched_dict[grp_name]) > 0:
                 if isinstance(matched_dict[grp_name][0], str):
                     matched_dict[grp_name] = [int(x) for x in matched_dict[grp_name]]
         
-        print(f"      Finetune Mode [EMOJI] {os.path.basename(matched_dict_path)}[EMOJI]:")
+        print(f"      Finetune Mode {os.path.basename(matched_dict_path)}:")
         if "filtered" in matched_dict_path:
-            print(f"   [EMOJI] gap [EMOJI]")
+            print(f"   gap ")
         else:
-            print(f"   [EMOJI]BM25 [EMOJI]")
-        print(f"   Gap [EMOJI]")
+            print(f"   BM25 ")
+        print(f"   Gap ")
         for grp_name, indices in matched_dict.items():
-            print(f"  {grp_name}: {len(indices)} [EMOJI]")
-            if len(indices) <= 10:  # [EMOJI]
-                print(f"    [EMOJI]: {sorted(indices)}")
+            print(f"  {grp_name}: {len(indices)} ")
+            if len(indices) <= 10:  
+                print(f"    {sorted(indices)}")
         
-        # [EMOJI] Other [EMOJI] - [EMOJI]
         if selected_group == "Other":
             other_indices = matched_dict.get("Other", [])
-            print(f"  Other [EMOJI]: {len(other_indices)} [EMOJI]")
+            print(f"  Other: {len(other_indices)} ")
             return other_indices, [], operation_buttons
-        
-        # [EMOJI] matched_dict [EMOJI]
+
         selected_group_indices = matched_dict.get(selected_group, [])
         
-        # [EMOJI]
         model_path = "test_results/triplet_trained_encoder.pth"
         if not os.path.exists(model_path):
-            print("      [EMOJI]")
-            # [EMOJI]
+
             group_indices = matched_dict.get(selected_group, [])
             return group_indices, [], options
         
-        # [EMOJI] gap_based_group_filtering [EMOJI]
         print(f"    Computing gap-based highlights for group: {selected_group}")
         
         if 'df' not in globals():
             df = pd.read_csv(csv_path)
         
-        # [EMOJI]
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        # [EMOJI]
-        # [EMOJI] torch.load [EMOJI] weights_only=False [EMOJI]
         try:
             encoder = torch.load(model_path, map_location=device, weights_only=False)
             if hasattr(encoder, 'eval'):
                 encoder.eval()
             else:
-                # [EMOJI] state_dict[EMOJI]
                 raise ValueError("Loaded state_dict instead of model")
         except Exception as e:
             print(f"  Failed to load model object directly: {e}")
             print("  Falling back to loading state_dict...")
             
-            # [EMOJI] state_dict [EMOJI]
             state_dict = torch.load(model_path, map_location=device)
             
-            # [EMOJI] BERT hidden size[EMOJI] proj.weight [EMOJI]
             if 'proj.weight' in state_dict:
                 proj_weight_shape = state_dict['proj.weight'].shape
-                proj_dim = proj_weight_shape[0]  # [EMOJI]
-                bert_hidden_size = proj_weight_shape[1]  # BERT hidden size
+                proj_dim = proj_weight_shape[0]  
+                bert_hidden_size = proj_weight_shape[1]  
                 print(f"  Detected: proj_dim={proj_dim}, bert_hidden_size={bert_hidden_size}")
             else:
                 proj_dim = 256
                 bert_hidden_size = 768
             
-            # [EMOJI] hidden_size [EMOJI] BERT [EMOJI]
             if bert_hidden_size == 768:
-                bert_name = "bert-base-uncased"  # [EMOJI] 768 [EMOJI]
+                bert_name = "bert-base-uncased"  
             elif bert_hidden_size == 384:
                 bert_name = "sentence-transformers/all-MiniLM-L6-v2"
             else:
@@ -7212,11 +6509,9 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
             
             print(f"  Using BERT model: {bert_name}")
             
-            # [EMOJI] LayerNorm [EMOJI]ln [EMOJI] norm[EMOJI]
             has_ln = 'ln.weight' in state_dict
             has_norm = 'norm.weight' in state_dict
             
-            # [EMOJI]
             class SentenceEncoder(nn.Module):
                 def __init__(self, bert_name, proj_dim, use_ln_name=False):
                     super().__init__()
@@ -7224,9 +6519,9 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
                     self.bert = AutoModel.from_pretrained(bert_name)
                     self.proj = nn.Linear(self.bert.config.hidden_size, proj_dim)
                     if use_ln_name:
-                        self.ln = nn.LayerNorm(proj_dim)  # [EMOJI]
+                        self.ln = nn.LayerNorm(proj_dim)  
                     else:
-                        self.norm = nn.LayerNorm(proj_dim)  # [EMOJI]
+                        self.norm = nn.LayerNorm(proj_dim)  
                     self.out_dim = proj_dim
                     self.use_ln_name = use_ln_name
                 
@@ -7241,31 +6536,25 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
                     z = z / (z.norm(dim=1, keepdim=True) + 1e-12)
                     return z
             
-            # [EMOJI]
-            # [EMOJI] CPU [EMOJI] meta tensor [EMOJI]
             encoder = SentenceEncoder(bert_name, proj_dim, use_ln_name=has_ln)
-            encoder.load_state_dict(state_dict, strict=False)  # strict=False [EMOJI]
-            encoder = encoder.to(device)  # [EMOJI]
+            encoder.load_state_dict(state_dict, strict=False)  
+            encoder = encoder.to(device)  
             encoder.eval()
             
-            # [EMOJI] bert_name [EMOJI] tokenizer [EMOJI]
             encoder.bert_model_name = bert_name
         
-        # [EMOJI] tokenizer[EMOJI]encoder[EMOJI]BERT[EMOJI]
         from transformers import AutoTokenizer
         if hasattr(encoder, 'bert_model_name'):
             tokenizer_name = encoder.bert_model_name
         elif hasattr(encoder, 'bert') and hasattr(encoder.bert, 'name_or_path'):
             tokenizer_name = encoder.bert.name_or_path
         else:
-            # [EMOJI] hidden_size [EMOJI]
             hidden_size = encoder.bert.config.hidden_size if hasattr(encoder, 'bert') else 768
             tokenizer_name = "bert-base-uncased" if hidden_size == 768 else "sentence-transformers/all-MiniLM-L6-v2"
         
         print(f"  Using tokenizer: {tokenizer_name}")
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         
-        # [EMOJI]
         texts = df.iloc[:, 1].astype(str).tolist()
         batch_size = 32
         all_embeddings = []
@@ -7280,12 +6569,8 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         
         Z_raw = np.vstack(all_embeddings)
         
-        # matched_dict [EMOJI]
-        
-        # [EMOJI]gap
         Z_norm = Z_raw / (np.linalg.norm(Z_raw, axis=1, keepdims=True) + 1e-8)
         
-        # [EMOJI]
         group_centers = {}
         group_names_list = []
         for group_name, indices in matched_dict.items():
@@ -7299,44 +6584,37 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
                 group_names_list.append(group_name)
         
         if len(group_centers) == 0:
-            print("  [EMOJI]")
+
             return core, gray, operation_buttons
         
-        # [EMOJI]
         all_similarities = []
         for group_name in group_names_list:
             center = group_centers[group_name]
             sim = np.dot(Z_norm, center)
             all_similarities.append(sim)
         
-        all_similarities = np.array(all_similarities).T  # [N, num_groups]
+        all_similarities = np.array(all_similarities).T  
         
-        # [EMOJI]gap: s_top1 - s_top2
-        sorted_indices = np.argsort(all_similarities, axis=1)[:, ::-1]  # [EMOJI]
+        sorted_indices = np.argsort(all_similarities, axis=1)[:, ::-1]  
         s_top1 = all_similarities[np.arange(len(all_similarities)), sorted_indices[:, 0]]
         s_top2 = all_similarities[np.arange(len(all_similarities)), sorted_indices[:, 1]] if all_similarities.shape[1] > 1 else s_top1
         gap = s_top1 - s_top2
         
-        # [EMOJI]top1[EMOJI]
-        arg1 = sorted_indices[:, 0]  # [EMOJI]
+        arg1 = sorted_indices[:, 0]  
         
-        # [EMOJI]Other[EMOJI]
         if selected_group not in group_names_list:
             return core, gray, operation_buttons
         
-        # [EMOJI] matched_dict [EMOJI]
         selected_group_indices = matched_dict.get(selected_group, [])
         if len(selected_group_indices) == 0:
-            print(f"  {selected_group} [EMOJI]")
+            print(f"  {selected_group} ")
             return core, gray, operation_buttons
         
-        print(f"  {selected_group} [EMOJI] {len(selected_group_indices)} [EMOJI]")
+        print(f"  {selected_group} {len(selected_group_indices)} ")
         
-        # [EMOJI]mask[EMOJI]
         group_mask = np.zeros(len(df), dtype=bool)
         group_mask[selected_group_indices] = True
         
-        # [EMOJI]gap[EMOJI]
         gaps_group = gap[selected_group_indices]
         mean_gap = gaps_group.mean()
         std_gap = gaps_group.std()
@@ -7347,14 +6625,14 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         thr_floor = get_config("gap_floor_threshold", 0.05)
         mix_ratio = get_config("gap_mix_ratio", 0.3)
         
-        # [EMOJI]mean - α*std
+
         base_threshold = mean_gap - alpha * std_gap
         
-        # [EMOJI]/[EMOJI]
+
         if len(gaps_group) < min_samples or std_gap < 1e-6:
             gray_threshold = np.percentile(gaps_group, percentile_fallback)
-            core_threshold = np.percentile(gaps_group, 50)  # [EMOJI]
-            print(f"    {selected_group}: [EMOJI]:{len(gaps_group)}, std:{std_gap:.6f}[EMOJI]")
+            core_threshold = np.percentile(gaps_group, 50) 
+            print(f"    {selected_group}: {len(gaps_group)}, std:{std_gap:.6f}")
         else:
 
             global_median = np.median(gap)
@@ -7383,7 +6661,7 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         print(f"      prototype_radius={prototype_radius:.3f} (mean_dist={mean_dist:.3f}, std_dist={std_dist:.3f})")
         
 
-        print(f"    [EMOJI] {len(selected_group_indices)} [EMOJI]...")
+        print(f"    {len(selected_group_indices)}...")
         for idx in selected_group_indices:
             gap_val = gap[idx]
             dist_to_center = distances_to_center[idx]
@@ -7395,18 +6673,16 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
             else:
                 gray.append(idx)
         
-        print(f"     {selected_group}: {len(selected_group_indices)} [EMOJI]")
-        print(f"   [EMOJI]: {len(core)} [EMOJI] - [EMOJI]: {core[:10]}")
-        print(f"   [EMOJI]: {len(gray)} [EMOJI] - [EMOJI]: {gray[:10]}")
-        print(f"   [EMOJI]: {len(core) + len(gray)} [EMOJI] {len(selected_group_indices)}[EMOJI]")
+        print(f"     {selected_group}: {len(selected_group_indices)} ")
+        print(f"   {len(core)} - {core[:10]}")
+        print(f"   {len(gray)} - {gray[:10]}")
+        print(f"   {len(core) + len(gray)} {len(selected_group_indices)}")
         
         if len(core) + len(gray) != len(selected_group_indices):
-            print(f"    [EMOJI]")
-        
-        # [EMOJI]
-        # [EMOJI]/[EMOJI]
+            print(f"    ")
+
         if selected_keyword:
-            print(f"    [EMOJI] '{selected_keyword}'...")
+            print(f"    '{selected_keyword}'...")
             keyword_core = []
             keyword_gray = []
             
@@ -7420,9 +6696,9 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
                 if selected_keyword.lower() in text_lower:
                     keyword_gray.append(idx)
             
-            print(f"   [EMOJI]: {len(keyword_core)} [EMOJI]")
-            print(f"   [EMOJI]: {len(keyword_gray)} [EMOJI]")
-            print(f"   [EMOJI]: {len(keyword_core) + len(keyword_gray)} [EMOJI]")
+            print(f"   {len(keyword_core)} ")
+            print(f"   {len(keyword_gray)} ")
+            print(f"   {len(keyword_core) + len(keyword_gray)} ")
             
             return keyword_core, keyword_gray, operation_buttons
         
@@ -7480,14 +6756,14 @@ def render_finetune_plot(display_mode, core_indices, gray_indices, selected_arti
         import traceback
         traceback.print_exc()
 
-    # Fallback to cached documents TSNE
+
     if not idx_to_coord:
         print("    No coordinates from training figures, using cached t-SNE")
         if _GLOBAL_DOCUMENT_EMBEDDINGS_READY and _GLOBAL_DOCUMENT_TSNE is not None:
             coords = _GLOBAL_DOCUMENT_TSNE
             idx_to_coord = {i: (coords[i, 0], coords[i, 1]) for i in range(len(coords))}
         else:
-            # Last resort empty figure
+
             return {
                 'data': [],
                 'layout': {'title': 'Finetune - No coordinates available'}
@@ -7495,7 +6771,7 @@ def render_finetune_plot(display_mode, core_indices, gray_indices, selected_arti
 
 
     valid_indices = list(idx_to_coord.keys())
-    print(f"[EMOJI] Using {len(valid_indices)} coordinates for finetune plot")
+    print(f" Using {len(valid_indices)} coordinates for finetune plot")      
     if valid_indices:
         print(f"   Document indices range: {min(valid_indices)} to {max(valid_indices)}")
     
@@ -7666,7 +6942,7 @@ def render_finetune_plot(display_mode, core_indices, gray_indices, selected_arti
     prevent_initial_call=True
 )
 def finetune_click_2d_point(click_data, display_mode):
-    """[EMOJI] 2D [EMOJI]"""
+
     if display_mode != "finetune":
         raise PreventUpdate
     
@@ -7681,7 +6957,7 @@ def finetune_click_2d_point(click_data, display_mode):
         print(f"        Error parsing 2D click: {e}")
         raise PreventUpdate
 
-# Temp assign operations - [EMOJI]
+
 @app.callback(
     [Output("finetune-temp-assignments", "data", allow_duplicate=True),
      Output("finetune-selected-article-index", "data", allow_duplicate=True)],
@@ -7691,7 +6967,7 @@ def finetune_click_2d_point(click_data, display_mode):
     prevent_initial_call=True
 )
 def finetune_move_document(n_clicks_list, selected_idx, assignments):
-    """Handle all 'Move to X' button clicks"""
+
     print(f"    DEBUG: finetune_move_document called")
     print(f"   n_clicks_list: {n_clicks_list}")
     print(f"   selected_idx: {selected_idx}")
@@ -7743,7 +7019,7 @@ def finetune_move_document(n_clicks_list, selected_idx, assignments):
         traceback.print_exc()
         raise PreventUpdate
 
-# Clear adjustment history
+
 @app.callback(
     Output("finetune-temp-assignments", "data", allow_duplicate=True),
     Input("finetune-clear-history-btn", "n_clicks"),
@@ -7752,10 +7028,9 @@ def finetune_move_document(n_clicks_list, selected_idx, assignments):
 def clear_finetune_history(n_clicks):
     if not n_clicks:
         raise PreventUpdate
-    print("[EMOJI] Clearing adjustment history")
+    print("Clearing adjustment history")
     return {}
 
-# Update adjustment history display
 @app.callback(
     Output("finetune-adjustment-history", "children"),
     Input("finetune-temp-assignments", "data")
@@ -7885,13 +7160,12 @@ def update_adjustment_history(temp_assignments):
     prevent_initial_call=True
 )
 def run_finetune_training(n_clicks, temp_assignments, group_order, current_training_figures, current_selected_group):
-    """Run prototype-based finetune training with user adjustments"""
     if not n_clicks:
         raise PreventUpdate
     
     try:
         print("=" * 60)
-        print("[EMOJI] Starting Finetune Training (Prototype-based)")
+        print(" Starting Finetune Training (Prototype-based)")
         print("=" * 60)
         
         global df
@@ -7899,7 +7173,7 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
             df = pd.read_csv(csv_path)
         
    
-        print(f"[EMOJI] Applying {len(temp_assignments or {})} user adjustments...")
+        print(f"Applying {len(temp_assignments or {})} user adjustments...")
         adjusted_group_order = {}
         for grp_name, kw_list in group_order.items():
             adjusted_group_order[grp_name] = kw_list.copy()
@@ -8007,7 +7281,6 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
             tokenizer_name = "bert-base-uncased"
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         
-        print("[EMOJI] Running prototype-based finetune training...")
 
         texts = df.iloc[:, 1].astype(str).tolist()
         
@@ -8100,15 +7373,13 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         filtered_path = "test_results/filtered_group_assignment.json"
         with open(filtered_path, "w", encoding="utf-8") as f:
             json.dump(matched_dict_adjusted, f, ensure_ascii=False, indent=2)
-        print(f"        Saved adjusted group assignment to {filtered_path}")
-        print(f"[EMOJI] Saved group distribution:")
+
         for grp_name, indices in matched_dict_adjusted.items():
             print(f"  {grp_name}: {len(indices)} samples")
             if len(indices) <= 10:
-                print(f"    [EMOJI]: {sorted(indices)}")
+                print(f"   DEBUG: {sorted(indices)}")
         
 
-        print(f"      [EMOJI] 2D [EMOJI]...")
         encoder.eval()
         with torch.no_grad():
             all_embeds = []
@@ -8134,7 +7405,7 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                 if valid_indices:
                     center = projected_2d_after[valid_indices].mean(axis=0)
                     group_centers[grp_name] = center
-                    print(f"   {grp_name} [EMOJI]: {center}")
+                    print(f"   {grp_name} : {center}")
         
  
         import plotly.graph_objects as go
@@ -8218,7 +7489,7 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         }
         
         updated_figures = {"before": fig_before_dict, "after": fig_after_dict}
-        print(f"     2D [EMOJI]")
+        print(f"     2D ")
         
         success_style = {
             "backgroundColor": "#27ae60",
@@ -8267,7 +7538,7 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         
 
         if not current_selected_group or current_selected_group not in matched_dict_adjusted:
-            # [EMOJI]
+
             if temp_assignments:
                 from collections import Counter
       
@@ -8289,7 +7560,7 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         print(f"   This ensures consistent gap-based styling")
         
 
-        return "[EMOJI] Iteration Complete - Adjust & Train Again", success_style, current_selected_group, None, {}, dash.no_update, dash.no_update, updated_figures
+        return "Iteration Complete - Adjust & Train Again", success_style, current_selected_group, None, {}, dash.no_update, dash.no_update, updated_figures
         
     except Exception as e:
         print(f"        Finetune training failed: {e}")
@@ -8314,24 +7585,14 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         return f"Training Failed: {str(e)}", error_style, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
 if __name__ == "__main__":
-    print("    DEBUG: ==========================================")
-    print("    DEBUG: DASH APPLICATION STARTUP")
-    print("    DEBUG: ==========================================")
-    print("    DEBUG: Starting Dash application...")
-    print("    DEBUG: Target URL: http://127.0.0.1:8053")
-    print("    DEBUG: Current working directory:", os.getcwd())
-    print("    DEBUG: Python version:", __import__('sys').version)
-    print("    DEBUG: Dash version:", __import__('dash').__version__)
-    
-    # Disable reloader to prevent threading issues
+
+
     import os
     os.environ['FLASK_ENV'] = 'development'
     
-    print("    DEBUG: Environment variables set:")
-    print("    DEBUG:   FLASK_ENV =", os.environ.get('FLASK_ENV'))
     
     try:
-        print("    DEBUG:     ATTEMPTING TO START ON PORT 8053...")
+      
         app.run(
             debug=True,
             port=8053,
@@ -8340,9 +7601,7 @@ if __name__ == "__main__":
             threaded=True
         )
     except OSError as e:
-        print(f"    DEBUG: OSError occurred on port 8053: {e}")
-        print(f"    DEBUG: Error type: {type(e)}")
-        print(f"    DEBUG: Trying alternative port 8054...")
+
         
         try:
             app.run(
@@ -8353,9 +7612,7 @@ if __name__ == "__main__":
                 threaded=True
             )
         except OSError as e2:
-            print(f"    DEBUG: Alternative port 8054 also failed: {e2}")
-            print(f"    DEBUG: Please check if ports are available")
-            print(f"    DEBUG: You can manually specify a different port")
+
 
             import socket
             def find_free_port():
