@@ -1,0 +1,32 @@
+# 基础包
+pandas
+numpy
+scipy
+matplotlib
+plotly
+
+# 深度学习
+torch
+torchvision
+torchaudio
+
+# 机器学习
+scikit-learn
+transformers
+sentence-transformers
+
+# NLP
+nltk
+keybert
+rank-bm25
+rapidfuzz
+
+# Web框架
+dash
+dash-bootstrap-components
+
+# 并行处理
+joblib
+
+# 其他工具
+tqdm
