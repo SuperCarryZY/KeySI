@@ -1,34 +1,53 @@
-# Import libraries and dependencies for NLP, visualization, modeling, and UI
+
+import os
 import re 
 import json
-import os
+import json as json_module
 import random
 import io
 import base64
 import math
-from rank_bm25 import BM25Okapi
-from nltk.stem import PorterStemmer
+import gc
+import multiprocessing
+import socket
+import traceback
+import itertools
+from collections import Counter
+
+# Data processing and ML
+import pandas as pd
+import numpy as np
+import torch
+import torch.nn as nn
+from torch.nn.functional import pad
+
+# Visualization
 import matplotlib
 matplotlib.use("Agg") 
-import pandas as pd
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
+
+# Web framework
 import dash
 from dash import dcc, html, Input, Output, State, ALL
 from dash.exceptions import PreventUpdate
-import plotly.graph_objects as go
-import plotly.express as px
-import matplotlib.pyplot as plt
-import torch
-import numpy as np
-import torch.nn as nn
-from torch.nn.functional import pad
+
+# NLP and text processing
+import nltk
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
+from rank_bm25 import BM25Okapi
 from keybert import KeyBERT
 from sentence_transformers import SentenceTransformer
+from transformers import BertTokenizer, BertModel, AutoTokenizer
+from rapidfuzz import fuzz
+
+# Machine learning and clustering
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import normalize
-from rapidfuzz import fuzz
-from transformers import BertTokenizer, BertModel
 from sklearn.manifold import TSNE
-import itertools
 from sklearn.metrics import (
     silhouette_score, 
     calinski_harabasz_score,
@@ -40,18 +59,38 @@ from sklearn.metrics import (
     adjusted_rand_score, 
     normalized_mutual_info_score
 )
-import gc
-import multiprocessing
-from collections import Counter
-import nltk
-
-from nltk.tokenize import word_tokenize
-from nltk import pos_tag
-from joblib import Parallel, delayed
+from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.spatial.distance import cosine
-from sklearn.feature_extraction.text import TfidfVectorizer
+from joblib import Parallel, delayed
 
+
+OUTPUT_DIR = "KeySI_results"    
+
+training_in_progress = False
+
+FILE_PATHS = {
+    # data file
+    "csv_path": "CSV/20news_top30_per_class.csv", 
+    "final_list_path": f"{OUTPUT_DIR}/final_list.json",
+    
+    # result
+    "bm25_search_results": f"{OUTPUT_DIR}/bm25_search_results.json",
+    "filtered_group_assignment": f"{OUTPUT_DIR}/filtered_group_assignment.json", 
+    "group_assignment": f"{OUTPUT_DIR}/group_assignment.json",
+    "triplet_trained_encoder": f"{OUTPUT_DIR}/triplet_trained_encoder.pth",
+    "gap_based_filter_results": f"{OUTPUT_DIR}/gap_based_filter_results.json",
+    "clustering_evaluation": f"{OUTPUT_DIR}/clustering_evaluation.json",
+    "triplet_run_stats": f"{OUTPUT_DIR}/triplet_run_stats.json",
+    "training_group_info": f"{OUTPUT_DIR}/training_group_info.json",
+    "embeddings_trained": f"{OUTPUT_DIR}/embeddings_trained.npy",
+    "triplet_training_comparison": f"{OUTPUT_DIR}/triplet_training_comparison.png",
+    "triplet_tsne_comparison": f"{OUTPUT_DIR}/triplet_tsne_comparison.json",
+    "user_finetuned_list": f"{OUTPUT_DIR}/user_finetuned_list.json",
+    "bert_finetuned": f"{OUTPUT_DIR}/bert_finetuned.pth",
+}
+
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 TRAINING_CONFIG = {
@@ -59,15 +98,14 @@ TRAINING_CONFIG = {
     "proj_dim": 256,
     "freeze_layers": 6,
     
-    "triplet_epochs": 10,        
+    "triplet_epochs": 1,        
     "triplet_batch_size": 16,
-    "triplet_margin": 0.8,
+    "triplet_margin": 1.2,
     "triplet_lr": 2e-5,
     
-    "proto_epochs": 5,          
+    "proto_epochs": 1,       
     "proto_batch_size": 64,
-    "proto_lr": 1e-5,
-    "min_separation": 1.0,
+    "proto_lr": 2e-5,
     
 
     "gap_alpha": 0.5,            
@@ -95,6 +133,35 @@ TRAINING_CONFIG = {
 def get_config(key, default=None):
 
     return TRAINING_CONFIG.get(key, default)
+
+
+class SentenceEncoder(nn.Module):
+
+    
+    def __init__(self, bert_name=None, proj_dim=None, device='cpu'):
+        if bert_name is None:
+            bert_name = get_config("bert_name")
+        if proj_dim is None:
+            proj_dim = get_config("proj_dim")
+        super().__init__()
+
+        self.bert = BertModel.from_pretrained(bert_name)
+        self.hidden = self.bert.config.hidden_size
+        self.proj = nn.Linear(self.hidden, proj_dim) if proj_dim else None
+        self.out_dim = proj_dim or self.hidden
+        self.ln = nn.LayerNorm(self.out_dim)
+
+        if device != 'cpu':
+            self.to(device)
+
+    def encode_tokens(self, tokens):
+        out = self.bert(**tokens).last_hidden_state  # (B,L,H)
+        mask = tokens['attention_mask'].unsqueeze(-1).float()
+        pooled = (out * mask).sum(1) / mask.sum(1).clamp(min=1.0)
+        if self.proj is not None: pooled = self.proj(pooled)
+        if pooled.dim()==1: pooled = pooled.unsqueeze(0)
+        pooled = self.ln(pooled)
+        return nn.functional.normalize(pooled, p=2, dim=-1)
 
 
 def ensure_nltk_data():
@@ -173,7 +240,7 @@ else:
 num_threads=8
 top_similiar_file_to_keywords=500
 learningrate=1e-4
-num_epochs = 5
+
 margin_number = 3
 top_keywords=3
 early_stop_threshold = 8
@@ -273,25 +340,13 @@ PLOT_STYLES = {
 }
 
 
-img_output_dir = "../Keyword_Group/Test"
-csv_path = "C:/Users/Super/Box/Yan/KeySI/CSV/20news_top30_per_class.csv"  
-final_list_path = "../Keyword_Group/Jupyter/final_list.json"
-save_path = "../Keyword_Group/Jupyter/final_list.json"
-output_dir = "../Keyword_Group/covidtest"
-model_save_path = "../Keyword_Group/bert_finetuned.pth"
-output_file = os.path.join(output_dir, "group_results_.csv")
-group_dict_path = "../Keyword_Group/BBC/B_indices_output5_T8.json"
-output_path = "../Keyword_Group/Jupyter/group_indices_output.json"
 
 
 def ensure_directories(): 
     directories = [
-        img_output_dir,
-        os.path.dirname(final_list_path),
-        output_dir,
-        os.path.dirname(model_save_path),
-        os.path.dirname(group_dict_path),
-        os.path.dirname(output_path)
+        OUTPUT_DIR,
+        "Keyword_Group",
+        "CSV"
     ]
     for directory in directories:
         if directory and not os.path.exists(directory):
@@ -312,6 +367,26 @@ _GLOBAL_DOCUMENT_EMBEDDINGS = None
 _GLOBAL_DOCUMENT_TSNE = None
 _GLOBAL_DOCUMENT_EMBEDDINGS_READY = False
 
+def safe_encode_batch(batch_texts, model, device, fallback_dim=768):
+    try:
+        for i, text in enumerate(batch_texts):
+            if len(text) > 1000:  
+                print(f"    Warning: Text {i} is very long ({len(text)} chars), truncating further")
+                batch_texts[i] = truncate_text_for_model(text, max_length=400)
+        
+        print(f"    Encoding batch of {len(batch_texts)} texts...")
+        embeddings = model.encode(batch_texts, convert_to_tensor=True).to(device).cpu().numpy()
+        print(f"    Successfully encoded batch, shape: {embeddings.shape}")
+        return embeddings
+        
+    except Exception as e:
+        print(f"    Error encoding batch: {e}")
+        print(f"    Using fallback zero vectors for batch")
+        
+        batch_size = len(batch_texts)
+        fallback_embeddings = np.zeros((batch_size, fallback_dim))
+        return fallback_embeddings
+
 def precompute_document_embeddings():
    
     global _GLOBAL_DOCUMENT_EMBEDDINGS, _GLOBAL_DOCUMENT_TSNE, _GLOBAL_DOCUMENT_EMBEDDINGS_READY, df
@@ -325,7 +400,7 @@ def precompute_document_embeddings():
     try:
   
         if 'df' not in globals():
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(FILE_PATHS["csv_path"])
         
         print(f"    Processing {len(df)} documents...")
         
@@ -384,7 +459,7 @@ def precompute_document_embeddings():
         _GLOBAL_DOCUMENT_EMBEDDINGS_READY = True
         print("    Document embeddings and t-SNE pre-computation completed!")
         
-        # Clear GPU cache if using CUDA
+        
         if device == "cuda":
             torch.cuda.empty_cache()
             
@@ -430,43 +505,17 @@ def truncate_text_for_model(text, max_length=500):
 
 try:
     precompute_document_embeddings()
-    print("         Document embeddings initialization completed successfully!")
-    print(f"          Performance improvement: Keyword clicks should now be 3-5x faster")
-    print(f"            Memory usage: ~{_GLOBAL_DOCUMENT_EMBEDDINGS.nbytes / 1024 / 1024:.1f} MB for embeddings")
-  
 except Exception as e:
-    print(f"    Warning: Could not pre-compute embeddings: {e}")
-    print("    Will compute on-demand (slower response)")
-    print("           Performance will be slower without pre-computed embeddings")
+    pass
 
 
-def safe_encode_batch(batch_texts, model, device, fallback_dim=768):
-    try:
-
-        for i, text in enumerate(batch_texts):
-            if len(text) > 1000:  
-                print(f"    Warning: Text {i} is very long ({len(text)} chars), truncating further")
-                batch_texts[i] = truncate_text_for_model(text, max_length=400)
-        
-        print(f"    Encoding batch of {len(batch_texts)} texts...")
-        embeddings = model.encode(batch_texts, convert_to_tensor=True).to(device).cpu().numpy()
-        print(f"    Successfully encoded batch, shape: {embeddings.shape}")
-        return embeddings
-        
-    except Exception as e:
-        print(f"    Error encoding batch: {e}")
-        print(f"    Using fallback zero vectors for batch")
-        
-        batch_size = len(batch_texts)
-        fallback_embeddings = np.zeros((batch_size, fallback_dim))
-        return fallback_embeddings
 
 kw_model = KeyBERT(model=embedding_model_kw)
 
 ps = PorterStemmer()
 word_count = Counter()
 original_form = {}
-df = pd.read_csv(csv_path)
+df = pd.read_csv(FILE_PATHS["csv_path"])
 all_articles_text = df.iloc[:, 1].dropna().astype(str).tolist()
 labels = df.iloc[:, 0].values
 
@@ -693,7 +742,7 @@ def create_layout():
                 "marginBottom": "10px",
                 "textShadow": "2px 2px 4px rgba(0,0,0,0.1)"
             }),
-            html.P("Intelligent Keyword Analysis & Document Clustering", style={
+            html.P(" Keyword System", style={
                 "textAlign": "center",
                 "color": "#7f8c8d",
                 "fontSize": "1.1rem",
@@ -747,9 +796,57 @@ def create_layout():
                         "fontWeight": "bold",
                         "cursor": "pointer",
                         "transition": "all 0.3s ease",
-                        "boxShadow": "0 2px 5px rgba(0,0,0,0.1)"
+                        "boxShadow": "0 2px 5px rgba(0,0,0,0.1)",
+                        "marginRight": "10px",
+                        "minWidth": "140px",
+                        "flexShrink": "0"
                     }
-                )
+                ),
+                html.Button("Switch to Training View", id="switch-view-btn", n_clicks=0, style={
+                    "backgroundColor": "#3498db",
+                    "color": "white",
+                    "border": "none",
+                    "padding": "10px 20px",
+                    "borderRadius": "6px",
+                    "fontSize": "1rem",
+                    "fontWeight": "bold",
+                    "cursor": "pointer",
+                    "transition": "all 0.3s ease",
+                    "boxShadow": "0 2px 5px rgba(0,0,0,0.1)",
+                    "marginRight": "10px",
+                    "minWidth": "180px",
+                    "flexShrink": "0",
+                    "display": "none"
+                }),
+                html.Button("Train Model", id="train-btn", n_clicks=0, style={
+                    "backgroundColor": "#e74c3c",
+                    "color": "white",
+                    "border": "none",
+                    "padding": "10px 20px",
+                    "borderRadius": "6px",
+                    "fontSize": "1rem",
+                    "fontWeight": "bold",
+                    "cursor": "pointer",
+                    "transition": "all 0.3s ease",
+                    "boxShadow": "0 2px 5px rgba(0,0,0,0.1)",
+                    "minWidth": "120px",
+                    "flexShrink": "0"
+                }),
+                html.Button("Switch to Finetune Mode", id="switch-finetune-btn", n_clicks=0, style={
+                    "backgroundColor": "#8e44ad",
+                    "color": "white",
+                    "border": "none",
+                    "padding": "10px 20px",
+                    "borderRadius": "6px",
+                    "fontSize": "1rem",
+                    "fontWeight": "bold",
+                    "cursor": "pointer",
+                    "transition": "all 0.3s ease",
+                    "boxShadow": "0 2px 5px rgba(0,0,0,0.1)",
+                    "minWidth": "180px",
+                    "flexShrink": "0",
+                    "display": "none"
+                })
             ], style={
                 "display": "flex",
                 "alignItems": "center",
@@ -757,11 +854,13 @@ def create_layout():
                 "backgroundColor": "#f8f9fa",
                 "borderRadius": "8px",
                 "border": "1px solid #e9ecef",
-                "width": "48%",
-                "marginRight": "2%"
+                "width": "100%",
+                "marginBottom": "20px",
+                "flexWrap": "nowrap",
+                "justifyContent": "flex-start"
             }),
             
-            # Right: Add Custom Keyword
+           
             html.Div([
                 html.Label("Add Custom Keyword:", style={
                     "fontWeight": "bold",
@@ -772,7 +871,7 @@ def create_layout():
                 dcc.Input(
                     id='new-keyword-input',
                     type='text',
-                    placeholder='Enter a keyword to add...',
+                    placeholder='Enter keywords (use comma to separate multiple)...',
                     style={
                         "flex": "1",
                         "padding": "8px 12px",
@@ -986,10 +1085,10 @@ def create_layout():
                 'padding': '20px',
                 'marginLeft': '7px'
             })
-        ], id="keywords-group-management-area", style={'display': 'flex', 'marginBottom': '30px'}),
+        ], id="keywords-group-management-area", style={'display': 'flex', 'marginBottom': '30px', 'height': '600px', 'overflowY': 'auto'}),
         
         
-        html.Div(id="training-group-management-area", style={'display': 'none', 'marginBottom': '30px'}, children=[
+        html.Div(id="training-group-management-area", style={'display': 'none', 'marginBottom': '30px', 'height': '600px', 'overflowY': 'auto'}, children=[
             html.Div([
                 html.H4("Training Group Management", style={
                     "color": "#2c3e50",
@@ -1090,7 +1189,7 @@ def create_layout():
             })
         ]),
         
-        html.Div(id="finetune-group-management-area", style={'display': 'none', 'marginBottom': '30px'}, children=[
+        html.Div(id="finetune-group-management-area", style={'display': 'none', 'marginBottom': '30px', 'height': '600px', 'overflowY': 'auto'}, children=[
         html.Div([
                 html.H4("Finetune Group Management", style={
                     "color": "#2c3e50",
@@ -1221,6 +1320,7 @@ def create_layout():
                     "marginBottom": "15px",
                     "fontSize": "0.85rem"
                 }),
+                html.Div(id="finetune-history-buttons", children=[], style={"marginTop": "10px"}),
                 html.Div([
                     html.H5("Legend:", style={"color": "#2c3e50", "marginBottom": "10px", "fontSize": "1rem"}),
                     html.Ul([
@@ -1243,6 +1343,7 @@ def create_layout():
                             "width": "100%",
                             "marginBottom": "10px"
                         }),
+                        html.Div(id="finetune-training-status", style={"marginTop": "10px", "textAlign": "center", "fontWeight": "bold"}),
                         html.Button("Clear Adjustment History", id="finetune-clear-history-btn", n_clicks=0, style={
                             "backgroundColor": "#e74c3c",
                 "color": "white",
@@ -1267,52 +1368,15 @@ def create_layout():
             })
         ]),
         
-        html.Div([
-            html.Button("Train Model", id="train-btn", n_clicks=0, style={
-                "margin": "30px auto 15px auto",
-                "padding": "15px 40px",
-                "fontSize": "1.2rem",
-                "fontWeight": "bold",
-                "backgroundColor": "#e74c3c",
-                "color": "white",
-                "border": "none",
-                "borderRadius": "8px",
-                "cursor": "pointer",
-                "transition": "all 0.3s ease",
-                "boxShadow": "0 4px 15px rgba(231, 76, 60, 0.3)",
-                "display": "block"
-            }),
-            html.Button("Switch to Training View", id="switch-view-btn", n_clicks=0, style={
-                "margin": "15px auto",
-                "padding": "12px 30px",
-                "fontSize": "1rem",
-                "fontWeight": "bold",
-                "backgroundColor": "#3498db",
-                "color": "white",
-                "border": "none",
-                "borderRadius": "6px",
-                "cursor": "pointer",
-                "transition": "all 0.3s ease",
-                "boxShadow": "0 3px 10px rgba(52, 152, 219, 0.3)",
-                "display": "none"  
-            }),
-            html.Button("Switch to Finetune Mode", id="switch-finetune-btn", n_clicks=0, style={
-                "margin": "15px auto",
-                "padding": "12px 30px",
-                "fontSize": "1rem",
-                "fontWeight": "bold",
-                "backgroundColor": "#8e44ad",
-                "color": "white",
-                "border": "none",
-                "borderRadius": "6px",
-                "cursor": "pointer",
-                "transition": "all 0.3s ease",
-                "boxShadow": "0 3px 10px rgba(142, 68, 173, 0.3)",
-                "display": "none"
-            })
-        ], style={"textAlign": "center"}),
 
-        html.Div(id="debug-output", style={"marginTop": "20px"})
+        html.Div(id="debug-output", style={"marginTop": "20px"}),
+        
+        # 定时器组件用于更新训练状态
+        dcc.Interval(
+            id="interval-component",
+            interval=1000,  # 每秒更新一次
+            n_intervals=0
+        )
     ])
 
 app.layout = create_layout()
@@ -1346,8 +1410,8 @@ def update_group_order(generate_n_clicks, group_data, num_groups, current_order)
         
         groups = {f"Group {i+1}": [] for i in range(num_groups)}
         
-        groups["Other"] = []
-        print(f"        Added 'Other' group for exclusion (total groups: {num_groups + 1})")
+        groups["Exclude"] = []
+        print(f"        Added 'Exclude' group for exclusion (total groups: {num_groups + 1})")
         
         return groups
     
@@ -1398,8 +1462,13 @@ def render_groups(group_order, selected_group, selected_keyword, display_mode):
     children = []
     for grp_name, kw_list in group_order.items():
         if grp_name == "Other":
-            group_display_name = "Other (Exclude)"
-            group_color = get_group_color(grp_name)
+            # 检查Other组是否有用户定义的关键词
+            if kw_list:  # 如果有关键词，显示为Exclude组
+                group_display_name = "Exclude"
+                group_color = get_group_color(grp_name)
+            else:  # 如果没有关键词，显示为Other (Exclude)
+                group_display_name = "Other (Exclude)"
+                group_color = get_group_color(grp_name)
         else:
             group_number = grp_name.replace("Group ", "")
             group_display_name = f"Group {group_number}"
@@ -1644,7 +1713,7 @@ def select_keyword_from_group(n_clicks, display_mode, group_order):
                     try:
                         global df
                         if 'df' not in globals():
-                            df = pd.read_csv(csv_path)
+                            df = pd.read_csv(FILE_PATHS["csv_path"])
                         
                         for i in range(len(df)):
                             text = str(df.iloc[i, 1]).lower()
@@ -2016,8 +2085,8 @@ def run_training():
     try:
         clear_caches()
         
-        print(f"    DEBUG: Loading CSV data from: {csv_path}")
-        df = pd.read_csv(csv_path)
+        print(f"    DEBUG: Loading CSV data from: {FILE_PATHS['csv_path']}")
+        df = pd.read_csv(FILE_PATHS["csv_path"])
         print(f"    DEBUG: CSV loaded successfully, shape: {df.shape}")
         
         df_clean = df.dropna(subset=[df.columns[1]])
@@ -2035,7 +2104,7 @@ def run_training():
         traceback.print_exc()
         return None, None
 
-    out_dir = "test_results"; os.makedirs(out_dir, exist_ok=True)
+    out_dir = OUTPUT_DIR; os.makedirs(out_dir, exist_ok=True)
 
     from nltk.stem import SnowballStemmer
     stemmer = SnowballStemmer('english')
@@ -2082,10 +2151,10 @@ def run_training():
     ALLOW_EMPTY_GROUPS = False
     
     query_groups = {}
-    print(f"    DEBUG: Checking for user groups at: {final_list_path}")
-    if os.path.exists(final_list_path):
+    print(f"    DEBUG: Checking for user groups at: {FILE_PATHS['final_list_path']}")
+    if os.path.exists(FILE_PATHS["final_list_path"]):
         try:
-            with open(final_list_path, "r", encoding="utf-8") as f:
+            with open(FILE_PATHS["final_list_path"], "r", encoding="utf-8") as f:
                 user_groups = json.load(f)
             print(f"    DEBUG: Loaded user groups: {user_groups}")
             for group_name, keywords in user_groups.items():
@@ -2095,11 +2164,11 @@ def run_training():
             print(f"     Loaded user groups for training: {list(query_groups.keys())}")
         except Exception as e:
             print(f"    ERROR: Failed to load user groups: {e}")
-            import traceback
+            
             traceback.print_exc()
             query_groups = {}
     else:
-        print(f"    WARNING: User groups file not found: {final_list_path}")
+        print(f"    WARNING: User groups file not found: {FILE_PATHS['final_list_path']}")
         query_groups = {}
     
     if not query_groups and not ALLOW_EMPTY_GROUPS:
@@ -2113,7 +2182,7 @@ def run_training():
         print(f"    DEBUG: BM25 search completed successfully")
     except Exception as e:
         print(f"    ERROR: BM25 search failed: {e}")
-        import traceback
+        
         traceback.print_exc()
         return None, None
     for g, idxs in matched_dict.items():
@@ -2126,7 +2195,7 @@ def run_training():
     else:
         print(f"[BM25] Other: {len(matched_dict['Other'])} docs")
     
-    with open(os.path.join(out_dir, "bm25_search_results.json"), "w", encoding="utf-8") as f:
+    with open(FILE_PATHS["bm25_search_results"], "w", encoding="utf-8") as f:
         json.dump(matched_dict, f, ensure_ascii=False, indent=2)
 
 
@@ -2141,32 +2210,7 @@ def run_training():
         return None, None
     
 
-    class SentenceEncoder(nn.Module):
-
-        def __init__(self, bert_name=None, proj_dim=None, device='cpu'):
-            if bert_name is None:
-                bert_name = get_config("bert_name")
-            if proj_dim is None:
-                proj_dim = get_config("proj_dim")
-            super().__init__()
-
-            self.bert = BertModel.from_pretrained(bert_name)
-            self.hidden = self.bert.config.hidden_size
-            self.proj = nn.Linear(self.hidden, proj_dim) if proj_dim else None
-            self.out_dim = proj_dim or self.hidden
-            self.ln = nn.LayerNorm(self.out_dim)
-
-            if device != 'cpu':
-                self.to(device)
-
-        def encode_tokens(self, tokens):
-            out = self.bert(**tokens).last_hidden_state  # (B,L,H)
-            mask = tokens['attention_mask'].unsqueeze(-1).float()
-            pooled = (out * mask).sum(1) / mask.sum(1).clamp(min=1.0)
-            if self.proj is not None: pooled = self.proj(pooled)
-            if pooled.dim()==1: pooled = pooled.unsqueeze(0)
-            pooled = self.ln(pooled)
-            return nn.functional.normalize(pooled, p=2, dim=-1)
+    # 使用全局SentenceEncoder类
     
     print(f"    DEBUG: Initializing encoder on device: {device}")
     try:
@@ -2431,13 +2475,12 @@ def run_training():
                 G[g] = nn.functional.normalize(proto, dim=0)  # (D,)
         return G  # dict[str -> (D,)]
 
-    def prototype_separation_training(encoder, tokenizer, all_texts, group_prototypes, device,
-                                     epochs=None, bs=None, lr=None, min_separation=None, matched_dict=None):
+    def prototype_center_training(encoder, tokenizer, all_texts, group_prototypes, device,
+                                 epochs=None, bs=None, lr=None, matched_dict=None):
 
         if epochs is None: epochs = get_config("proto_epochs")
         if bs is None: bs = get_config("proto_batch_size")
         if lr is None: lr = get_config("proto_lr")
-        if min_separation is None: min_separation = get_config("min_separation")
 
         if hasattr(encoder, 'bert'):
             for p in encoder.bert.embeddings.parameters(): 
@@ -2452,7 +2495,7 @@ def run_training():
                 global_prototypes[group_name] = proto_tensor.clone().to(device).detach()
         
         params = [p for p in encoder.parameters() if p.requires_grad]
-        print(f"Prototype Separation: {sum(p.numel() for p in params):,}")
+        print(f"Prototype Center Training: {sum(p.numel() for p in params):,}")
         
         opt = torch.optim.AdamW(params, lr=lr)
         
@@ -2554,7 +2597,7 @@ def run_training():
             if steps > 0:
                 avg_center = total_center_loss / steps
                 avg_total = total_loss / steps
-                print(f"[PrototypeSep] Epoch {ep+1}/{epochs} Center={avg_center:.4f} Total={avg_total:.4f}")
+                print(f"[PrototypeCenter] Epoch {ep+1}/{epochs} Center={avg_center:.4f} Total={avg_total:.4f}")
             
             print(f"  Epoch {ep+1}...")
             with torch.no_grad():
@@ -2587,7 +2630,7 @@ def run_training():
 
     def evaluate_clustering_quality(Z, true_labels, matched_dict, group_names):
 
-        from sklearn.metrics import silhouette_score
+       
         
         silhouette = silhouette_score(Z, true_labels)
         
@@ -2721,13 +2764,13 @@ def run_training():
     matched_dict = clean_matched_dict  
     
 
-    with open(os.path.join(out_dir, "filtered_group_assignment.json"), "w", encoding="utf-8") as f:
+    with open(FILE_PATHS["filtered_group_assignment"], "w", encoding="utf-8") as f:
         json.dump(matched_dict, f, ensure_ascii=False, indent=2)
     print(f"[SAVE] Filtered group assignment: {os.path.join(out_dir, 'filtered_group_assignment.json')}")
     
 
 
-    with open(os.path.join(out_dir, "gap_based_filter_results.json"), "w", encoding="utf-8") as f:
+    with open(FILE_PATHS["gap_based_filter_results"], "w", encoding="utf-8") as f:
         json.dump({
             "original_sizes": {k: len(v) for k, v in bm25_results.items()},
             "clean_sizes": {k: len(v) for k, v in clean_matched_dict.items()},
@@ -2757,7 +2800,7 @@ def run_training():
             print(f"{group_name}: 0 docs")
             continue
             
-        from collections import Counter
+        
         label_counts = Counter(group_labels)
         most_common_label, most_common_count = label_counts.most_common(1)[0]
         purity = most_common_count / len(group_labels)
@@ -2782,15 +2825,15 @@ def run_training():
             print("[WARN] Triplets Triplet")
     except Exception as e:
         print(f"    ERROR: Triplet generation/training failed: {e}")
-        import traceback
+
         traceback.print_exc()
         return None, None
     
 
 
     try:
-        encoder = prototype_separation_training(encoder, tokenizer, all_texts, group_prototypes, device,
-                                              matched_dict=clean_matched_dict)
+        encoder = prototype_center_training(encoder, tokenizer, all_texts, group_prototypes, device,
+                                         matched_dict=clean_matched_dict)
 
     except Exception as e:
     
@@ -2924,7 +2967,7 @@ def run_training():
     cluster_eval_raw_serializable = convert_numpy_types(cluster_eval_raw)
     cluster_eval_trained_serializable = convert_numpy_types(cluster_eval_trained)
     
-    with open(os.path.join(out_dir, "clustering_evaluation.json"), "w", encoding="utf-8") as f:
+    with open(FILE_PATHS["clustering_evaluation"], "w", encoding="utf-8") as f:
         json.dump({
             "raw_embedding": cluster_eval_raw_serializable,
             "trained_embedding": cluster_eval_trained_serializable,
@@ -2996,10 +3039,10 @@ def run_training():
         ax2.legend(); ax2.grid(True, alpha=0.3)
         
         plt.tight_layout()
-        plt.savefig(os.path.join(out_dir, "triplet_training_comparison.png"), dpi=300, bbox_inches='tight')
+        plt.savefig(FILE_PATHS["triplet_training_comparison"], dpi=300, bbox_inches='tight')
         print(f"[SAVE] Triplet: {os.path.join(out_dir, 'triplet_training_comparison.png')}")
         
-        with open(os.path.join(out_dir, "triplet_tsne_comparison.json"), "w", encoding="utf-8") as f:
+        with open(FILE_PATHS["triplet_tsne_comparison"], "w", encoding="utf-8") as f:
             json.dump({
                 "raw_tsne": {
                     "x": X2_raw[:,0].tolist(),
@@ -3022,16 +3065,16 @@ def run_training():
 
     print(f"    DEBUG: Saving trained embeddings and model...")
     try:
-        np.save(os.path.join(out_dir, "embeddings_trained.npy"), Z_trained)
+        np.save(FILE_PATHS["embeddings_trained"], Z_trained)
         print(f"    DEBUG: Saved embeddings to embeddings_trained.npy")
-        torch.save(encoder.state_dict(), os.path.join(out_dir, "triplet_trained_encoder.pth"))
+        torch.save(encoder.state_dict(), FILE_PATHS["triplet_trained_encoder"])
         print(f"    DEBUG: Saved model state dict to triplet_trained_encoder.pth")
     except Exception as e:
         print(f"    ERROR: Failed to save embeddings or model: {e}")
         import traceback
         traceback.print_exc()
 
-    with open(os.path.join(out_dir, "triplet_run_stats.json"), "w", encoding="utf-8") as f:
+    with open(FILE_PATHS["triplet_run_stats"], "w", encoding="utf-8") as f:
         json.dump({
             "bm25_sizes": {k: len(v) for k, v in matched_dict.items()},
             "device": device,
@@ -3252,19 +3295,19 @@ def run_training_with_highlights(highlighted_indices):
     
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     
-    model_save_path = "../Keyword_Group/bert_finetuned.pth"
+    model_save_path = FILE_PATHS["bert_finetuned"]
     if os.path.exists(model_save_path):
         checkpoint = torch.load(model_save_path, map_location=device)
         model_finetuned.load_state_dict(checkpoint['model_state_dict'])
         model_finetuned.eval()
     
     if "df_global" not in globals():
-        df_articles = pd.read_csv(csv_path)
+        df_articles = pd.read_csv(FILE_PATHS["csv_path"])
     else:
         df_articles = df
     
     matched_dict = {}
-    bm25_results_path = os.path.join("test_results", "bm25_search_results.json")
+    bm25_results_path = FILE_PATHS["bm25_search_results"]
     if os.path.exists(bm25_results_path):
         with open(bm25_results_path, "r", encoding="utf-8") as f:
             matched_dict = json.load(f)
@@ -4396,25 +4439,25 @@ def handle_train_button(n_clicks, group_order):
                 'yaxis': {'title': 'Y'}
             }
         }
-        return {"display": "none"}, empty_fig, empty_fig, {"display": "none"}, "Train", normal_style, False
+        return "Train", normal_style, False, {"display": "none"}, "keywords", {"before": empty_fig, "after": empty_fig}
     
     try:
         print("Starting training process...")
         print(f"    DEBUG: Group order data: {group_order}")
-        print(f"    DEBUG: Final list path: {final_list_path}")
+        print(f"    DEBUG: Final list path: {FILE_PATHS['final_list_path']}")
         
         print("Saving group data to final_list.json...")
-        with open(final_list_path, "w", encoding="utf-8") as f:
+        with open(FILE_PATHS["final_list_path"], "w", encoding="utf-8") as f:
             json.dump(group_order, f, indent=4, ensure_ascii=False)
-        print(f"Group data saved to {final_list_path}")
+        print(f"Group data saved to {FILE_PATHS['final_list_path']}")
         
-        if os.path.exists(final_list_path):
-            with open(final_list_path, "r", encoding="utf-8") as f:
+        if os.path.exists(FILE_PATHS["final_list_path"]):
+            with open(FILE_PATHS["final_list_path"], "r", encoding="utf-8") as f:
                 saved_data = json.load(f)
             print(f"    DEBUG: Verified saved data: {saved_data}")
         else:
-            print(f"    ERROR: Failed to save group data to {final_list_path}")
-            raise FileNotFoundError(f"Could not save group data to {final_list_path}")
+            print(f"    ERROR: Failed to save group data to {FILE_PATHS['final_list_path']}")
+            raise FileNotFoundError(f"Could not save group data to {FILE_PATHS['final_list_path']}")
         
         training_fig = {
             'data': [],
@@ -4460,9 +4503,9 @@ def handle_train_button(n_clicks, group_order):
                     }]
                 }
             }
-            return {"display": "block"}, error_fig, error_fig, {"display": "block"}, "Train (Failed)", normal_style, False
+            return "Train (Failed)", normal_style, False, {"display": "block"}, "keywords", {"before": error_fig, "after": error_fig}
         
-        group_info_path = "test_results/training_group_info.json"
+        group_info_path = FILE_PATHS["training_group_info"]
         with open(group_info_path, "w", encoding="utf-8") as f:
             json.dump(group_order, f, indent=4, ensure_ascii=False)
         print(f"Group information saved to {group_info_path} for model loading")
@@ -4693,7 +4736,7 @@ def display_article_content_training(click_data_before, click_data_after):
         
         global df
         if 'df' not in globals():
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(FILE_PATHS["csv_path"])
         
         if article_index is not None and article_index < len(df):
             article_text = str(df.iloc[article_index, 1])
@@ -4730,17 +4773,22 @@ def switch_display_mode(n_clicks, current_mode):
     if not n_clicks or n_clicks == 0:
         raise PreventUpdate
     
+    print(f"    DEBUG: switch_display_mode called with current_mode: {current_mode}")
+    
     if current_mode == "keywords":
         new_mode = "training"
         button_text = "Switch to Keywords View"
     elif current_mode == "training":
         new_mode = "keywords"
         button_text = "Switch to Training View"
+    elif current_mode == "finetune":
+        new_mode = "training"
+        button_text = "Switch to Training View"
     else:
         new_mode = "keywords"
         button_text = "Switch to Training View"
     
-    print(f"Switching display mode from {current_mode} to {new_mode}")
+    print(f"    DEBUG: switch_display_mode: switching from {current_mode} to {new_mode}")
     return new_mode, button_text
 
 @app.callback(
@@ -4751,27 +4799,29 @@ def switch_display_mode(n_clicks, current_mode):
 )
 def control_switch_view_btn_visibility(display_mode):
     base_style = {
-        "margin": "15px auto",
-        "padding": "12px 30px",
-        "fontSize": "1rem",
-        "fontWeight": "bold",
         "backgroundColor": "#3498db",
         "color": "white",
         "border": "none",
+        "padding": "10px 20px",
         "borderRadius": "6px",
+        "fontSize": "1rem",
+        "fontWeight": "bold",
         "cursor": "pointer",
         "transition": "all 0.3s ease",
-        "boxShadow": "0 3px 10px rgba(52, 152, 219, 0.3)",
+        "boxShadow": "0 2px 5px rgba(0,0,0,0.1)",
+        "marginRight": "10px",
+        "minWidth": "180px",
+        "flexShrink": "0"
     }
     
     if display_mode == "finetune":
-        base_style["display"] = "none"
+        base_style["display"] = "block"
         button_text = "Switch to Training View"  
     elif display_mode == "training":
         base_style["display"] = "block"
         button_text = "Switch to Keywords View"  
     elif display_mode == "keywords":
-        base_style["display"] = "block"
+        base_style["display"] = "none"
         button_text = "Switch to Training View"  
     else:
         base_style["display"] = "block"
@@ -4784,6 +4834,9 @@ def control_switch_view_btn_visibility(display_mode):
     [Input("display-mode", "data"), Input("training-figures", "data")]
 )
 def show_switch_finetune_btn(display_mode, training_figures):
+    print(f"    DEBUG: show_switch_finetune_btn called with display_mode: {display_mode}")
+    print(f"    DEBUG: training_figures: {training_figures}")
+    
     base_style = {
         "margin": "15px auto",
         "padding": "12px 30px",
@@ -4800,12 +4853,20 @@ def show_switch_finetune_btn(display_mode, training_figures):
     }
     try:
         has_after = isinstance(training_figures, dict) and bool(training_figures.get("after"))
-        if display_mode in ("training", "finetune") and has_after:
+        print(f"    DEBUG: has_after: {has_after}")
+        print(f"    DEBUG: display_mode in ('training', 'finetune'): {display_mode in ('training', 'finetune')}")
+        
+        if display_mode in ("training", "finetune", "keywords") and has_after:
             base_style["display"] = "block"
+            print(f"    DEBUG: Showing finetune button")
         else:
             base_style["display"] = "none"
-    except Exception:
+            print(f"    DEBUG: Hiding finetune button")
+    except Exception as e:
         base_style["display"] = "none"
+        print(f"    DEBUG: Exception in finetune button logic: {e}")
+    
+    print(f"    DEBUG: Returning finetune button style: {base_style}")
     return base_style
             
 
@@ -5370,8 +5431,13 @@ def render_training_groups(group_order, selected_group, display_mode, selected_k
     children = []
     for grp_name, kw_list in group_order.items():
         if grp_name == "Other":
-            group_display_name = "Other (Exclude)"
-            group_color = get_group_color(grp_name)
+
+            if kw_list:  
+                group_display_name = "Exclude"
+                group_color = get_group_color(grp_name)
+            else:  
+                group_display_name = "Other (Exclude)"
+                group_color = get_group_color(grp_name)
         else:
             group_number = grp_name.replace("Group ", "")
             group_display_name = f"Training Group {group_number}"
@@ -5672,20 +5738,45 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
             ])
         
         matching_articles = []
-        for idx, row in df.iterrows():
-            text = str(row.iloc[1]) if len(row) > 1 else ""
-            text_lower = text.lower()
-            
-            contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
-            
-            if contains_keyword:
-                file_keywords = extract_top_keywords(text, 5)
-                matching_articles.append({
-                    'file_number': idx + 1,
-                    'file_index': idx,
-                    'text': text,
-                    'keywords': file_keywords
-                })
+        
+
+        filtered_indices = []
+        try:
+            filtered_path = FILE_PATHS["filtered_group_assignment"]
+            if os.path.exists(filtered_path):
+                with open(filtered_path, "r", encoding="utf-8") as f:
+                    filtered_dict = json.load(f)
+          
+                if selected_group in filtered_dict:
+                    filtered_indices = filtered_dict[selected_group]
+                    print(f"    Using filtered documents for group '{selected_group}': {len(filtered_indices)} documents")
+                else:
+                    print(f"    Group '{selected_group}' not found in filtered results, using all documents")
+                    filtered_indices = list(range(len(df)))
+            else:
+                print(f"    No filtered results found, using all documents")
+                filtered_indices = list(range(len(df)))
+        except Exception as e:
+            print(f"    Error loading filtered results: {e}, using all documents")
+            filtered_indices = list(range(len(df)))
+        
+   
+        for idx in filtered_indices:
+            if idx < len(df):
+                row = df.iloc[idx]
+                text = str(row.iloc[1]) if len(row) > 1 else ""
+                text_lower = text.lower()
+                
+                contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
+                
+                if contains_keyword:
+                    file_keywords = extract_top_keywords(text, 5)
+                    matching_articles.append({
+                        'file_number': idx + 1,
+                        'file_index': idx,
+                        'text': text,
+                        'keywords': file_keywords
+                    })
         
         if not matching_articles:
             result = html.P(f"No training articles found for the selected search criteria")
@@ -5794,7 +5885,7 @@ def display_training_article_content(article_clicks, display_mode):
     try:
         global df
         if 'df' not in globals():
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(FILE_PATHS["csv_path"])
         
         if article_index is not None and article_index < len(df):
             article_text = str(df.iloc[article_index, 1])
@@ -5872,7 +5963,7 @@ def display_article_content_smart(article_clicks, display_mode, current_keyword,
     try:
         global df
         if 'df' not in globals():
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(FILE_PATHS["csv_path"])
         
         if article_index is not None and article_index < len(df):
             article_text = str(df.iloc[article_index, 1])
@@ -5911,13 +6002,18 @@ def display_article_content_smart(article_clicks, display_mode, current_keyword,
     prevent_initial_call=True
 )
 def switch_to_finetune_mode(n_clicks, current_mode):
+    print(f"    DEBUG: switch_to_finetune_mode called with n_clicks={n_clicks}, current_mode={current_mode}")
 
     if not n_clicks:
+        print(f"    DEBUG: switch_to_finetune_mode: no clicks, raising PreventUpdate")
         raise PreventUpdate
     if current_mode == "training":
-        return "finetune", "Switch to Training Mode"
+        print(f"    DEBUG: switch_to_finetune_mode: switching from training to finetune")
+        return "finetune", "Switch to Training View"
     if current_mode == "finetune":
+        print(f"    DEBUG: switch_to_finetune_mode: switching from finetune to training")
         return "training", "Switch to Finetune Mode"
+    print(f"    DEBUG: switch_to_finetune_mode: unexpected current_mode={current_mode}, raising PreventUpdate")
     raise PreventUpdate
 
 @app.callback(
@@ -5927,19 +6023,31 @@ def switch_to_finetune_mode(n_clicks, current_mode):
      Input("finetune-selected-keyword", "data")]  
 )
 def render_finetune_groups(group_order, selected_group, selected_keyword):
+    print(f"   DEBUG: render_finetune_groups called")
+    print(f"   DEBUG: group_order = {group_order}")
+    print(f"   DEBUG: selected_group = {selected_group}")
+    print(f"   DEBUG: selected_keyword = {selected_keyword}")
 
     if not group_order:
         return []
 
     children = []
     for grp_name, kw_list in group_order.items():
+        print(f"   DEBUG: Processing group: {grp_name}")
+        print(f"   DEBUG: Keywords for {grp_name}: {kw_list}")
         if grp_name == "Other":
-            group_display_name = "Other (Exclude)"
-            group_color = get_group_color(grp_name)
+
+            if kw_list:  
+                group_display_name = "Exclude"
+                group_color = get_group_color(grp_name)
+            else:  
+                group_display_name = "Other (Exclude)"
+                group_color = get_group_color(grp_name)
         else:
             group_number = grp_name.replace("Group ", "")
             group_display_name = f"Group {group_number}"
             group_color = get_group_color(grp_name)
+            print(f"   DEBUG: {grp_name} -> display_name: {group_display_name}, color: {group_color}")
         
         if grp_name == "Other":
             header_style = {
@@ -6028,10 +6136,16 @@ def render_finetune_groups(group_order, selected_group, selected_keyword):
 def select_finetune_group(n_clicks, display_mode):
     ctx = dash.callback_context
     
-    print(f"    DEBUG: select_finetune_group called")
+    print(f"   DEBUG: select_finetune_group called")
     print(f"   display_mode: {display_mode}")
     print(f"   n_clicks: {n_clicks}")
     print(f"   ctx.triggered: {ctx.triggered}")
+    
+    if ctx.triggered:
+        triggered_id = ctx.triggered[0]['prop_id']
+        triggered_value = ctx.triggered[0]['value']
+        print(f"   triggered_id: {triggered_id}")
+        print(f"   triggered_value: {triggered_value}")
     
     if display_mode != "finetune":
         print(f"           Not in finetune mode, raising PreventUpdate")
@@ -6076,8 +6190,16 @@ def select_finetune_keyword_from_group(n_clicks, display_mode):
 
     ctx = dash.callback_context
     
-    print(f"    DEBUG: select_finetune_keyword_from_group called")
+    print(f"   DEBUG: select_finetune_keyword_from_group called")
     print(f"   display_mode: {display_mode}")
+    print(f"   n_clicks: {n_clicks}")
+    print(f"   ctx.triggered: {ctx.triggered}")
+    
+    if ctx.triggered:
+        triggered_id = ctx.triggered[0]['prop_id']
+        triggered_value = ctx.triggered[0]['value']
+        print(f"   triggered_id: {triggered_id}")
+        print(f"   triggered_value: {triggered_value}")
     
     if display_mode != "finetune":
         print(f"           Not in finetune mode, raising PreventUpdate")
@@ -6286,8 +6408,23 @@ def update_finetune_text_preview(selected_idx, display_mode):
         
         full_text = str(df.iloc[selected_idx, 1])
         
+        true_label = "Unknown"
+        if len(df.columns) > 0:
+            true_label = str(df.iloc[selected_idx, 0])
+        
         preview = html.Div([
             html.H5(f"Document {selected_idx+1}", style={"color": "#2c3e50", "marginBottom": "10px", "fontSize": "1rem"}),
+            html.Div([
+                html.Span("True Label: ", style={"fontWeight": "bold", "color": "#2c3e50"}),
+                html.Span(true_label, style={
+                    "backgroundColor": "#3498db",
+                    "color": "white",
+                    "padding": "2px 8px",
+                    "borderRadius": "4px",
+                    "fontSize": "0.8rem",
+                    "fontWeight": "bold"
+                })
+            ], style={"marginBottom": "15px"}),
             html.P(full_text, style={
                 "color": "#34495e", 
                 "fontSize": "0.85rem", 
@@ -6312,23 +6449,30 @@ def update_finetune_text_preview(selected_idx, display_mode):
     [Input("finetune-selected-group", "data"),
      Input("finetune-selected-keyword", "data"),
      Input("finetune-selected-article-index", "data")],  
-    [State("group-order", "data")]
+    [State("group-order", "data"),
+     State("finetune-temp-assignments", "data")]
 )
-def compute_finetune_highlights(selected_group, selected_keyword, selected_article_idx, group_order):
-    global df
+def compute_finetune_highlights(selected_group, selected_keyword, selected_article_idx, group_order, temp_assignments):
+    global df, current_group_order
     core, gray = [], []
     operation_buttons = []
     
-    print(f"    compute_finetune_highlights called:")
+    current_group_order = group_order
+    
+    print(f"   DEBUG: compute_finetune_highlights called:")
     print(f"   selected_group: {selected_group}")
     print(f"   selected_keyword: {selected_keyword}")
     print(f"   selected_article_idx: {selected_article_idx}")
     print(f"   group_order: {group_order}")
+    print(f"   DEBUG: group_order details:")
+    for grp_name, kw_list in group_order.items():
+        print(f"     {grp_name}: {kw_list}")
+    print(f"   DEBUG: Set current_group_order = {current_group_order}")
     
     excluded_group = None
     if selected_article_idx is not None and group_order:
         try:
-            matched_dict_path = "test_results/filtered_group_assignment.json"
+            matched_dict_path = FILE_PATHS["filtered_group_assignment"]
             if os.path.exists(matched_dict_path):
                 with open(matched_dict_path, "r", encoding="utf-8") as f:
                     matched_dict = json.load(f)
@@ -6363,6 +6507,18 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         except Exception as e:
             print(f"       Could not determine document's group: {e}")
     
+    if temp_assignments and selected_article_idx is not None:
+        for idx_str, target_group in temp_assignments.items():
+            if idx_str.endswith("_original"):
+                continue
+            try:
+                if int(idx_str) == int(selected_article_idx):
+                    excluded_group = target_group
+                    print(f"           Selected doc {selected_article_idx} was moved to: {excluded_group}")
+                    break
+            except (ValueError, TypeError):
+                continue
+    
     print(f"    DEBUG: Generating operation buttons...")
     print(f"   group_order: {group_order}")
     print(f"   selected_article_idx: {selected_article_idx}")
@@ -6384,26 +6540,46 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         }
         
         for group_name in group_order.keys():
-            if group_name != excluded_group:  
-                if group_name == "Group 1":
-                    bg_color = "#FF6B6B"  
-                elif group_name == "Group 2":
-                    bg_color = "#32CD32"  
-                elif group_name == "Other":
-                    bg_color = "#e74c3c"  
-                else:
-                    bg_color = "#3498db"  
+
+            should_exclude = False
+            if excluded_group is not None:
+                if group_name == excluded_group:
+                    should_exclude = True
+               
+                elif group_name == "Other" and excluded_group == "Exclude":
+                    should_exclude = True
+                elif group_name == "Exclude" and excluded_group == "Other":
+                    should_exclude = True
+            
+            if should_exclude:
+                continue
                 
-                button_style = {**button_style_base, "backgroundColor": bg_color}
-                
-                operation_buttons.append(
-                    html.Button(
-                        f"Move to {group_name}",
-                        id={"type": "finetune-move-to", "target": group_name},
-                        n_clicks=0,
-                        style=button_style
-                    )
+
+            if group_name == "Group 1":
+                bg_color = "#FF6B6B"  
+            elif group_name == "Group 2":
+                bg_color = "#32CD32"  
+            elif group_name == "Other":
+                bg_color = "#e74c3c"  
+            else:
+                bg_color = "#3498db"  
+            
+            button_style = {**button_style_base, "backgroundColor": bg_color}
+            
+
+            if group_name == "Exclude" and group_order.get("Exclude"):
+                button_text = "Move to Exclude"
+            else:
+                button_text = f"Move to {group_name}"
+            
+            operation_buttons.append(
+                html.Button(
+                    button_text,
+                    id={"type": "finetune-move-to", "target": group_name},
+                    n_clicks=0,
+                    style=button_style
                 )
+            )
         
         print(f"        Generated {len(operation_buttons)} operation buttons (excluding {excluded_group})")
     else:
@@ -6432,13 +6608,22 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         return core, gray, operation_buttons
     
     try:
-        matched_dict_path = "test_results/filtered_group_assignment.json"
-        if not os.path.exists(matched_dict_path):
-            print("      BM25 ")
-            matched_dict_path = "test_results/bm25_search_results.json"
-            if not os.path.exists(matched_dict_path):
-                print("      ")
-                return core, gray, operation_buttons
+ 
+        user_finetuned_path = FILE_PATHS["user_finetuned_list"]
+        matched_dict_path = None
+        
+        if os.path.exists(user_finetuned_path):
+            matched_dict_path = user_finetuned_path
+            print(f"      Using user finetuned results from {os.path.basename(matched_dict_path)}")
+        elif os.path.exists(FILE_PATHS["filtered_group_assignment"]):
+            matched_dict_path = FILE_PATHS["filtered_group_assignment"]
+            print(f"      Using filtered group assignment from {os.path.basename(matched_dict_path)}")
+        elif os.path.exists(FILE_PATHS["bm25_search_results"]):
+            matched_dict_path = FILE_PATHS["bm25_search_results"]
+            print(f"      Using BM25 search results from {os.path.basename(matched_dict_path)}")
+        else:
+            print("      No group assignment data found")
+            return core, gray, operation_buttons
         
         with open(matched_dict_path, "r", encoding="utf-8") as f:
             matched_dict = json.load(f)
@@ -6459,91 +6644,200 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
             if len(indices) <= 10:  
                 print(f"    {sorted(indices)}")
         
-        if selected_group == "Other":
-            other_indices = matched_dict.get("Other", [])
-            print(f"  Other: {len(other_indices)} ")
-            return other_indices, [], operation_buttons
+        if selected_group == "Exclude":
+            exclude_has_keywords = False
+            if group_order and "Exclude" in group_order and group_order["Exclude"]:
+                exclude_has_keywords = True
+                print(f"  Exclude group has user-defined keywords: {group_order['Exclude']}")
+                print(f"  Treating Exclude as Exclude group with prototype")
+            else:
+                print(f"  Exclude group has no user-defined keywords - treating as exclude group")
+            
+            try:
+                if exclude_has_keywords:
+                   
+                    exclude_keywords = group_order.get("Exclude", [])
+                    print(f"  Exclude keywords: {exclude_keywords}")
+                    
+                    
+                    filtered_exclude_indices = []
+                    if "Exclude" in matched_dict:
+                        filtered_exclude_indices = matched_dict["Exclude"]
+                        print(f"  Filtered Exclude documents: {len(filtered_exclude_indices)} documents")
+                    
+                   
+                    manually_moved_indices = []
+                    if temp_assignments:
+                        for idx_str, target_group in temp_assignments.items():
+                            if idx_str.endswith("_original"):
+                                continue
+                            if target_group == "Exclude":  
+                                manually_moved_indices.append(int(idx_str))
+                        print(f"  User manually moved to Exclude: {len(manually_moved_indices)} documents")
+                    
+                    all_exclude_indices = list(set(filtered_exclude_indices + manually_moved_indices))
+                    print(f"  Total Exclude documents: {len(all_exclude_indices)} documents")
+                    print(f"    All Exclude documents: {sorted(all_exclude_indices) if len(all_exclude_indices) <= 20 else 'too many to display'}")
+                    
+                    return all_exclude_indices, [], operation_buttons
+                else:
+                
+                    manually_moved_indices = []
+                    if temp_assignments:
+                        for idx_str, target_group in temp_assignments.items():
+                            if idx_str.endswith("_original"):
+                                continue
+                            if target_group == "Exclude":  
+                                manually_moved_indices.append(int(idx_str))
+                        print(f"  User manually moved to Exclude (no keywords): {len(manually_moved_indices)} documents")
+                    
+                    return manually_moved_indices, [], operation_buttons
+            except Exception as e:
+                print(f"  Error getting Exclude group indices: {e}")
+                exclude_indices = matched_dict.get("Exclude", [])
+                return exclude_indices, [], operation_buttons
 
         selected_group_indices = matched_dict.get(selected_group, [])
         
-        model_path = "test_results/triplet_trained_encoder.pth"
+        model_path = FILE_PATHS["triplet_trained_encoder"]
         if not os.path.exists(model_path):
 
             group_indices = matched_dict.get(selected_group, [])
-            return group_indices, [], options
+            return group_indices, [], operation_buttons
         
         print(f"    Computing gap-based highlights for group: {selected_group}")
         
         if 'df' not in globals():
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(FILE_PATHS["csv_path"])
+        
         
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"        Using device: {device}")
         
+
+
+        print(f"  Loading state_dict from: {model_path}")
+        state_dict = torch.load(model_path, map_location="cpu")
+        
+
+        print(f"  State_dict type: {type(state_dict)}")
+        print(f"  State_dict keys count: {len(state_dict.keys())}")
+        print(f"  First 10 state_dict keys:")
+        for i, key in enumerate(list(state_dict.keys())[:10]):
+            print(f"    {i+1}. {key}: {state_dict[key].shape if hasattr(state_dict[key], 'shape') else type(state_dict[key])}")
+        
+
+        if 'proj.weight' in state_dict:
+            proj_weight_shape = state_dict['proj.weight'].shape
+            proj_dim = proj_weight_shape[0]  
+            bert_hidden_size = proj_weight_shape[1]  
+            print(f"  Detected from proj.weight: proj_dim={proj_dim}, bert_hidden_size={bert_hidden_size}")
+        else:
+            proj_dim = 256
+            bert_hidden_size = 768
+            print(f"  Using default values: proj_dim={proj_dim}, bert_hidden_size={bert_hidden_size}")
+
+        has_ln = 'ln.weight' in state_dict
+        has_norm = 'norm.weight' in state_dict
+        print(f"  LayerNorm detection: has_ln={has_ln}, has_norm={has_norm}")
+
+        if bert_hidden_size == 768:
+            bert_name = "bert-base-uncased"  
+        elif bert_hidden_size == 384:
+            bert_name = "sentence-transformers/all-MiniLM-L6-v2"
+        else:
+            bert_name = get_config("bert_model", "sentence-transformers/all-MiniLM-L6-v2")
+        
+        print(f"  Selected BERT model: {bert_name}")
+        
+            
+        print(f"  Creating SentenceEncoder with bert_name={bert_name}, proj_dim={proj_dim}, device=cpu")
+        encoder = SentenceEncoder(bert_name=bert_name, proj_dim=proj_dim, device="cpu")
+        
+        
+        print(f"  Created model structure:")
+        print(f"    - bert config hidden_size: {encoder.bert.config.hidden_size}")
+        print(f"    - proj layer: {encoder.proj}")
+        print(f"    - ln layer: {encoder.ln}")
+        print(f"    - out_dim: {encoder.out_dim}")
+        
+        
+        print(f"  State_dict vs Model parameter matching:")
+        model_state_dict = encoder.state_dict()
+        print(f"    Model state_dict keys count: {len(model_state_dict.keys())}")
+        print(f"    First 10 model keys:")
+        for i, key in enumerate(list(model_state_dict.keys())[:10]):
+            print(f"      {i+1}. {key}: {model_state_dict[key].shape}")
+        
+        
+        print(f"  Key parameter matching check:")
+        for key in ['proj.weight', 'proj.bias', 'ln.weight', 'ln.bias']:
+            if key in state_dict and key in model_state_dict:
+                state_shape = state_dict[key].shape
+                model_shape = model_state_dict[key].shape
+                match = state_shape == model_shape
+                print(f"    {key}: state_dict{state_shape} vs model{model_shape} -> {'✓' if match else '✗'}")
+            elif key in state_dict:
+                print(f"    {key}: in state_dict only (shape: {state_dict[key].shape})")
+            elif key in model_state_dict:
+                print(f"    {key}: in model only (shape: {model_state_dict[key].shape})")
+
+        print(f"  Attempting to load state_dict...")
         try:
-            encoder = torch.load(model_path, map_location=device, weights_only=False)
-            if hasattr(encoder, 'eval'):
-                encoder.eval()
-            else:
-                raise ValueError("Loaded state_dict instead of model")
-        except Exception as e:
-            print(f"  Failed to load model object directly: {e}")
-            print("  Falling back to loading state_dict...")
-            
-            state_dict = torch.load(model_path, map_location=device)
-            
-            if 'proj.weight' in state_dict:
-                proj_weight_shape = state_dict['proj.weight'].shape
-                proj_dim = proj_weight_shape[0]  
-                bert_hidden_size = proj_weight_shape[1]  
-                print(f"  Detected: proj_dim={proj_dim}, bert_hidden_size={bert_hidden_size}")
-            else:
-                proj_dim = 256
-                bert_hidden_size = 768
-            
-            if bert_hidden_size == 768:
-                bert_name = "bert-base-uncased"  
-            elif bert_hidden_size == 384:
-                bert_name = "sentence-transformers/all-MiniLM-L6-v2"
-            else:
-                bert_name = get_config("bert_model", "sentence-transformers/all-MiniLM-L6-v2")
-            
-            print(f"  Using BERT model: {bert_name}")
-            
-            has_ln = 'ln.weight' in state_dict
-            has_norm = 'norm.weight' in state_dict
-            
-            class SentenceEncoder(nn.Module):
-                def __init__(self, bert_name, proj_dim, use_ln_name=False):
-                    super().__init__()
-                    from transformers import AutoModel
-                    self.bert = AutoModel.from_pretrained(bert_name)
-                    self.proj = nn.Linear(self.bert.config.hidden_size, proj_dim)
-                    if use_ln_name:
-                        self.ln = nn.LayerNorm(proj_dim)  
-                    else:
-                        self.norm = nn.LayerNorm(proj_dim)  
-                    self.out_dim = proj_dim
-                    self.use_ln_name = use_ln_name
-                
-                def encode_tokens(self, tokens):
-                    out = self.bert(**tokens)
-                    cls = out.last_hidden_state[:, 0, :]
-                    z = self.proj(cls)
-                    if self.use_ln_name:
-                        z = self.ln(z)
-                    else:
-                        z = self.norm(z)
-                    z = z / (z.norm(dim=1, keepdim=True) + 1e-12)
-                    return z
-            
-            encoder = SentenceEncoder(bert_name, proj_dim, use_ln_name=has_ln)
-            encoder.load_state_dict(state_dict, strict=False)  
-            encoder = encoder.to(device)  
-            encoder.eval()
-            
-            encoder.bert_model_name = bert_name
+            missing_keys, unexpected_keys = encoder.load_state_dict(state_dict, strict=False)
+            print(f"  State_dict loaded successfully!")
+            print(f"    Missing keys: {len(missing_keys)}")
+            if missing_keys:
+                print(f"    Missing keys: {missing_keys[:5]}{'...' if len(missing_keys) > 5 else ''}")
+            print(f"    Unexpected keys: {len(unexpected_keys)}")
+            if unexpected_keys:
+                print(f"    Unexpected keys: {unexpected_keys[:5]}{'...' if len(unexpected_keys) > 5 else ''}")
+        except Exception as load_error:
+            print(f"  ERROR loading state_dict: {load_error}")
+            print(f"  This explains the CUDA index out of bounds error!")
+            raise load_error
         
-        from transformers import AutoTokenizer
+        encoder.eval()
+        encoder.bert_model_name = bert_name
+        print(f"  Model loaded and ready on CPU")
+
+        if device.type == 'cuda':
+            print(f" MOVING MODEL TO GPU DEBUG ")
+            try:
+                print(f"  Testing CUDA availability...")
+                test_tensor = torch.tensor([1.0]).cuda()
+                print(f"  CUDA test tensor created: {test_tensor}")
+                del test_tensor
+                torch.cuda.empty_cache()
+                print(f"  CUDA cache cleared successfully")
+                
+                print(f"  Moving model to GPU...")
+                encoder = encoder.cuda()
+                print(f"  Model moved to GPU successfully")
+
+                print(f"  Testing model on GPU...")
+                test_input = {
+                    'input_ids': torch.tensor([[101, 102]]).cuda(),
+                    'attention_mask': torch.tensor([[1, 1]]).cuda(),
+                    'token_type_ids': torch.tensor([[0, 0]]).cuda()
+                }
+                with torch.no_grad():
+                    test_output = encoder.encode_tokens(test_input)
+                print(f"  GPU test successful, output shape: {test_output.shape}")
+
+                
+            except Exception as gpu_error:
+                print(f"  ERROR moving to GPU: {gpu_error}")
+                print(f"  Falling back to CPU...")
+                device = torch.device("cpu")
+                encoder = encoder.cpu()
+                print(f"  Model moved back to CPU")
+
+        else:
+            print(f"  Using CPU device as requested")
+        
+
+        
         if hasattr(encoder, 'bert_model_name'):
             tokenizer_name = encoder.bert_model_name
         elif hasattr(encoder, 'bert') and hasattr(encoder.bert, 'name_or_path'):
@@ -6558,14 +6852,98 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         texts = df.iloc[:, 1].astype(str).tolist()
         batch_size = 32
         all_embeddings = []
+
+        print(f"  Total texts to encode: {len(texts)}")
+        print(f"  Batch size: {batch_size}")
+        print(f"  Device: {device}")
+        print(f"  Encoder device: {next(encoder.parameters()).device}")
         
         with torch.no_grad():
-            for i in range(0, len(texts), batch_size):
-                batch = texts[i:i+batch_size]
-                inputs = tokenizer(batch, padding=True, truncation=True, max_length=256, return_tensors='pt')
-                inputs = {k: v.to(device) for k, v in inputs.items()}
-                embeds = encoder.encode_tokens(inputs)
-                all_embeddings.append(embeds.cpu().numpy())
+            try:
+                for i in range(0, len(texts), batch_size):
+                    batch = texts[i:i+batch_size]
+                    batch_num = i//batch_size + 1
+                    total_batches = (len(texts)-1)//batch_size + 1
+
+                    print(f"    Batch size: {len(batch)}")
+                    print(f"    Sample text: {batch[0][:100]}..." if batch else "Empty batch")
+
+                    print(f"    Tokenizing batch...")
+                    inputs = tokenizer(batch, padding=True, truncation=True, max_length=256, return_tensors='pt')
+                    print(f"    Tokenization completed")
+
+                    vocab_size = tokenizer.vocab_size
+                    if 'input_ids' in inputs:
+
+                        min_id = inputs['input_ids'].min().item()
+                        max_id = inputs['input_ids'].max().item()
+                        print(f"    Token ID range: {min_id} to {max_id} (vocab_size: {vocab_size})")
+                        
+                        if max_id >= vocab_size:
+                            print(f"    WARNING: Found token ID {max_id} >= vocab_size {vocab_size}, clamping...")
+                            inputs['input_ids'] = torch.clamp(inputs['input_ids'], 0, vocab_size - 1)
+                            print(f"    After clamping: {inputs['input_ids'].min().item()} to {inputs['input_ids'].max().item()}")
+                        else:
+                            print(f"    Token IDs are within valid range")
+
+                    print(f"    Moving inputs to device: {device}")
+                    inputs = {k: v.to(device) for k, v in inputs.items()}
+                    print(f"    Inputs moved to device successfully")
+
+                    print(f"    Input shapes and devices:")
+                    for k, v in inputs.items():
+                        print(f"      {k}: shape={v.shape}, device={v.device}, dtype={v.dtype}")
+
+                    print(f"    Starting encoding...")
+                    try:
+                        embeds = encoder.encode_tokens(inputs)
+                        print(f"    Encoding successful!")
+                        print(f"    Output shape: {embeds.shape}")
+                        print(f"    Output device: {embeds.device}")
+                        print(f"    Output dtype: {embeds.dtype}")
+
+                        if torch.isnan(embeds).any():
+                            print(f"    WARNING: Output contains NaN values!")
+                        if torch.isinf(embeds).any():
+                            print(f"    WARNING: Output contains Inf values!")
+                        
+                        all_embeddings.append(embeds.cpu().numpy())
+                        print(f"    Batch {batch_num} completed successfully")
+                        
+                    except Exception as encode_error:
+                        print(f"    ERROR during encoding: {encode_error}")
+                        print(f"    This is likely the source of CUDA index out of bounds!")
+                        raise encode_error
+
+            except Exception as encoding_error:
+                print(f"CUDA error during encoding, falling back to CPU: {encoding_error}")
+
+                encoder = SentenceEncoder(bert_name=bert_name, proj_dim=proj_dim, device="cpu")
+                encoder.load_state_dict(state_dict, strict=False)
+                encoder.eval()
+
+                all_embeddings = []
+                for i in range(0, len(texts), batch_size):
+                    batch = texts[i:i+batch_size]
+                    inputs = tokenizer(batch, padding=True, truncation=True, max_length=256, return_tensors='pt')
+
+                    vocab_size = tokenizer.vocab_size
+                    if 'input_ids' in inputs:
+
+                        min_id = inputs['input_ids'].min().item()
+                        max_id = inputs['input_ids'].max().item()
+                        print(f"    CPU Token ID range: {min_id} to {max_id} (vocab_size: {vocab_size})")
+                        
+                        if max_id >= vocab_size:
+                            print(f"    CPU WARNING: Found token ID {max_id} >= vocab_size {vocab_size}, clamping...")
+                            inputs['input_ids'] = torch.clamp(inputs['input_ids'], 0, vocab_size - 1)
+                            print(f"    CPU After clamping: {inputs['input_ids'].min().item()} to {inputs['input_ids'].max().item()}")
+                        else:
+                            print(f"    CPU Token IDs are within valid range")
+                    
+                    inputs = {k: v.to("cpu") for k, v in inputs.items()}
+                    embeds = encoder.encode_tokens(inputs)
+                    all_embeddings.append(embeds.cpu().numpy())
         
         Z_raw = np.vstack(all_embeddings)
         
@@ -6614,8 +6992,13 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         
         group_mask = np.zeros(len(df), dtype=bool)
         group_mask[selected_group_indices] = True
+
+        valid_selected_indices = [idx for idx in selected_group_indices if idx < len(gap)]
+        if len(valid_selected_indices) == 0:
+            print(f"  No valid indices for {selected_group}")
+            return core, gray, operation_buttons
         
-        gaps_group = gap[selected_group_indices]
+        gaps_group = gap[valid_selected_indices]
         mean_gap = gaps_group.mean()
         std_gap = gaps_group.std()
         
@@ -6700,14 +7083,28 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
             print(f"   {len(keyword_gray)} ")
             print(f"   {len(keyword_core) + len(keyword_gray)} ")
             
+
+            print(f"  Keyword core indices: {len(keyword_core)} - {keyword_core[:5]}")
+            print(f"  Keyword gray indices: {len(keyword_gray)} - {keyword_gray[:5]}")
+            print(f"  Operation buttons: {len(operation_buttons)}")
+
             return keyword_core, keyword_gray, operation_buttons
         
+
+        print(f"  Core indices: {len(core)} - {core[:5]}")
+        print(f"  Gray indices: {len(gray)} - {gray[:5]}")
+        print(f"  Operation buttons: {len(operation_buttons)}")
+
         return core, gray, operation_buttons
         
     except Exception as e:
         print(f"        Error in gap-based filtering: {e}")
         import traceback
         traceback.print_exc()
+
+        if "CUDA" in str(e) or "device-side assert" in str(e):
+            print("        CUDA error detected, but skipping cache cleanup to avoid further errors")
+        
         return core, gray, operation_buttons
 
 
@@ -6963,10 +7360,11 @@ def finetune_click_2d_point(click_data, display_mode):
      Output("finetune-selected-article-index", "data", allow_duplicate=True)],
     Input({"type": "finetune-move-to", "target": ALL}, "n_clicks"),
     [State("finetune-selected-article-index", "data"),
-     State("finetune-temp-assignments", "data")],
+     State("finetune-temp-assignments", "data"),
+     State("group-order", "data")],
     prevent_initial_call=True
 )
-def finetune_move_document(n_clicks_list, selected_idx, assignments):
+def finetune_move_document(n_clicks_list, selected_idx, assignments, group_order):
 
     print(f"    DEBUG: finetune_move_document called")
     print(f"   n_clicks_list: {n_clicks_list}")
@@ -7002,11 +7400,58 @@ def finetune_move_document(n_clicks_list, selected_idx, assignments):
     
     try:
     
-        import json as json_module
+        
         button_id = json_module.loads(triggered_id.split('.')[0])
         target_group = button_id['target']
         
         new_map = dict(assignments or {})
+
+        if str(selected_idx) not in assignments:
+            try:
+                original_group = "Unknown"
+
+                try:
+                    with open(FILE_PATHS["filtered_group_assignment"], "r") as f:
+                        current_matched_dict = json_module.load(f)
+                    for grp_name_file, indices in current_matched_dict.items():
+                        if selected_idx in indices:
+                            original_group = grp_name_file
+                            print(f"     Found original group from filtered_group_assignment.json: {original_group}")
+                            break
+                except:
+                    pass
+
+                if original_group == "Unknown":
+                    try:
+                        with open(FILE_PATHS["group_assignment"], "r") as f:
+                            current_matched_dict = json_module.load(f)
+                        for grp_name_file, indices in current_matched_dict.items():
+                            if selected_idx in indices:
+                                original_group = grp_name_file
+                                print(f"     Found original group from group_assignment.json: {original_group}")
+                                break
+                    except:
+                        pass
+
+                if original_group == "Unknown":
+                    try:
+                        with open(FILE_PATHS["bm25_search_results"], "r") as f:
+                            current_matched_dict = json_module.load(f)
+                        for grp_name_file, indices in current_matched_dict.items():
+                            if selected_idx in indices:
+                                original_group = grp_name_file
+                                print(f"     Found original group from bm25_search_results.json: {original_group}")
+                                break
+                    except:
+                        pass
+
+                new_map[f"{selected_idx}_original"] = original_group
+                print(f"     Recorded original group for Doc {selected_idx+1}: {original_group}")
+            except Exception as e:
+                print(f"     Could not determine original group: {e}")
+
+                new_map[f"{selected_idx}_original"] = "Unknown"
+        
         new_map[str(selected_idx)] = target_group
         print(f"     Moved Doc {selected_idx+1} to {target_group}")
         
@@ -7031,12 +7476,14 @@ def clear_finetune_history(n_clicks):
     print("Clearing adjustment history")
     return {}
 
+
 @app.callback(
-    Output("finetune-adjustment-history", "children"),
-    Input("finetune-temp-assignments", "data")
+    [Output("finetune-adjustment-history", "children"),
+     Output("finetune-history-buttons", "children")],
+    [Input("finetune-temp-assignments", "data")]
 )
 def update_adjustment_history(temp_assignments):
-    global df
+    global df, current_group_order
     if not temp_assignments or len(temp_assignments) == 0:
         return html.P("No adjustments yet. Click a point and use the buttons to reassign.", 
                      style={
@@ -7045,13 +7492,13 @@ def update_adjustment_history(temp_assignments):
                          "textAlign": "center", 
                          "padding": "20px",
                          "fontSize": "0.95rem"
-                     })
+                     }), []
     
   
     try:
-        matched_dict_path = "test_results/filtered_group_assignment.json"
+        matched_dict_path = FILE_PATHS["filtered_group_assignment"]
         if not os.path.exists(matched_dict_path):
-            matched_dict_path = "test_results/bm25_search_results.json"
+            matched_dict_path = FILE_PATHS["bm25_search_results"]
         
         with open(matched_dict_path, "r", encoding="utf-8") as f:
             matched_dict = json.load(f)
@@ -7067,25 +7514,90 @@ def update_adjustment_history(temp_assignments):
     
     if 'df' not in globals():
         try:
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(FILE_PATHS["csv_path"])
         except:
             df = None
     
    
     history_items = []
-    for idx_str, new_group in temp_assignments.items():
-        idx = int(idx_str)
-        original_group = idx_to_original_group.get(idx, "Unknown")
+    history_buttons = []
+
+    if temp_assignments:
+
+        rounds = set()
+        for key in temp_assignments.keys():
+            if key.startswith('round_'):
+                round_num = key.split('_')[1]
+                rounds.add(int(round_num))
         
+        for round_num in sorted(rounds):
+            history_buttons.append(
+                html.Button(f"Round {round_num} Adjustments", 
+                           id={"type": "history-round", "index": round_num},
+                           style={
+                               "backgroundColor": "#3498db",
+                               "color": "white",
+                               "border": "none",
+                               "padding": "8px 16px",
+                               "borderRadius": "4px",
+                               "margin": "5px",
+                               "cursor": "pointer",
+                               "fontSize": "0.9rem"
+                           })
+            )
+    
+    for idx_str, new_group in temp_assignments.items():
+
+        if idx_str.endswith("_original"):
+            continue
+            
+        idx = int(idx_str)
+
+        original_key = f"{idx}_original"
+        if original_key in temp_assignments:
+            original_group = temp_assignments[original_key]
+        else:
+            original_group = idx_to_original_group.get(idx, "Unknown")
         
         doc_preview = "..."
         if df is not None and idx < len(df):
             doc_text = str(df.iloc[idx, 1])
             doc_preview = doc_text[:50] + "..." if len(doc_text) > 50 else doc_text
         
-        
         color_from = get_group_color(original_group)
         color_to = get_group_color(new_group)
+        
+
+
+        display_original_group = original_group
+        display_new_group = new_group
+        
+
+        try:
+            print(f"   DEBUG: current_group_order = {current_group_order}")
+            if hasattr(globals(), 'current_group_order') and current_group_order:
+                print(f"   DEBUG: Exclude group has keywords: {current_group_order.get('Exclude', [])}")
+
+                if "Exclude" in current_group_order and current_group_order["Exclude"]:
+                    if display_new_group == "Other":
+                        display_new_group = "Exclude"
+                        print(f"   DEBUG: Changed new_group from Other to Exclude")
+                    if display_original_group == "Other":
+                        display_original_group = "Exclude"
+                        print(f"   DEBUG: Changed original_group from Other to Exclude")
+        except Exception as e:
+            print(f"   DEBUG: Error in display logic: {e}")
+            pass
+
+        if original_group != new_group and original_group != "Unknown":
+            change_text = f"Doc {idx+1}: {display_original_group} → {display_new_group}"
+            change_color = "#27ae60"    
+        elif original_group == "Unknown":
+            change_text = f"Doc {idx+1}: → {new_group} (moved to {new_group})"
+            change_color = "#e67e22" 
+        else:
+            change_text = f"Doc {idx+1}: {original_group} (no change)"
+            change_color = "#95a5a6"  
         
         history_items.append(
             html.Div([
@@ -7115,6 +7627,12 @@ def update_adjustment_history(temp_assignments):
                         "fontSize": "0.85rem"
                     })
                 ], style={"marginBottom": "8px"}),
+                html.Div(change_text, style={
+                    "fontSize": "0.8rem",
+                    "color": change_color,
+                    "fontWeight": "bold",
+                    "marginBottom": "5px"
+                }),
                 html.Div(doc_preview, style={
                     "fontSize": "0.8rem",
                     "color": "#7f8c8d",
@@ -7140,12 +7658,13 @@ def update_adjustment_history(temp_assignments):
             "fontSize": "1rem"
         }),
         html.Div(history_items, style={"overflowY": "auto"})
-    ]
+    ], history_buttons
 
 
 @app.callback(
-    [Output("finetune-train-btn", "children"),
+    [Output("finetune-train-btn", "children", allow_duplicate=True),
      Output("finetune-train-btn", "style", allow_duplicate=True),
+     Output("finetune-training-status", "children", allow_duplicate=True),
      Output("finetune-selected-group", "data", allow_duplicate=True),
      Output("finetune-selected-keyword", "data", allow_duplicate=True), 
      Output("finetune-temp-assignments", "data", allow_duplicate=True),
@@ -7163,70 +7682,160 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
     if not n_clicks:
         raise PreventUpdate
     
+ 
+    global training_in_progress
+    if training_in_progress:
+        running_style = {
+            "backgroundColor": "#f39c12",
+            "color": "white",
+            "border": "none",
+            "padding": "12px 24px",
+            "borderRadius": "6px",
+            "fontSize": "1rem",
+            "fontWeight": "bold",
+            "cursor": "not-allowed",
+            "transition": "all 0.3s ease",
+            "boxShadow": "0 3px 8px rgba(243, 156, 18, 0.3)",
+            "width": "100%",
+            "marginTop": "10px"
+        }
+        return "Running...", running_style, "", dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+
+    training_style = {
+        "backgroundColor": "#f39c12",
+        "color": "white",
+        "border": "none",
+        "padding": "12px 24px",
+        "borderRadius": "6px",
+        "fontSize": "1rem",
+        "fontWeight": "bold",
+        "cursor": "not-allowed",
+        "transition": "all 0.3s ease",
+        "boxShadow": "0 3px 8px rgba(243, 156, 18, 0.3)",
+        "width": "100%",
+        "marginTop": "10px"
+    }
+    
+    success_style = {
+        "backgroundColor": "#27ae60",
+        "color": "white",
+        "border": "none",
+        "padding": "12px 24px",
+        "borderRadius": "6px",
+        "fontSize": "1rem",
+        "fontWeight": "bold",
+        "cursor": "pointer",
+        "transition": "all 0.3s ease",
+        "boxShadow": "0 3px 8px rgba(39, 174, 96, 0.3)",
+        "width": "100%",
+        "marginTop": "10px"
+    }
+    
     try:
         print("=" * 60)
-        print(" Starting Finetune Training (Prototype-based)")
+        print(" Starting Finetune Training (Triplet + Center Pull)")
         print("=" * 60)
+        
+      
+        training_in_progress = True
         
         global df
         if 'df' not in globals():
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(FILE_PATHS["csv_path"])
         
+        user_has_exclude = "Exclude" in group_order and group_order["Exclude"]
+        
+        print(f"User has defined Exclude group: {user_has_exclude}")
+        if user_has_exclude:
+            print(f"  Exclude group keywords: {group_order['Exclude']}")
+            print("  → Using Case 1: Center Pull only")
+        else:
+            print("  → Using Case 2: Center Pull + Exclude Push")
    
         print(f"Applying {len(temp_assignments or {})} user adjustments...")
+        print(f"   DEBUG: Original group_order: {group_order}")
         adjusted_group_order = {}
         for grp_name, kw_list in group_order.items():
             adjusted_group_order[grp_name] = kw_list.copy()
+        print(f"   DEBUG: adjusted_group_order: {adjusted_group_order}")
         
     
+
+
         matched_dict_adjusted = {}
-        for grp_name in group_order.keys():
-            matched_dict_adjusted[grp_name] = []
+
         
-   
+
+        for grp_name in group_order.keys():
+            if grp_name == "Exclude" and user_has_exclude:
+                matched_dict_adjusted["Exclude"] = []
+            else:
+                matched_dict_adjusted[grp_name] = []
+        
         for i in range(len(df)):
             text_lower = str(df.iloc[i, 1]).lower()
             assigned = False
             for grp_name, kw_list in adjusted_group_order.items():
-                if grp_name == "Other":
-                    continue
                 match_count = sum(1 for kw in kw_list if kw.lower() in text_lower)
                 if match_count >= 1:
                     matched_dict_adjusted[grp_name].append(i)
+                    if i < 5:  
+                        print(f"   DEBUG: Doc {i} assigned to {grp_name} (keywords: {kw_list})")
                     assigned = True
                     break
-            if not assigned:
-                matched_dict_adjusted["Other"].append(i)
+
         
  
         if temp_assignments:
             for idx_str, target_group in temp_assignments.items():
+                if idx_str.endswith("_original"):
+                    continue
+                    
                 idx = int(idx_str)
               
                 for grp_name in matched_dict_adjusted.keys():
                     if idx in matched_dict_adjusted[grp_name]:
                         matched_dict_adjusted[grp_name].remove(idx)
             
-                if target_group in matched_dict_adjusted:
+                if target_group == "Exclude" and user_has_exclude:
+                    matched_dict_adjusted["Exclude"].append(idx)
+                elif target_group in matched_dict_adjusted:
                     matched_dict_adjusted[target_group].append(idx)
         
-        print(f"      Adjusted group distribution:")
+        print(f"Adjusted group distribution:")
         for grp_name, indices in matched_dict_adjusted.items():
             print(f"  {grp_name}: {len(indices)} samples")
         
 
-        model_path = "test_results/triplet_trained_encoder.pth"
+        model_path = FILE_PATHS["triplet_trained_encoder"]
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        
+        print(f"Using device: {device}")
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            print(f"CUDA memory before loading: {torch.cuda.memory_allocated()/1024**2:.1f}MB")
    
         try:
-            encoder = torch.load(model_path, map_location=device, weights_only=False)
+            print(f"  Loading model to CPU first...")
+            encoder = torch.load(model_path, map_location="cpu", weights_only=False)
+            
             if hasattr(encoder, 'eval'):
+                print(f"  Moving model to {device}...")
+                if device.type == 'cuda':
+                    encoder = encoder.cuda()
+                    torch.cuda.synchronize()
+                    print(f"  Model moved to GPU successfully")
+                else:
+                    encoder = encoder.to(device)
+                
                 encoder.eval()
+                print(f"  Model loaded and ready on {device}")
             else:
                 raise ValueError("Loaded state_dict instead of model")
-        except Exception:
-            state_dict = torch.load(model_path, map_location=device)
+        except Exception as e:
+            print(f"  Failed to load model object directly: {e}")
+            print("  Falling back to loading state_dict...")
+            state_dict = torch.load(model_path, map_location="cpu")
             if 'proj.weight' in state_dict:
                 proj_weight_shape = state_dict['proj.weight'].shape
                 proj_dim = proj_weight_shape[0]
@@ -7243,94 +7852,110 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                 bert_name = get_config("bert_model", "sentence-transformers/all-MiniLM-L6-v2")
             
             has_ln = 'ln.weight' in state_dict
-            
-            class SentenceEncoder(nn.Module):
-                def __init__(self, bert_name, proj_dim, use_ln_name=False):
-                    super().__init__()
-                    from transformers import AutoModel
-                    self.bert = AutoModel.from_pretrained(bert_name)
-                    self.proj = nn.Linear(self.bert.config.hidden_size, proj_dim)
-                    if use_ln_name:
-                        self.ln = nn.LayerNorm(proj_dim)
-                    else:
-                        self.norm = nn.LayerNorm(proj_dim)
-                    self.out_dim = proj_dim
-                    self.use_ln_name = use_ln_name
-                
-                def encode_tokens(self, tokens):
-                    out = self.bert(**tokens)
-                    cls = out.last_hidden_state[:, 0, :]
-                    z = self.proj(cls)
-                    if self.use_ln_name:
-                        z = self.ln(z)
-                    else:
-                        z = self.norm(z)
-                    z = z / (z.norm(dim=1, keepdim=True) + 1e-12)
-                    return z
-            
-            encoder = SentenceEncoder(bert_name, proj_dim, use_ln_name=has_ln).to(device)
+
+            encoder = SentenceEncoder(bert_name=bert_name, proj_dim=proj_dim, device="cpu")
+            encoder = encoder.to_empty(device=device)
             encoder.load_state_dict(state_dict, strict=False)
             encoder.eval()
             encoder.bert_model_name = bert_name
-        
 
-        from transformers import AutoTokenizer
+       
         if hasattr(encoder, 'bert_model_name'):
             tokenizer_name = encoder.bert_model_name
         else:
             tokenizer_name = "bert-base-uncased"
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-        
 
         texts = df.iloc[:, 1].astype(str).tolist()
-        
 
         def encode_all_docs():
             encoder.eval()
             Z = []
-            batch_size = 32
-            for i in range(0, len(texts), batch_size):
-                batch = texts[i:i+batch_size]
-                toks = tokenizer(batch, return_tensors='pt', padding=True, truncation=True, max_length=256)
-                toks = {k: v.to(device) for k, v in toks.items()}
-                with torch.no_grad():
-                    Z.append(encoder.encode_tokens(toks).cpu())
-            return torch.vstack(Z)
+            batch_size = 16  
+            try:
+                for i in range(0, len(texts), batch_size):
+                    batch = texts[i:i+batch_size]
+                    toks = tokenizer(batch, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                    vocab_size = tokenizer.vocab_size
+                    if 'input_ids' in toks:
+                        toks['input_ids'] = torch.clamp(toks['input_ids'], 0, vocab_size - 1)
+                    toks = {k: v.to(device) for k, v in toks.items()}
+                    with torch.no_grad():
+                        Z.append(encoder.encode_tokens(toks).cpu())
+
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                return torch.vstack(Z)
+            except Exception as cuda_error:
+                print(f"CUDA error during encoding in finetune training, falling back to CPU: {cuda_error}")
+                encoder_cpu = SentenceEncoder(bert_name, proj_dim, device="cpu")
+                encoder_cpu = encoder_cpu.to("cpu")
+                encoder_cpu.load_state_dict(state_dict, strict=False)
+                encoder_cpu.eval()
+
+                Z = []
+                for i in range(0, len(texts), batch_size):
+                    batch = texts[i:i+batch_size]
+                    toks = tokenizer(batch, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                    vocab_size = tokenizer.vocab_size
+                    if 'input_ids' in toks:
+                        toks['input_ids'] = torch.clamp(toks['input_ids'], 0, vocab_size - 1)
+                    toks = {k: v.to("cpu") for k, v in toks.items()}
+                    with torch.no_grad():
+                        Z.append(encoder_cpu.encode_tokens(toks).cpu())
+                return torch.vstack(Z)
         
         Z_before = encode_all_docs().numpy()
         
       
         group_prototypes = {}
         for grp_name, indices in matched_dict_adjusted.items():
-            if grp_name == "Other" or len(indices) == 0:
+            if len(indices) == 0:
                 continue
             grp_embeds = Z_before[indices]
             prototype = grp_embeds.mean(axis=0)
             prototype = prototype / (np.linalg.norm(prototype) + 1e-12)
-            group_prototypes[grp_name] = torch.tensor(prototype, device=device)
+            group_prototypes[grp_name] = torch.tensor(prototype, device=device, dtype=torch.float32)
         
         print(f"  Computed {len(group_prototypes)} group prototypes")
-        
+
+        if user_has_exclude:
+            lr = 5e-6  
+            epochs = 10
+            print(f"  Case 1: Using lr={lr}, epochs={epochs}")
+        else:
+            lr = 1e-5
+            epochs = 10
+            print(f"  Case 2: Using lr={lr}, epochs={epochs}")
  
         encoder.train()
-        optimizer = torch.optim.AdamW(encoder.parameters(), lr=1e-5)
+        optimizer = torch.optim.AdamW(encoder.parameters(), lr=lr)
         
-        epochs = 3
         batch_size = 16
         
         for epoch in range(epochs):
             total_loss = 0
             n_batches = 0
-            
         
             train_samples = []
-            for grp_name, indices in matched_dict_adjusted.items():
-                if grp_name == "Other":
-                    continue
-                for idx in indices:
-                    train_samples.append((idx, grp_name))
+            exclude_samples = []
             
-            import random
+            for grp_name, indices in matched_dict_adjusted.items():
+                if grp_name == "Exclude" and not user_has_exclude:
+                    exclude_samples.extend(indices)
+                else:
+                    for idx in indices:
+                        train_samples.append((idx, grp_name))
+            
+            print(f"  Epoch {epoch+1}/{epochs}:")
+            print(f"    Triplet + Center Pull samples: {len(train_samples)}")
+            print(f"    Exclude Push samples: {len(exclude_samples)}")
+            
+            if len(train_samples) == 0:
+                print(f"    WARNING: No training samples found!")
+                continue
+            
+            
             random.shuffle(train_samples)
             
             for i in range(0, len(train_samples), batch_size):
@@ -7338,47 +7963,166 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                 batch_texts = [texts[idx] for idx, _ in batch]
                 batch_groups = [grp for _, grp in batch]
                 
-      
-                toks = tokenizer(batch_texts, return_tensors='pt', padding=True, truncation=True, max_length=256)
-                toks = {k: v.to(device) for k, v in toks.items()}
-                embeds = encoder.encode_tokens(toks)
+                try:
+                    toks = tokenizer(batch_texts, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                    vocab_size = tokenizer.vocab_size
+                    if 'input_ids' in toks:
+                        toks['input_ids'] = torch.clamp(toks['input_ids'], 0, vocab_size - 1)
+                    toks = {k: v.to(device) for k, v in toks.items()}
+                    embeds = encoder.encode_tokens(toks)
+                except Exception as cuda_error:
+                    print(f"CUDA error during finetune training, falling back to CPU: {cuda_error}")
+
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    print(f"CUDA error during finetune training, falling back to CPU: {cuda_error}")
+                    encoder = SentenceEncoder(bert_name, proj_dim, device="cpu")
+                    encoder = encoder.to("cpu")
+                    encoder.load_state_dict(state_dict, strict=False)
+                    encoder.train()
+                    device = torch.device("cpu")
+                    toks = tokenizer(batch_texts, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                    vocab_size = tokenizer.vocab_size
+                    if 'input_ids' in toks:
+                        toks['input_ids'] = torch.clamp(toks['input_ids'], 0, vocab_size - 1)
+                    toks = {k: v.to("cpu") for k, v in toks.items()}
+                    embeds = encoder.encode_tokens(toks)
                 
-   
-                loss = 0
+                center_loss = torch.tensor(0.0, device=device, requires_grad=True)
                 for j, grp in enumerate(batch_groups):
                     if grp in group_prototypes:
                         proto = group_prototypes[grp]
                         similarity = torch.cosine_similarity(embeds[j], proto, dim=0)
-                        loss += (1 - similarity)
+                        center_loss = center_loss + (1 - similarity)
                 
-                loss = loss / len(batch)
+                center_loss = center_loss / len(batch)
+                
+                triplet_loss = torch.tensor(0.0, device=device, requires_grad=True)
+                if len(batch_groups) >= 2:
+                    group_embeddings = {}
+                    for j, grp in enumerate(batch_groups):
+                        if grp not in group_embeddings:
+                            group_embeddings[grp] = []
+                        group_embeddings[grp].append(embeds[j])
+                    
+                    for group_name, group_embeds in group_embeddings.items():
+                        if len(group_embeds) < 2:
+                            continue
+                        
+                        for anchor in group_embeds:
+                            positive_candidates = [e for e in group_embeds if not torch.equal(e, anchor)]
+                            if not positive_candidates:
+                                continue
+                            positive = positive_candidates[0]
+                            
+                            negative_candidates = []
+                            for other_group, other_embeds in group_embeddings.items():
+                                if other_group != group_name:
+                                    negative_candidates.extend(other_embeds)
+                            
+                            if negative_candidates:
+                                negative = negative_candidates[0]
+                                
+                                margin = 0.5
+                                ap_dist = torch.norm(anchor - positive, p=2)
+                                an_dist = torch.norm(anchor - negative, p=2)
+                                triplet_loss = triplet_loss + torch.relu(ap_dist - an_dist + margin)
+                
+                total_batch_loss = center_loss + 0.5 * triplet_loss
                 
                 optimizer.zero_grad()
-                loss.backward()
+                total_batch_loss.backward()
                 optimizer.step()
                 
-                total_loss += loss.item()
+                total_loss += total_batch_loss.item()
                 n_batches += 1
             
+            if not user_has_exclude and exclude_samples:
+                print(f"    Training {len(exclude_samples)} exclude samples...")
+                
+                for exclude_idx in exclude_samples:
+                    try:
+                        exclude_text = texts[exclude_idx]
+                        exclude_toks = tokenizer([exclude_text], return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        vocab_size = tokenizer.vocab_size
+                        if 'input_ids' in exclude_toks:
+                            exclude_toks['input_ids'] = torch.clamp(exclude_toks['input_ids'], 0, vocab_size - 1)
+                        exclude_toks = {k: v.to(device) for k, v in exclude_toks.items()}
+                        exclude_embed = encoder.encode_tokens(exclude_toks)
+                        
+                        max_similarity = 0
+                        for grp_name, prototype in group_prototypes.items():
+                            if grp_name != "Other":  
+                                sim = torch.cosine_similarity(exclude_embed, prototype.unsqueeze(0))
+                                if sim.item() > max_similarity:
+                                    max_similarity = sim.item()
+                        
+                        tau = 0.35
+                        exclude_loss = torch.max(torch.tensor(0.0, device=device), 
+                                               torch.tensor(max_similarity - tau, device=device))
+                        
+                        if exclude_loss.item() > 0:
+                            optimizer.zero_grad()
+                            exclude_loss.backward()
+                            optimizer.step()
+                            total_loss += exclude_loss.item()
+                            n_batches += 1
+                        
+                    except Exception as e:
+                        print(f"    Exclude Push training failed for doc {exclude_idx}: {e}")
+                        continue
+                
+            if user_has_exclude and epoch < epochs - 1: 
+                print(f"    Updating prototypes with EMA...")
+                alpha = 0.9  
+                
+                with torch.no_grad():
+                    current_embeds = []
+                    for grp_name, indices in matched_dict_adjusted.items():
+                        if len(indices) == 0:
+                            continue
+                        grp_embeds = []
+                        for idx in indices:
+                            text = texts[idx]
+                            toks = tokenizer([text], return_tensors='pt', padding=True, truncation=True, max_length=256)
+                            toks = {k: v.to(device) for k, v in toks.items()}
+                            embed = encoder.encode_tokens(toks)
+                            grp_embeds.append(embed.cpu())
+                        
+                        if grp_embeds:
+                            current_prototype = torch.cat(grp_embeds, dim=0).mean(dim=0)
+                            current_prototype = current_prototype / (torch.norm(current_prototype) + 1e-12)
+                            
+                            if grp_name in group_prototypes:
+                                old_prototype = group_prototypes[grp_name]
+                                new_prototype = alpha * old_prototype + (1 - alpha) * current_prototype.to(device)
+                                new_prototype = new_prototype / (torch.norm(new_prototype) + 1e-12)
+                                group_prototypes[grp_name] = new_prototype
+            
             avg_loss = total_loss / n_batches if n_batches > 0 else 0
-            print(f"  Epoch {epoch+1}/{epochs}, Loss: {avg_loss:.4f}")
+            print(f"    Loss: {avg_loss:.4f}")
+            
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
         
         print("     Finetune training completed!")
-        
 
         torch.save(encoder.state_dict(), model_path)
         print(f"        Saved finetuned model to {model_path}")
         
+  
+        user_finetuned_path = FILE_PATHS["user_finetuned_list"]
+        with open(user_finetuned_path, "w", encoding="utf-8") as f:
+            json.dump(matched_dict_adjusted, f, ensure_ascii=False, indent=2)
+        print(f"        Saved user finetuned results to {user_finetuned_path}")
 
-        filtered_path = "test_results/filtered_group_assignment.json"
+
+        filtered_path = FILE_PATHS["filtered_group_assignment"]
         with open(filtered_path, "w", encoding="utf-8") as f:
             json.dump(matched_dict_adjusted, f, ensure_ascii=False, indent=2)
 
         for grp_name, indices in matched_dict_adjusted.items():
             print(f"  {grp_name}: {len(indices)} samples")
-            if len(indices) <= 10:
-                print(f"   DEBUG: {sorted(indices)}")
-        
 
         encoder.eval()
         with torch.no_grad():
@@ -7390,13 +8134,10 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                 embeds = encoder.encode_tokens(toks)
                 all_embeds.append(embeds.cpu())
             Z_after = torch.cat(all_embeds, dim=0).numpy()
-        
   
-        from sklearn.manifold import TSNE
+        
         tsne = TSNE(n_components=2, random_state=42, perplexity=30)
         projected_2d_after = tsne.fit_transform(Z_after)
-    
-        
      
         group_centers = {}
         for grp_name, indices in matched_dict_adjusted.items():
@@ -7406,13 +8147,11 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                     center = projected_2d_after[valid_indices].mean(axis=0)
                     group_centers[grp_name] = center
                     print(f"   {grp_name} : {center}")
-        
  
-        import plotly.graph_objects as go
+
         
         def create_plotly_figure(projected_2d, title, is_after=False, group_centers_param=None):
             fig = go.Figure()
-            
      
             article_indices = list(range(len(projected_2d)))
             hover_texts = [f"Doc {idx+1}" for idx in article_indices] 
@@ -7435,7 +8174,6 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                 hovertemplate='<b>%{hovertext}</b><br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>',
                 hovertext=hover_texts
             ))
-            
 
             if is_after and group_centers_param:
                 center_style = PLOT_STYLES["center"]
@@ -7458,7 +8196,6 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                         textfont=dict(size=12, color=color, family='Arial Black'),
                         hovertemplate=f'<b>Group Center: {grp_name}</b><br>X: %{{x:.2f}}<br>Y: %{{y:.2f}}<extra></extra>'
                     ))
-            
 
             layout_style = PLOT_STYLES["layout"]
             fig.update_layout(
@@ -7475,13 +8212,9 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
             )
             
             return fig
-        
 
         fig_before_dict = current_training_figures.get("before") if current_training_figures else None
-        
-
         fig_after = create_plotly_figure(projected_2d_after, "2D Projection After Training (Finetuned)", True, group_centers)
-        
  
         fig_after_dict = {
             "data": [trace.to_plotly_json() for trace in fig_after.data],
@@ -7489,45 +8222,18 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         }
         
         updated_figures = {"before": fig_before_dict, "after": fig_after_dict}
-        print(f"     2D ")
-        
-        success_style = {
-            "backgroundColor": "#27ae60",
-            "color": "white",
-            "border": "none",
-            "padding": "12px 24px",
-            "borderRadius": "6px",
-            "fontSize": "1rem",
-            "fontWeight": "bold",
-            "cursor": "pointer",
-            "transition": "all 0.3s ease",
-            "boxShadow": "0 3px 8px rgba(39, 174, 96, 0.3)",
-            "width": "100%",
-            "marginTop": "10px"
-        }
-        
-
-        core_indices = []
-        gray_indices = []
-        
-        print(f"    DEBUG: Preparing to return highlight data")
-        print(f"   current_selected_group: {current_selected_group}")
-        print(f"   matched_dict_adjusted keys: {list(matched_dict_adjusted.keys())}")
-        
+        print(f"     2D visualization generated")
 
         if not current_selected_group or current_selected_group not in matched_dict_adjusted:
             print(f"    No selected group, trying to auto-select from adjustments")
-            
 
             if temp_assignments:
-                from collections import Counter
 
                 target_groups = [new_grp for new_grp in temp_assignments.values()]
                 most_common = Counter(target_groups).most_common(1)
                 if most_common and most_common[0][0] != "Other":
                     current_selected_group = most_common[0][0]
                     print(f"   Auto-selected group: {current_selected_group} (most adjusted)")
-            
 
             if not current_selected_group or current_selected_group not in matched_dict_adjusted:
                 for grp in matched_dict_adjusted.keys():
@@ -7536,36 +8242,20 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                         print(f"   Auto-selected group: {current_selected_group} (first non-Other)")
                         break
         
-
-        if not current_selected_group or current_selected_group not in matched_dict_adjusted:
-
-            if temp_assignments:
-                from collections import Counter
-      
-                target_groups = [new_grp for new_grp in temp_assignments.values()]
-                most_common = Counter(target_groups).most_common(1)
-                if most_common and most_common[0][0] != "Other":
-                    current_selected_group = most_common[0][0]
-                    print(f"   Auto-selected group: {current_selected_group} (most adjusted)")
-            
+        print(f"        Training complete. compute_finetune_highlights will recalculate highlights for {current_selected_group}")
         
-            if not current_selected_group or current_selected_group not in matched_dict_adjusted:
-                for grp in matched_dict_adjusted.keys():
-                    if grp != "Other":
-                        current_selected_group = grp
-                        print(f"   Auto-selected group: {current_selected_group} (first non-Other)")
-                        break
+   
+        training_in_progress = False
         
-        print(f"        Iteration complete. compute_finetune_highlights will recalculate highlights for {current_selected_group}")
-        print(f"   This ensures consistent gap-based styling")
-        
-
-        return "Iteration Complete - Adjust & Train Again", success_style, current_selected_group, None, {}, dash.no_update, dash.no_update, updated_figures
+        return "Run Finetune Training", success_style, "", current_selected_group, None, temp_assignments, dash.no_update, dash.no_update, updated_figures
         
     except Exception as e:
         print(f"        Finetune training failed: {e}")
-        import traceback
+
         traceback.print_exc()
+        
+  
+        training_in_progress = False
         
         error_style = {
             "backgroundColor": "#e74c3c",
@@ -7582,12 +8272,157 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
             "marginTop": "10px"
         }
         
-        return f"Training Failed: {str(e)}", error_style, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+        return "Run Finetune Training", error_style, "", dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+
+
+
+@app.callback(
+    [Output("finetune-train-btn", "children", allow_duplicate=True),
+     Output("finetune-train-btn", "style", allow_duplicate=True),
+     Output("finetune-training-status", "children", allow_duplicate=True)],
+    Input("interval-component", "n_intervals"),
+    prevent_initial_call=True
+)
+def update_training_status(n_intervals):
+    global training_in_progress
+    
+    if training_in_progress:
+        running_style = {
+            "backgroundColor": "#f39c12",
+            "color": "white",
+            "border": "none",
+            "padding": "12px 24px",
+            "borderRadius": "6px",
+            "fontSize": "1rem",
+            "fontWeight": "bold",
+            "cursor": "not-allowed",
+            "transition": "all 0.3s ease",
+            "boxShadow": "0 3px 8px rgba(243, 156, 18, 0.3)",
+            "width": "100%",
+            "marginTop": "10px"
+        }
+        return "Running...", running_style, ""
+    else:
+        normal_style = {
+            "backgroundColor": "#9b59b6",
+            "color": "white",
+            "border": "none",
+            "padding": "12px 24px",
+            "borderRadius": "6px",
+            "fontSize": "1rem",
+            "fontWeight": "bold",
+            "cursor": "pointer",
+            "transition": "all 0.3s ease",
+            "boxShadow": "0 3px 8px rgba(155, 89, 182, 0.3)",
+            "width": "100%",
+            "marginTop": "10px"
+        }
+        return "Run Finetune Training", normal_style, ""
+
+
+
+@app.callback(
+    Output("train-btn", "style", allow_duplicate=True),
+    Input("display-mode", "data"),
+    prevent_initial_call=True
+)
+def control_train_button_visibility(display_mode):
+    if display_mode == "keywords":
+        return {
+            "backgroundColor": "#e74c3c",
+            "color": "white",
+            "border": "none",
+            "padding": "10px 20px",
+            "borderRadius": "6px",
+            "fontSize": "1rem",
+            "fontWeight": "bold",
+            "cursor": "pointer",
+            "transition": "all 0.3s ease",
+            "boxShadow": "0 2px 5px rgba(0,0,0,0.1)",
+            "minWidth": "120px",
+            "flexShrink": "0"
+        }
+    else:
+        return {"display": "none"}
+
+
+
+@app.callback(
+    Output("switch-finetune-btn", "style", allow_duplicate=True),
+    Input("display-mode", "data"),
+    prevent_initial_call=True
+)
+def control_finetune_button_visibility(display_mode):
+    if display_mode == "training":
+        return {
+            "backgroundColor": "#8e44ad",
+            "color": "white",
+            "border": "none",
+            "padding": "10px 20px",
+            "borderRadius": "6px",
+            "fontSize": "1rem",
+            "fontWeight": "bold",
+            "cursor": "pointer",
+            "transition": "all 0.3s ease",
+            "boxShadow": "0 2px 5px rgba(0,0,0,0.1)",
+            "minWidth": "180px",
+            "flexShrink": "0"
+        }
+    else:
+        return {"display": "none"}
+
+
+
+
+
+@app.callback(
+    [Output("group-order", "data", allow_duplicate=True),
+     Output("new-keyword-input", "value", allow_duplicate=True),
+     Output("debug-output", "children", allow_duplicate=True)],
+    Input("add-keyword-btn", "n_clicks"),
+    [State("new-keyword-input", "value"),
+     State("group-order", "data"),
+     State("selected-group", "data")],
+    prevent_initial_call=True
+)
+def add_custom_keyword(n_clicks, keyword_value, group_order, selected_group):
+    if not n_clicks or not keyword_value or not selected_group:
+        raise PreventUpdate
+    
+    if not group_order:
+        group_order = {}
+    
+    if selected_group not in group_order:
+        group_order[selected_group] = []
+    
+
+    keywords = [kw.strip() for kw in keyword_value.split(',') if kw.strip()]
+    
+    added_keywords = []
+    already_exists = []
+    
+    for keyword in keywords:
+        if keyword not in group_order[selected_group]:
+            group_order[selected_group].append(keyword)
+            added_keywords.append(keyword)
+            print(f"Added keyword '{keyword}' to group '{selected_group}'")
+        else:
+            already_exists.append(keyword)
+    
+   
+    if added_keywords and already_exists:
+        message = f"Added: {', '.join(added_keywords)} | Already exists: {', '.join(already_exists)}"
+    elif added_keywords:
+        message = f"Added {len(added_keywords)} keywords: {', '.join(added_keywords)}"
+    else:
+        message = f"All keywords already exist: {', '.join(already_exists)}"
+        return dash.no_update, "", message
+    
+    return group_order, "", message
+
 
 if __name__ == "__main__":
 
-
-    import os
     os.environ['FLASK_ENV'] = 'development'
     
     
@@ -7614,7 +8449,7 @@ if __name__ == "__main__":
         except OSError as e2:
 
 
-            import socket
+            
             def find_free_port():
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     s.bind(('', 0))
@@ -7634,5 +8469,4 @@ if __name__ == "__main__":
                     threaded=True
                 )
             except Exception as e3:
-                print(f"    DEBUG: All attempts failed: {e3}")
-                print(f"    DEBUG: Please restart the application manually")
+                print(" Failed")
