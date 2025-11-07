@@ -10,7 +10,6 @@ import math
 import gc
 import multiprocessing
 import socket
-import traceback
 import itertools
 from collections import Counter
 import pandas as pd
@@ -18,6 +17,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn.functional import pad
+import traceback
 import matplotlib
 matplotlib.use("Agg") 
 import matplotlib.pyplot as plt
@@ -35,6 +35,7 @@ from keybert import KeyBERT
 from sentence_transformers import SentenceTransformer
 from transformers import BertTokenizer, BertModel, AutoTokenizer
 from rapidfuzz import fuzz
+
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import normalize
 from sklearn.manifold import TSNE
@@ -417,7 +418,7 @@ def precompute_document_embeddings():
         _GLOBAL_DOCUMENT_EMBEDDINGS = np.array(all_embeddings)
         print(f"    Document embeddings computed, shape: {_GLOBAL_DOCUMENT_EMBEDDINGS.shape}")
         
-     
+        
         print(f"    Embeddings length: {len(_GLOBAL_DOCUMENT_EMBEDDINGS)}")
         print(f"    df length: {len(df)}")
         
@@ -497,7 +498,7 @@ try:
     precompute_document_embeddings()
 except Exception as e:
     pass
-
+        
 
 
 kw_model = KeyBERT(model=embedding_model_kw)
@@ -572,7 +573,7 @@ def extract_keywords_batch_gpu(articles, batch_size=None):
                 batch_results.append(result if result else None)
             
             results.extend(batch_results)
-        
+            
             clear_gpu_memory()
             
         except Exception as e:
@@ -585,7 +586,7 @@ processed_articles, valid_indices = preprocess_articles_batch(all_articles_text)
 
 if processed_articles:
     batch_results = extract_keywords_batch_gpu(processed_articles, batch_size=128)
-
+    
     results = [None] * len(all_articles_text)
     for i, result in enumerate(batch_results):
         if i < len(valid_indices):
@@ -1184,7 +1185,7 @@ def create_layout():
                 html.H4("Finetune Group Management", style={
                     "color": "#2c3e50",
                     "fontSize": "1.3rem",
-                    "fontWeight": "bold",
+                "fontWeight": "bold",
                     "marginBottom": "15px",
                     "textAlign": "center"
                 }),
@@ -1211,7 +1212,7 @@ def create_layout():
                 'marginRight': '15px'
             }),
             
-            html.Div([
+        html.Div([
                 html.H4("Documents List", id="finetune-articles-title", style={
                     "color": "#2c3e50",
                     "fontSize": "1.3rem",
@@ -1248,8 +1249,8 @@ def create_layout():
             html.Div([
                 html.H4("Sample Operations", style={
                     "color": "#2c3e50",
-                    "fontSize": "1.2rem",
-                    "fontWeight": "bold",
+                "fontSize": "1.2rem",
+                "fontWeight": "bold",
                     "marginBottom": "10px",
                     "textAlign": "center"
                 }),
@@ -1273,7 +1274,7 @@ def create_layout():
                            })
                 ], style={
                     "backgroundColor": "#f8f9fa",
-                    "borderRadius": "8px",
+                "borderRadius": "8px",
                     "padding": "15px",
                     "minHeight": "150px",
                     "maxHeight": "200px",
@@ -1286,7 +1287,7 @@ def create_layout():
                 html.H4("Adjustment History", style={
                     "color": "#2c3e50",
                     "fontSize": "1.2rem",
-                    "fontWeight": "bold",
+                "fontWeight": "bold",
                     "marginBottom": "10px",
                     "textAlign": "center"
                 }),
@@ -1321,14 +1322,14 @@ def create_layout():
                     html.Div([
                         html.Button("Run Finetune Training", id="finetune-train-btn", n_clicks=0, style={
                             "backgroundColor": "#9b59b6",
-                            "color": "white",
-                            "border": "none",
+                "color": "white",
+                "border": "none",
                             "padding": "12px 24px",
-                            "borderRadius": "6px",
+                "borderRadius": "6px",
                 "fontSize": "1rem",
                 "fontWeight": "bold",
-                            "cursor": "pointer",
-                            "transition": "all 0.3s ease",
+                "cursor": "pointer",
+                "transition": "all 0.3s ease",
                             "boxShadow": "0 3px 8px rgba(155, 89, 182, 0.3)",
                             "width": "100%",
                             "marginBottom": "10px"
@@ -1361,10 +1362,10 @@ def create_layout():
 
         html.Div(id="debug-output", style={"marginTop": "20px"}),
         
-        # 定时器组件用于更新训练状态
+
         dcc.Interval(
             id="interval-component",
-            interval=1000,  # 每秒更新一次
+            interval=1000, 
             n_intervals=0
         )
     ])
@@ -1420,7 +1421,7 @@ def update_group_order(generate_n_clicks, group_data, num_groups, current_order)
     Output("group-containers", "children"),
     [Input("group-order", "data"),
      Input("selected-group", "data"),
-     Input("selected-keyword", "data")],  # Add selected-keyword as Input to trigger re-render
+     Input("selected-keyword", "data")], 
     [State("display-mode", "data")]
 )
 def render_groups(group_order, selected_group, selected_keyword, display_mode):
@@ -1452,11 +1453,11 @@ def render_groups(group_order, selected_group, selected_keyword, display_mode):
     children = []
     for grp_name, kw_list in group_order.items():
         if grp_name == "Other":
-            # 检查Other组是否有用户定义的关键词
-            if kw_list:  # 如果有关键词，显示为Exclude组
+           
+            if kw_list: 
                 group_display_name = "Exclude"
                 group_color = get_group_color(grp_name)
-            else:  # 如果没有关键词，显示为Other (Exclude)
+            else:  
                 group_display_name = "Other (Exclude)"
                 group_color = get_group_color(grp_name)
         else:
@@ -1636,7 +1637,7 @@ def select_group(n_clicks, display_mode):
             print(f"    DEBUG:   Error: {e}")
             print(f"    DEBUG:   Error type: {type(e)}")
             print(f"    DEBUG:   Full traceback:")
-            import traceback
+               
             traceback.print_exc()
             raise PreventUpdate
     else:
@@ -1882,69 +1883,60 @@ def display_recommended_articles(selected_keyword, selected_group, group_order, 
         
         matching_articles = []
         
-        if _GLOBAL_DOCUMENT_EMBEDDINGS_READY and len(search_keywords) > 0:
+        print(f"    Using BM25 search for keywords: {search_keywords}")
+        
+        try:
+            from rank_bm25 import BM25Okapi
+            import nltk
+            from nltk.corpus import stopwords
+            from nltk.stem import PorterStemmer
+            
             try:
-                print(f"    Using semantic search for keywords: {search_keywords}")
-                
-                keyword_texts = " ".join(search_keywords)  
-                keyword_embedding = embedding_model_kw.encode([keyword_texts], convert_to_tensor=True).to(device).cpu().numpy()
-                
-                document_embeddings = get_document_embeddings()
-                
-                similarities = cosine_similarity(keyword_embedding, document_embeddings)[0]
-                
-                top_indices = np.argsort(similarities)[::-1]
-                
-                for idx in top_indices:
-                    if similarities[idx] > 0.15:  
-                        text = str(df.iloc[int(idx), 1]) if len(df.iloc[int(idx)]) > 1 else ""
-                        file_keywords = extract_top_keywords(text, 5)
-                        matching_articles.append({
-                            'file_number': int(idx) + 1,
-                            'file_index': int(idx),
-                            'text': text,
-                            'keywords': file_keywords,
-                            'similarity': float(similarities[idx])
-                        })
-                        
-                        if len(matching_articles) >= 50:  
-                            break
-                
-                print(f"    Semantic search found {len(matching_articles)} relevant documents")
-                
-            except Exception as e:
-                print(f"    Semantic search failed, falling back to text search: {e}")
-                # Fallback to text search
-                for idx, row in df.iterrows():
-                    text = str(row.iloc[1]) if len(row) > 1 else ""
-                    text_lower = text.lower()
-                    
-                    contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
-                    
-                    if contains_keyword:
-                        file_keywords = extract_top_keywords(text, 5)
-                        matching_articles.append({
-                            'file_number': idx + 1,
-                            'file_index': idx,
-                            'text': text,
-                            'keywords': file_keywords
-                        })
-        else:
-            print(f"    Using text search for keywords: {search_keywords}")
-        for idx, row in df.iterrows():
-            text = str(row.iloc[1]) if len(row) > 1 else ""
-            text_lower = text.lower()
+                stop_words = set(stopwords.words('english'))
+            except:
+                stop_words = set()
             
-            contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
+            stemmer = PorterStemmer()
             
-            if contains_keyword:
-                file_keywords = extract_top_keywords(text, 5)
-                matching_articles.append({
-                    'file_number': idx + 1,
-                    'file_index': idx,
-                    'text': text,
-                    'keywords': file_keywords
-                })
+            all_texts = [str(df.iloc[i, 1]) for i in range(len(df))]
+            
+            def preprocess(text):
+                tokens = text.lower().split()
+                tokens = [stemmer.stem(w) for w in tokens if w not in stop_words and len(w) > 2]
+                return tokens
+            
+            tokenized_corpus = [preprocess(doc) for doc in all_texts]
+            bm25 = BM25Okapi(tokenized_corpus)
+            
+            query_tokens = []
+            for kw in search_keywords:
+                query_tokens.extend(preprocess(kw))
+            
+            scores = bm25.get_scores(query_tokens)
+            
+            top_indices = np.argsort(scores)[::-1]
+            
+            for idx in top_indices:
+                if scores[idx] > 0:
+                    text = str(df.iloc[int(idx), 1])
+                    file_keywords = extract_top_keywords(text, 5)
+                    matching_articles.append({
+                        'file_number': int(idx) + 1,
+                        'file_index': int(idx),
+                        'text': text,
+                        'keywords': file_keywords,
+                        'bm25_score': float(scores[idx])
+                    })
+                    
+                    if len(matching_articles) >= 100:
+                        break
+            
+            print(f"    BM25 search found {len(matching_articles)} relevant documents")
+            
+        except Exception as e:
+            print(f"    BM25 search failed: {e}")
+            import traceback
+            traceback.print_exc()
         
         if not matching_articles:
             result = html.P(f"No articles found for the selected search criteria")
@@ -2090,7 +2082,6 @@ def run_training():
         
     except Exception as e:
         print(f"    ERROR: Failed to load CSV data: {e}")
-        import traceback
         traceback.print_exc()
         return None, None
 
@@ -2172,7 +2163,6 @@ def run_training():
         print(f"    DEBUG: BM25 search completed successfully")
     except Exception as e:
         print(f"    ERROR: BM25 search failed: {e}")
-        
         traceback.print_exc()
         return None, None
     for g, idxs in matched_dict.items():
@@ -2195,7 +2185,6 @@ def run_training():
         print(f"    DEBUG: Tokenizer loaded successfully")
     except Exception as e:
         print(f"    ERROR: Failed to load tokenizer: {e}")
-        import traceback
         traceback.print_exc()
         return None, None
     
@@ -2208,7 +2197,7 @@ def run_training():
         print(f"    DEBUG: Encoder initialized successfully")
     except Exception as e:
         print(f"    ERROR: Failed to initialize encoder: {e}")
-        import traceback
+           
         traceback.print_exc()
         return None, None
 
@@ -2344,7 +2333,7 @@ def run_training():
                 group_center = np.mean(Z_norm[valid_indices], axis=0)
                 group_center = group_center / (np.linalg.norm(group_center) + 1e-8)
                 group_centers[group_name] = group_center
-
+        
         all_similarities = []
         for group_name, center in group_centers.items():
             sim = np.dot(Z_norm, center)
@@ -2366,7 +2355,7 @@ def run_training():
         
         print(f"  {len(gap)} gap")
         print(f"  Gap: [{gap.min():.3f}, {gap.max():.3f}]")
-
+        
         group_thresholds = {}
         
         for group_name, group_idx in label_map.items():
@@ -2387,7 +2376,7 @@ def run_training():
                 
 
                 base_threshold = mean_gap - alpha * std_gap
-
+                
                 min_samples = get_config("gap_min_samples")
                 percentile_fallback = get_config("gap_percentile_fallback")
                 if len(gaps_group) < min_samples or std_gap < 1e-6:
@@ -2556,7 +2545,7 @@ def run_training():
                     if group_mask.sum() > 0:
                         group_embeddings = z_batch[group_mask]
                         batch_group_means[group_name] = group_embeddings.mean(dim=0)
-
+                
                 
                 center_loss = torch.tensor(0.0, device=device)
                 for group_name, indices in matched_dict.items():
@@ -2610,7 +2599,7 @@ def run_training():
 
                             current_proto = Z_all[valid_indices].mean(dim=0)
                             current_proto = nn.functional.normalize(current_proto, p=2, dim=-1)
-
+                            
                             global_prototypes[group_name] = (1 - ema_alpha) * global_prototypes[group_name] + ema_alpha * current_proto
                             global_prototypes[group_name] = nn.functional.normalize(global_prototypes[group_name], p=2, dim=-1)
                 
@@ -2619,7 +2608,7 @@ def run_training():
         return encoder
 
     def evaluate_clustering_quality(Z, true_labels, matched_dict, group_names):
-
+        
        
         
         silhouette = silhouette_score(Z, true_labels)
@@ -2717,7 +2706,7 @@ def run_training():
                 final_matched_dict[group_name].append(doc_id)
             else:
                 print(f"Duplicate document ID: {doc_id} found in multiple groups")
-
+    
 
     if "Other" in matched_dict:
         final_matched_dict["Other"] = []
@@ -2756,7 +2745,8 @@ def run_training():
 
     with open(FILE_PATHS["filtered_group_assignment"], "w", encoding="utf-8") as f:
         json.dump(matched_dict, f, ensure_ascii=False, indent=2)
-    print(f"[SAVE] Filtered group assignment: {os.path.join(out_dir, 'filtered_group_assignment.json')}")
+    print(f"[SAVE] Filtered group assignment saved to: {FILE_PATHS['filtered_group_assignment']}")
+    print(f"[DEBUG] Filtered group sizes: {json.dumps({k: len(v) for k, v in matched_dict.items()}, ensure_ascii=False)}")
     
 
 
@@ -2815,7 +2805,6 @@ def run_training():
             print("[WARN] Triplets Triplet")
     except Exception as e:
         print(f"    ERROR: Triplet generation/training failed: {e}")
-
         traceback.print_exc()
         return None, None
     
@@ -2823,15 +2812,15 @@ def run_training():
 
     try:
         encoder = prototype_center_training(encoder, tokenizer, all_texts, group_prototypes, device,
-                                         matched_dict=clean_matched_dict)
+                                          matched_dict=clean_matched_dict)
 
     except Exception as e:
     
-        import traceback
+           
         traceback.print_exc()
         return None, None
     
-
+    
     def l2norm(X): 
         return X / (np.linalg.norm(X, axis=1, keepdims=True) + 1e-8)
     
@@ -2843,7 +2832,6 @@ def run_training():
         print(f"    DEBUG: Normalized embeddings shape: {Zn.shape}")
     except Exception as e:
         print(f"    ERROR: Corpus encoding failed: {e}")
-        import traceback
         traceback.print_exc()
         return None, None
     
@@ -2879,7 +2867,7 @@ def run_training():
             "ema_r_edge": float(r_edge)
         }
     
-
+    
     for g, stat in group_stats.items():
         train_set = set(stat["train_idxs"])
         proto = stat["ema_proto"]
@@ -2925,7 +2913,6 @@ def run_training():
         print(f"    DEBUG: Final embeddings shape: {Z_trained.shape}")
     except Exception as e:
         print(f"    ERROR: Final embedding encoding failed: {e}")
-        import traceback
         traceback.print_exc()
         return None, None
 
@@ -2933,10 +2920,10 @@ def run_training():
     
 
     cluster_eval_raw = evaluate_clustering_quality(Z_raw, main_categories, bm25_results, list(bm25_results.keys()))
-
+    
     cluster_eval_trained = evaluate_clustering_quality(Z_trained, main_categories, matched_dict, list(matched_dict.keys()))
-    print(f"Silhouette Score : {cluster_eval_raw['silhouette_true_labels']:.4f} → {cluster_eval_trained['silhouette_true_labels']:.4f}")
-    print(f"Silhouette Score (BM25): {cluster_eval_raw['silhouette_group_labels']:.4f} → {cluster_eval_trained['silhouette_group_labels']:.4f}")
+    print(f"Silhouette Score : {cluster_eval_raw['silhouette_true_labels']:.4f} -> {cluster_eval_trained['silhouette_true_labels']:.4f}")
+    print(f"Silhouette Score (BM25): {cluster_eval_raw['silhouette_group_labels']:.4f} -> {cluster_eval_trained['silhouette_group_labels']:.4f}")
 
     def convert_numpy_types(obj):
         if isinstance(obj, np.float32):
@@ -3012,7 +2999,7 @@ def run_training():
                      fontsize=14, fontweight='bold')
         ax1.set_xlabel('t-SNE Dimension 1'); ax1.set_ylabel('t-SNE Dimension 2')
         ax1.legend(); ax1.grid(True, alpha=0.3)
-
+        
         for main_cat in unique_main_cats:
             cat_mask = [cat == main_cat for cat in main_categories]
             cat_indices = np.where(cat_mask)[0]
@@ -3061,7 +3048,7 @@ def run_training():
         print(f"    DEBUG: Saved model state dict to triplet_trained_encoder.pth")
     except Exception as e:
         print(f"    ERROR: Failed to save embeddings or model: {e}")
-        import traceback
+           
         traceback.print_exc()
 
     with open(FILE_PATHS["triplet_run_stats"], "w", encoding="utf-8") as f:
@@ -3077,8 +3064,8 @@ def run_training():
     
 
     print(f"Silhouette Score: {cluster_eval_trained['silhouette_true_labels'] - cluster_eval_raw['silhouette_true_labels']:+.4f}")
-
-
+    
+    
     
     df_articles = df_clean  
     
@@ -3444,7 +3431,7 @@ def run_training_with_highlights(highlighted_indices):
         )
         
         return fig
-
+    
     fig_before = create_plotly_figure_with_highlights(projected_2d_before, "Before Training", highlighted_indices, None)
     fig_after = create_plotly_figure_with_highlights(projected_2d_after, "After Training", highlighted_indices, group_centers)
     
@@ -3465,6 +3452,23 @@ def clear_caches():
     _ARTICLES_CACHE.clear()
     _DOCUMENTS_2D_CACHE.clear()
     print("Cleared all caches due to data change")
+    
+    try:
+        filtered_path = FILE_PATHS.get("filtered_group_assignment")
+        if filtered_path and os.path.exists(filtered_path):
+            os.remove(filtered_path)
+            print(f"    Removed old filtered_group_assignment.json")
+    except Exception as e:
+        print(f"     Could not remove filtered_group_assignment.json: {e}")
+    
+ 
+    try:
+        user_finetuned_path = FILE_PATHS.get("user_finetuned_list")
+        if user_finetuned_path and os.path.exists(user_finetuned_path):
+            os.remove(user_finetuned_path)
+
+    except Exception as e:
+        print(f"     Could not remove user_finetuned_list.json: {e}")
 
 
 
@@ -3750,7 +3754,7 @@ app.clientside_callback(
 def update_documents_2d_plot_initial(layout_children, display_mode, training_figures):
 
     global df
-
+    
     
     if display_mode != "keywords":
         print(f"    DEBUG:         NOT IN KEYWORDS MODE:")
@@ -3928,18 +3932,18 @@ def update_documents_2d_plot_initial(layout_children, display_mode, training_fig
 def update_documents_2d_plot(selected_keyword, selected_group, selected_article, group_order, display_mode):
 
     global df, _DOCUMENTS_2D_CACHE
-
+    
     if display_mode != "keywords":
 
         raise PreventUpdate
-
+    
     
     if display_mode == "training":
 
         raise PreventUpdate
     
     print(f"    DEBUG:      NOT IN TRAINING MODE")
-
+    
     if display_mode is None or display_mode not in ["keywords"]:
         print(f"    DEBUG:         UNEXPECTED DISPLAY MODE:")
         print(f"    DEBUG:   display_mode: {display_mode}")
@@ -4473,7 +4477,6 @@ def handle_train_button(n_clicks, group_order):
             print("Training completed successfully!")
         except Exception as e:
             print(f"    ERROR: Training failed with exception: {e}")
-            import traceback
             traceback.print_exc()
             
             error_fig = {
@@ -4550,7 +4553,7 @@ def handle_train_button(n_clicks, group_order):
         
         def fig_to_serializable_dict(fig):
             result = {
-                'data': [],
+            'data': [],
                 'layout': {}
             }
             
@@ -4631,7 +4634,7 @@ def handle_train_button(n_clicks, group_order):
         
     except Exception as e:
         print(f"Training failed with error: {e}")
-        import traceback
+           
         traceback.print_exc()
         
         error_fig = {
@@ -5120,7 +5123,7 @@ def update_main_visualization_area(display_mode, training_figures):
 )
 def update_training_highlights(selected_keyword, selected_group, group_order, training_figures, display_mode):
     global df
-
+    
 
     if display_mode != "training":
         print(f"    DEBUG:         NOT IN TRAINING MODE:")
@@ -5129,7 +5132,7 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
         raise PreventUpdate
     
     print(f"    DEBUG:      TRAINING MODE CONFIRMED")
-
+    
     if 'df' not in globals() or not training_figures:
         print(f"    DEBUG:         MISSING DATA OR TRAINING FIGURES:")
         print(f"    DEBUG:   df in globals: {'df' in globals()}")
@@ -5138,19 +5141,92 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
         return {"type": "none", "indices": []}
     
     print(f"    DEBUG:      DATA AND TRAINING FIGURES AVAILABLE")
-
+    
     
     if selected_keyword:
         print(f"    DEBUG:     KEYWORD SELECTION:")
         print(f"    DEBUG:   Processing keyword: {selected_keyword}")
 
         keyword_indices = []
-        for i, text in enumerate(df.iloc[:, 1]):
-            if selected_keyword.lower() in str(text).lower():
-                keyword_indices.append(i)
         
-        print(f"    DEBUG:   Found {len(keyword_indices)} documents for keyword '{selected_keyword}'")
-        print(f"    DEBUG:   Document indices: {keyword_indices}")
+
+        filtered_path = FILE_PATHS["filtered_group_assignment"]
+        if os.path.exists(filtered_path):
+            try:
+                print(f"    DEBUG:   Loading filtered results for keyword search")
+                with open(filtered_path, "r", encoding="utf-8") as f:
+                    filtered_dict = json.load(f)
+                
+
+                keyword_group = None
+                for grp_name, keywords in group_order.items():
+                    if selected_keyword in keywords:
+                        keyword_group = grp_name
+                        print(f"    DEBUG:   Keyword '{selected_keyword}' belongs to group: {keyword_group}")
+                        break
+                
+                if keyword_group and keyword_group in filtered_dict:
+   
+                    group_filtered_docs = filtered_dict[keyword_group]
+                    print(f"    DEBUG:   Group '{keyword_group}' has {len(group_filtered_docs)} filtered documents")
+                    
+
+                    for idx in group_filtered_docs:
+                        if idx < len(df):
+                            text = str(df.iloc[idx, 1]).lower()
+                            if selected_keyword.lower() in text:
+                                keyword_indices.append(idx)
+                    
+                    print(f"    DEBUG:   Found {len(keyword_indices)} documents containing '{selected_keyword}' in filtered group")
+                    print(f"    DEBUG:   Document indices: {sorted(keyword_indices)}")
+                    return {"type": "keyword", "indices": keyword_indices, "keyword": selected_keyword}
+                else:
+                    print(f"    DEBUG:   Keyword group '{keyword_group}' not found in filtered results, fallback to full search")
+            except Exception as e:
+                print(f"    DEBUG:   Error loading filtered results: {e}, fallback to full search")
+        else:
+            print(f"    DEBUG:   No filtered results file, fallback to full search")
+        
+        # Fallback: 如果没有过滤文件，使用BM25搜索整个数据集
+        try:
+            from rank_bm25 import BM25Okapi
+            from nltk.stem import PorterStemmer
+            from nltk.corpus import stopwords
+            
+            try:
+                stop_words = set(stopwords.words('english'))
+            except:
+                stop_words = set()
+            
+            stemmer = PorterStemmer()
+            
+            def preprocess(text):
+                tokens = str(text).lower().split()
+                tokens = [stemmer.stem(w) for w in tokens if w not in stop_words and len(w) > 2]
+                return tokens
+            
+            all_texts = [str(df.iloc[i, 1]) for i in range(len(df))]
+            tokenized_corpus = [preprocess(doc) for doc in all_texts]
+            bm25 = BM25Okapi(tokenized_corpus)
+            
+            query_tokens = preprocess(selected_keyword)
+            scores = bm25.get_scores(query_tokens)
+            
+            for i, score in enumerate(scores):
+                if score > 0:
+                    keyword_indices.append(i)
+            
+            keyword_indices = sorted(keyword_indices, key=lambda x: scores[x], reverse=True)[:100]
+            
+            print(f"    DEBUG:   BM25 search found {len(keyword_indices)} documents for keyword '{selected_keyword}'")
+            print(f"    DEBUG:   Document indices (top scores): {keyword_indices[:20]}")
+            
+        except Exception as e:
+            print(f"    DEBUG:   BM25 failed, using text matching: {e}")
+            for i, text in enumerate(df.iloc[:, 1]):
+                if selected_keyword.lower() in str(text).lower():
+                    keyword_indices.append(i)
+            print(f"    DEBUG:   Text matching found {len(keyword_indices)} documents")
         
         return {"type": "keyword", "indices": keyword_indices, "keyword": selected_keyword}
         
@@ -5162,39 +5238,75 @@ def update_training_highlights(selected_keyword, selected_group, group_order, tr
         if selected_group in group_order:
             group_keywords = group_order[selected_group]
             print(f"    DEBUG:   Group keywords: {group_keywords}")
-            print(f"    DEBUG:   Group keywords type: {type(group_keywords)}")
-            print(f"    DEBUG:   Group keywords length: {len(group_keywords) if group_keywords else 0}")
             
             group_indices = []
-            for i, text in enumerate(df.iloc[:, 1]):
-                text_lower = str(text).lower()
-                
-
-                if i == 56 and selected_group == "Group 1":  
-                    print(f"    DEBUG:     DOCUMENT 57 ANALYSIS FOR GROUP 1:")
-                    print(f"    DEBUG:   Document index: {i+1} (1-indexed)")
-                    print(f"    DEBUG:   Text preview: {str(text)[:300]}...")
-                    print(f"    DEBUG:   Text length: {len(str(text))}")
-                    print(f"    DEBUG:   Group keywords: {group_keywords}")
-                    for kw in group_keywords:
-                        contains_kw = kw.lower() in text_lower
-                        print(f"    DEBUG:   Contains '{kw}': {contains_kw}")
-                        if contains_kw:
-
-                            pos = text_lower.find(kw.lower())
-                            context = text_lower[max(0, pos-50):pos+len(kw)+50]
-                            print(f"    DEBUG:     Context: ...{context}...")
-                    print(f"    DEBUG:   Overall match: {any(keyword.lower() in text_lower for keyword in group_keywords)}")
-                
-                if any(keyword.lower() in text_lower for keyword in group_keywords):
-                        group_indices.append(i)
             
-            print(f"    DEBUG:   Found {len(group_indices)} documents for group '{selected_group}'")
-            print(f"    DEBUG:   Document indices: {group_indices}")
+            filtered_path = FILE_PATHS["filtered_group_assignment"]
+            if os.path.exists(filtered_path):
+                try:
+                    print(f"    DEBUG:   Training mode detected - loading filtered results")
+                    with open(filtered_path, "r", encoding="utf-8") as f:
+                        filtered_dict = json.load(f)
+                    
+                    if selected_group in filtered_dict:
+                        group_indices = filtered_dict[selected_group]
+                        print(f"    DEBUG:   Using filtered documents: {len(group_indices)} documents")
+                        print(f"    DEBUG:   Document indices: {group_indices[:20]}")
+                        return {"type": "group", "indices": group_indices, "group": selected_group}
+                    else:
+                        print(f"    DEBUG:   Group '{selected_group}' not in filtered results")
+                except Exception as e:
+                    print(f"    DEBUG:   Failed to load filtered results: {e}")
+            
+            print(f"    DEBUG:   No filtered results - using BM25 search")
+            
+            try:
+                from rank_bm25 import BM25Okapi
+                from nltk.stem import PorterStemmer
+                from nltk.corpus import stopwords
+                
+                try:
+                    stop_words = set(stopwords.words('english'))
+                except:
+                    stop_words = set()
+                
+                stemmer = PorterStemmer()
+                
+                def preprocess(text):
+                    tokens = str(text).lower().split()
+                    tokens = [stemmer.stem(w) for w in tokens if w not in stop_words and len(w) > 2]
+                    return tokens
+                
+                all_texts = [str(df.iloc[i, 1]) for i in range(len(df))]
+                tokenized_corpus = [preprocess(doc) for doc in all_texts]
+                bm25 = BM25Okapi(tokenized_corpus)
+                
+                query_tokens = []
+                for kw in group_keywords:
+                    query_tokens.extend(preprocess(kw))
+                
+                scores = bm25.get_scores(query_tokens)
+                
+                for i, score in enumerate(scores):
+                    if score > 0:
+                        group_indices.append(i)
+                
+                group_indices = sorted(group_indices, key=lambda x: scores[x], reverse=True)[:100]
+                
+                print(f"    DEBUG:   BM25 search found {len(group_indices)} documents for group '{selected_group}'")
+                print(f"    DEBUG:   Document indices (top scores): {group_indices[:20]}")
+                
+            except Exception as e:
+                print(f"    DEBUG:   BM25 failed, using text matching: {e}")
+                for i, text in enumerate(df.iloc[:, 1]):
+                    text_lower = str(text).lower()
+                    if any(keyword.lower() in text_lower for keyword in group_keywords):
+                        group_indices.append(i)
+                print(f"    DEBUG:   Text matching found {len(group_indices)} documents")
             
             return {"type": "group", "indices": group_indices, "group": selected_group}
         else:
-            print(f"    DEBUG:           Group '{selected_group}' not found in group_order")
+            print(f"    DEBUG:   Group '{selected_group}' not found in group_order")
             return {"type": "group", "indices": [], "group": selected_group}
     
     print(f"    DEBUG:     NO SELECTION:")
@@ -5319,10 +5431,10 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
         
         if symbol == 'diamond' or 'Center' in trace_name:
             center_traces.append(trace)
-            print(f"    DEBUG:       → Keeping as center trace")
+            print(f"    DEBUG:       Keeping as center trace")
         elif main_trace is None and x_len > 10 and symbol != 'star':
             main_trace = trace
-            print(f"    DEBUG:       → Keeping as main document trace")
+            print(f"    DEBUG:       Keeping as main document trace")
     
     
     if main_trace:
@@ -5336,7 +5448,7 @@ def apply_highlights_to_training_plot(fig, keyword_group_highlights, selected_ar
     
     x_data = main_trace['x'] if isinstance(main_trace['x'], (list, tuple)) else list(main_trace['x'])
     y_data = main_trace['y'] if isinstance(main_trace['y'], (list, tuple)) else list(main_trace['y'])
-    
+        
     if keyword_group_highlights:
         highlight_x = [x_data[i] for i in keyword_group_highlights if i < len(x_data)]
         highlight_y = [y_data[i] for i in keyword_group_highlights if i < len(y_data)]
@@ -5526,7 +5638,7 @@ def render_training_groups(group_order, selected_group, display_mode, selected_k
 def select_training_group(n_clicks, display_mode):
 
     ctx = dash.callback_context
-
+    
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG: n_clicks: {n_clicks}")
     print(f"    DEBUG: display_mode: {display_mode}")
@@ -5548,7 +5660,7 @@ def select_training_group(n_clicks, display_mode):
         try:
             import json
             parsed_id = json.loads(triggered_id.split('.')[0])
-            selected_group = parsed_id["index"]            
+            selected_group = parsed_id["index"]
             return selected_group, None  
                 
         except Exception as e:
@@ -5574,7 +5686,7 @@ def select_training_group(n_clicks, display_mode):
 def select_training_keyword_from_group(n_clicks, display_mode, group_order):
 
     ctx = dash.callback_context
-
+    
     
     if not ctx.triggered:
         print(f"    DEBUG: No context triggered")
@@ -5731,35 +5843,61 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
         
 
         filtered_indices = []
+        use_filtered_mode = False
+        
         try:
             filtered_path = FILE_PATHS["filtered_group_assignment"]
+            print(f"    Checking for filtered results at: {filtered_path}")
             if os.path.exists(filtered_path):
                 with open(filtered_path, "r", encoding="utf-8") as f:
                     filtered_dict = json.load(f)
-          
+                print(f"    Loaded filtered results with groups: {list(filtered_dict.keys())}")
+                print(f"    Group sizes: {json.dumps({k: len(v) for k, v in filtered_dict.items()}, ensure_ascii=False)}")
+
                 if selected_group in filtered_dict:
                     filtered_indices = filtered_dict[selected_group]
+                    use_filtered_mode = True
                     print(f"    Using filtered documents for group '{selected_group}': {len(filtered_indices)} documents")
-                else:
-                    print(f"    Group '{selected_group}' not found in filtered results, using all documents")
-                    filtered_indices = list(range(len(df)))
-            else:
-                print(f"    No filtered results found, using all documents")
-                filtered_indices = list(range(len(df)))
-        except Exception as e:
-            print(f"    Error loading filtered results: {e}, using all documents")
-            filtered_indices = list(range(len(df)))
-        
+                    print(f"     Will display ALL {len(filtered_indices)} filtered documents (no keyword matching)")
    
-        for idx in filtered_indices:
-            if idx < len(df):
-                row = df.iloc[idx]
-                text = str(row.iloc[1]) if len(row) > 1 else ""
-                text_lower = text.lower()
-                
-                contains_keyword = any(keyword.lower() in text_lower for keyword in search_keywords)
-                
-                if contains_keyword:
+                elif selected_keyword and group_order:
+         
+                    keyword_group = None
+                    for grp_name, keywords in group_order.items():
+                        if selected_keyword in keywords:
+                            keyword_group = grp_name
+                            print(f"     Keyword '{selected_keyword}' belongs to group: {keyword_group}")
+                            break
+                    
+                    if keyword_group and keyword_group in filtered_dict:
+             
+                        group_filtered_docs = filtered_dict[keyword_group]
+                        print(f"     Group '{keyword_group}' has {len(group_filtered_docs)} filtered documents")
+                        
+           
+                        for idx in group_filtered_docs:
+                            if idx < len(df):
+                                text = str(df.iloc[idx, 1]).lower()
+                                if selected_keyword.lower() in text:
+                                    filtered_indices.append(idx)
+                        
+                        use_filtered_mode = True
+                        print(f"    Found {len(filtered_indices)} documents containing '{selected_keyword}' in filtered group")
+                        print(f"    Document indices: {sorted(filtered_indices)}")
+                    else:
+                        print(f"    Keyword group '{keyword_group}' not found in filtered results, fallback to BM25")
+                else:
+                    print(f"    Selected item not in filtered results, fallback to BM25")
+            else:
+                print(f"    No filtered results file, fallback to BM25")
+        except Exception as e:
+            print(f"    Error loading filtered results: {e}, fallback to BM25")
+        
+        if use_filtered_mode:
+            for idx in filtered_indices:
+                if idx < len(df):
+                    row = df.iloc[idx]
+                    text = str(row.iloc[1]) if len(row) > 1 else ""
                     file_keywords = extract_top_keywords(text, 5)
                     matching_articles.append({
                         'file_number': idx + 1,
@@ -5767,6 +5905,54 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
                         'text': text,
                         'keywords': file_keywords
                     })
+        else:
+            print(f"    Using BM25 search for training articles")
+            try:
+                from rank_bm25 import BM25Okapi
+                from nltk.stem import PorterStemmer
+                from nltk.corpus import stopwords
+                
+                try:
+                    stop_words = set(stopwords.words('english'))
+                except:
+                    stop_words = set()
+                
+                stemmer = PorterStemmer()
+                
+                def preprocess(text):
+                    tokens = str(text).lower().split()
+                    tokens = [stemmer.stem(w) for w in tokens if w not in stop_words and len(w) > 2]
+                    return tokens
+                
+                all_texts = [str(df.iloc[i, 1]) for i in range(len(df))]
+                tokenized_corpus = [preprocess(doc) for doc in all_texts]
+                bm25 = BM25Okapi(tokenized_corpus)
+                
+                query_tokens = []
+                for kw in search_keywords:
+                    query_tokens.extend(preprocess(kw))
+                
+                scores = bm25.get_scores(query_tokens)
+                
+                for idx in range(len(df)):
+                    if scores[idx] > 0:
+                        text = str(df.iloc[idx, 1])
+                        file_keywords = extract_top_keywords(text, 5)
+                        matching_articles.append({
+                            'file_number': idx + 1,
+                            'file_index': idx,
+                            'text': text,
+                            'keywords': file_keywords,
+                            'bm25_score': float(scores[idx])
+                        })
+                
+                matching_articles = sorted(matching_articles, key=lambda x: x.get('bm25_score', 0), reverse=True)[:100]
+                print(f"    BM25 found {len(matching_articles)} documents")
+                
+            except Exception as e:
+                print(f"    BM25 failed: {e}")
+                import traceback
+                traceback.print_exc()
         
         if not matching_articles:
             result = html.P(f"No training articles found for the selected search criteria")
@@ -5848,7 +6034,7 @@ def display_training_recommended_articles(selected_keyword, selected_group, disp
 def display_training_article_content(article_clicks, display_mode):
 
     ctx = dash.callback_context
-
+    
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG:     INPUT PARAMETERS:")
     print(f"    DEBUG:   display_mode: {display_mode}")
@@ -5893,7 +6079,7 @@ def display_training_article_content(article_clicks, display_mode):
             ])
             
             print(f"    DEBUG:      SUCCESS: Training article content loaded for article {article_index}")
-
+            
             
             return content, article_index
             
@@ -5922,7 +6108,7 @@ def display_training_article_content(article_clicks, display_mode):
 def display_article_content_smart(article_clicks, display_mode, current_keyword, current_group, group_order):
 
     ctx = dash.callback_context
-
+    
     print(f"    DEBUG: Function called at: {__import__('datetime').datetime.now()}")
     print(f"    DEBUG:     INPUT PARAMETERS:")
     print(f"    DEBUG:   display_mode: {display_mode}")
@@ -5971,7 +6157,7 @@ def display_article_content_smart(article_clicks, display_mode, current_keyword,
             ])
             
             print(f"    DEBUG:      SUCCESS: Article content loaded for article {article_index}")
-
+            
             
             return content, article_index
             
@@ -6126,7 +6312,9 @@ def render_finetune_groups(group_order, selected_group, selected_keyword):
 def select_finetune_group(n_clicks, display_mode):
     ctx = dash.callback_context
     
+    print(f"\n{'='*80}")
     print(f"   DEBUG: select_finetune_group called")
+    print(f"{'='*80}")
     print(f"   display_mode: {display_mode}")
     print(f"   n_clicks: {n_clicks}")
     print(f"   ctx.triggered: {ctx.triggered}")
@@ -6156,7 +6344,49 @@ def select_finetune_group(n_clicks, display_mode):
             try:
                 info = json.loads(trig.split('.')[0])
                 group_name = info.get("index")
-                print(f"        Finetune group header click: {group_name}")
+                print(f"   Finetune group header click: {group_name}")
+                
+                try:
+                    user_finetuned_path = FILE_PATHS["user_finetuned_list"]
+                    filtered_path = FILE_PATHS["filtered_group_assignment"]
+                    bm25_path = FILE_PATHS["bm25_search_results"]
+                    
+                    loaded_from = None
+                    matched_dict = None
+                    
+                    if os.path.exists(user_finetuned_path):
+                        with open(user_finetuned_path, "r", encoding="utf-8") as f:
+                            matched_dict = json.load(f)
+                        loaded_from = "user_finetuned_list.json"
+                    elif os.path.exists(filtered_path):
+                        with open(filtered_path, "r", encoding="utf-8") as f:
+                            matched_dict = json.load(f)
+                        loaded_from = "filtered_group_assignment.json"
+                    elif os.path.exists(bm25_path):
+                        with open(bm25_path, "r", encoding="utf-8") as f:
+                            matched_dict = json.load(f)
+                        loaded_from = "bm25_search_results.json"
+                    
+                    if matched_dict:
+                        print(f"   Data source: {loaded_from}")
+                        if group_name in matched_dict:
+                            doc_count = len(matched_dict[group_name])
+                            print(f"   Group '{group_name}': {doc_count} documents")
+                            if doc_count <= 20:
+                                print(f"   Document indices: {sorted(matched_dict[group_name])}")
+                        else:
+                            print(f"   Group '{group_name}' not found in file")
+                        
+                        print(f"   All groups:")
+                        total = 0
+                        for grp, indices in matched_dict.items():
+                            count = len(indices) if isinstance(indices, list) else 0
+                            total += count
+                            print(f"      {grp}: {count} documents")
+                        print(f"      Total: {total} documents")
+                except Exception as e:
+                    print(f"   Error reading file: {e}")
+                
                 print(f"   [CLEAN] Clearing keyword selection and selected document")
                 return group_name, None, None  
             except Exception as e:
@@ -6180,7 +6410,9 @@ def select_finetune_keyword_from_group(n_clicks, display_mode):
 
     ctx = dash.callback_context
     
+    print(f"\n{'='*80}")
     print(f"   DEBUG: select_finetune_keyword_from_group called")
+    print(f"{'='*80}")
     print(f"   display_mode: {display_mode}")
     print(f"   n_clicks: {n_clicks}")
     print(f"   ctx.triggered: {ctx.triggered}")
@@ -6209,9 +6441,57 @@ def select_finetune_keyword_from_group(n_clicks, display_mode):
             group = btn_info.get("group")  
             
             if triggered_n_clicks and (isinstance(triggered_n_clicks, (int, float)) and triggered_n_clicks > 0):
-                print(f"    Finetune keyword click: {keyword} from group: {group}")
+                print(f"   Finetune keyword click: '{keyword}' from group: '{group}'")
+                
+                try:
+                    user_finetuned_path = FILE_PATHS["user_finetuned_list"]
+                    filtered_path = FILE_PATHS["filtered_group_assignment"]
+                    bm25_path = FILE_PATHS["bm25_search_results"]
+                    
+                    loaded_from = None
+                    matched_dict = None
+                    
+                    if os.path.exists(user_finetuned_path):
+                        with open(user_finetuned_path, "r", encoding="utf-8") as f:
+                            matched_dict = json.load(f)
+                        loaded_from = "user_finetuned_list.json"
+                    elif os.path.exists(filtered_path):
+                        with open(filtered_path, "r", encoding="utf-8") as f:
+                            matched_dict = json.load(f)
+                        loaded_from = "filtered_group_assignment.json"
+                    elif os.path.exists(bm25_path):
+                        with open(bm25_path, "r", encoding="utf-8") as f:
+                            matched_dict = json.load(f)
+                        loaded_from = "bm25_search_results.json"
+                    
+                    if matched_dict:
+                        print(f"   Data source: {loaded_from}")
+                        if group in matched_dict:
+                            group_docs = matched_dict[group]
+                            print(f"   Group '{group}': {len(group_docs)} documents")
+                            
+                            try:
+                                df_local = pd.read_csv(FILE_PATHS["csv_path"])
+                                keyword_doc_count = 0
+                                keyword_doc_indices = []
+                                for idx in group_docs:
+                                    if idx < len(df_local):
+                                        text = str(df_local.iloc[idx, 1]).lower()
+                                        if keyword.lower() in text:
+                                            keyword_doc_count += 1
+                                            keyword_doc_indices.append(idx)
+                                
+                                print(f"   Keyword '{keyword}' in group: {keyword_doc_count} documents")
+                                if keyword_doc_count <= 20:
+                                    print(f"   Document indices: {sorted(keyword_doc_indices)}")
+                            except Exception as e:
+                                print(f"   Error counting keyword documents: {e}")
+                        else:
+                            print(f"   Group '{group}' not found in file")
+                except Exception as e:
+                    print(f"   Error reading file: {e}")
+                
                 print(f"   Returning: keyword='{keyword}', group='{group}'")
-
                 return keyword, group, None  
         except Exception as e:
             print(f"        Error parsing finetune keyword click: {e}")
@@ -6335,7 +6615,7 @@ def display_finetune_articles(selected_group, selected_keyword, core_indices, gr
         
     except Exception as e:
         print(f"        Error displaying finetune articles: {e}")
-        import traceback
+           
         traceback.print_exc()
         return html.P(f"Error: {str(e)}", style={"color": "#e74c3c", "textAlign": "center"})
 
@@ -6362,7 +6642,7 @@ def handle_finetune_article_click(n_clicks, display_mode, current_selected):
         raise PreventUpdate
     
     try:
-        import json
+      
         card_info = json.loads(triggered_id.split('.')[0])
         article_idx = card_info.get("index")
         
@@ -6372,7 +6652,7 @@ def handle_finetune_article_click(n_clicks, display_mode, current_selected):
         
     except Exception as e:
         print(f"        Error handling finetune article click: {e}")
-        import traceback
+           
         traceback.print_exc()
         return current_selected
 
@@ -6428,7 +6708,7 @@ def update_finetune_text_preview(selected_idx, display_mode):
         
     except Exception as e:
         print(f"        Error updating finetune text preview: {e}")
-        import traceback
+           
         traceback.print_exc()
         return html.P(f"Error: {str(e)}", style={"color": "#e74c3c"})
 
@@ -6615,6 +6895,11 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
             print("      No group assignment data found")
             return core, gray, operation_buttons
         
+        print(f"\n{'='*80}")
+        print(f"LOADING GROUP ASSIGNMENTS FOR FINETUNE")
+        print(f"{'='*80}")
+        print(f"   File path: {matched_dict_path}")
+        
         with open(matched_dict_path, "r", encoding="utf-8") as f:
             matched_dict = json.load(f)
         
@@ -6623,16 +6908,59 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
                 if isinstance(matched_dict[grp_name][0], str):
                     matched_dict[grp_name] = [int(x) for x in matched_dict[grp_name]]
         
-        print(f"      Finetune Mode {os.path.basename(matched_dict_path)}:")
-        if "filtered" in matched_dict_path:
-            print(f"   gap ")
-        else:
-            print(f"   BM25 ")
-        print(f"   Gap ")
+        print(f"   Loaded from file:")
         for grp_name, indices in matched_dict.items():
-            print(f"  {grp_name}: {len(indices)} ")
-            if len(indices) <= 10:  
-                print(f"    {sorted(indices)}")
+            print(f"      {grp_name}: {len(indices)} documents")
+            if len(indices) <= 15:
+                print(f"         索引: {sorted(indices)}")
+        print(f"{'='*80}\n")
+        
+
+        if temp_assignments:
+            print(f"\n{'='*80}")
+            print(f"APPLYING USER ADJUSTMENTS (temp_assignments)")
+            print(f"{'='*80}")
+            print(f"   Total adjustments: {len(temp_assignments)}")
+            for idx_str, target_group in temp_assignments.items():
+                if not idx_str.endswith("_original"):
+                    print(f"      {idx_str} -> {target_group}")
+            print(f"{'='*80}\n")
+            
+            for idx_str, target_group in temp_assignments.items():
+                if idx_str.endswith("_original"):
+                    continue
+                
+                try:
+                    idx = int(idx_str)
+                    
+                    removed_from = None
+                    for grp_name in matched_dict.keys():
+                        if idx in matched_dict[grp_name]:
+                            matched_dict[grp_name].remove(idx)
+                            removed_from = grp_name
+                            print(f"      Removed doc {idx} from {grp_name}")
+                            break
+                    
+                    if target_group in matched_dict:
+                        matched_dict[target_group].append(idx)
+                        print(f"      Added doc {idx} to {target_group}")
+                    elif target_group not in matched_dict:
+                        matched_dict[target_group] = [idx]
+                        print(f"      Created new group {target_group} with doc {idx}")
+                        
+                except Exception as e:
+                    print(f"      Error applying adjustment for {idx_str}: {e}")
+            
+            print(f"\n{'='*80}")
+            print(f"ADJUSTMENTS APPLIED - UPDATED DISTRIBUTION:")
+            print(f"{'='*80}")
+            for grp_name, indices in matched_dict.items():
+                print(f"   {grp_name}: {len(indices)} documents")
+                if len(indices) <= 15:
+                    print(f"      Indices: {sorted(indices)}")
+            print(f"{'='*80}\n")
+        else:
+            print(f"   No temp_assignments to apply")
         
         if selected_group == "Exclude":
             exclude_has_keywords = False
@@ -6766,7 +7094,7 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
                 state_shape = state_dict[key].shape
                 model_shape = model_state_dict[key].shape
                 match = state_shape == model_shape
-                print(f"    {key}: state_dict{state_shape} vs model{model_shape} -> {'✓' if match else '✗'}")
+                print(f"    {key}: state_dict{state_shape} vs model{model_shape} -> {'OK' if match else 'MISMATCH'}")
             elif key in state_dict:
                 print(f"    {key}: in state_dict only (shape: {state_dict[key].shape})")
             elif key in model_state_dict:
@@ -7089,7 +7417,7 @@ def compute_finetune_highlights(selected_group, selected_keyword, selected_artic
         
     except Exception as e:
         print(f"        Error in gap-based filtering: {e}")
-        import traceback
+           
         traceback.print_exc()
 
         if "CUDA" in str(e) or "device-side assert" in str(e):
@@ -7140,7 +7468,7 @@ def render_finetune_plot(display_mode, core_indices, gray_indices, selected_arti
                 print(f"   Total unique documents: {len(idx_to_coord)}")
     except Exception as e:
         print(f"        Error extracting coordinates: {e}")
-        import traceback
+           
         traceback.print_exc()
 
 
@@ -7450,7 +7778,7 @@ def finetune_move_document(n_clicks_list, selected_idx, assignments, group_order
         return new_map, None
     except Exception as e:
         print(f"        Error moving document: {e}")
-        import traceback
+           
         traceback.print_exc()
         raise PreventUpdate
 
@@ -7580,10 +7908,10 @@ def update_adjustment_history(temp_assignments):
             pass
 
         if original_group != new_group and original_group != "Unknown":
-            change_text = f"Doc {idx+1}: {display_original_group} → {display_new_group}"
+            change_text = f"Doc {idx+1}: {display_original_group} -> {display_new_group}"
             change_color = "#27ae60"    
         elif original_group == "Unknown":
-            change_text = f"Doc {idx+1}: → {new_group} (moved to {new_group})"
+            change_text = f"Doc {idx+1}: -> {new_group} (moved to {new_group})"
             change_color = "#e67e22" 
         else:
             change_text = f"Doc {idx+1}: {original_group} (no change)"
@@ -7597,7 +7925,7 @@ def update_adjustment_history(temp_assignments):
                         "color": "#2c3e50",
                         "marginRight": "10px"
                     }),
-                    html.Span("→", style={"margin": "0 5px", "color": "#95a5a6"}),
+                    html.Span("->", style={"margin": "0 5px", "color": "#95a5a6"}),
                 ], style={"marginBottom": "5px"}),
                 html.Div([
                     html.Span(original_group, style={
@@ -7608,7 +7936,7 @@ def update_adjustment_history(temp_assignments):
                         "fontSize": "0.85rem",
                         "marginRight": "5px"
                     }),
-                    html.Span("→", style={"margin": "0 5px", "color": "#95a5a6"}),
+                    html.Span("->", style={"margin": "0 5px", "color": "#95a5a6"}),
                     html.Span(new_group, style={
                         "backgroundColor": color_to,
                         "color": "white",
@@ -7672,6 +8000,15 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
     if not n_clicks:
         raise PreventUpdate
     
+    print(f"\n{'='*80}")
+    print(f"FINETUNE TRAINING STARTED")
+    print(f"{'='*80}")
+    print(f"INPUT group_order:")
+    for grp_name, kw_list in (group_order or {}).items():
+        print(f"   {grp_name}: {kw_list}")
+    print(f"INPUT temp_assignments: {temp_assignments}")
+    print(f"INPUT current_selected_group: {current_selected_group}")
+    print(f"{'='*80}\n")
  
     global training_in_progress
     if training_in_progress:
@@ -7738,9 +8075,9 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         print(f"User has defined Exclude group: {user_has_exclude}")
         if user_has_exclude:
             print(f"  Exclude group keywords: {group_order['Exclude']}")
-            print("  → Using Case 1: Center Pull only")
+            print("  Using Case 1: Center Pull only")
         else:
-            print("  → Using Case 2: Center Pull + Exclude Push")
+            print("  Using Case 2: Center Pull + Exclude Push")
    
         print(f"Applying {len(temp_assignments or {})} user adjustments...")
         print(f"   DEBUG: Original group_order: {group_order}")
@@ -7753,29 +8090,39 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
 
 
         matched_dict_adjusted = {}
-
         
-
-        for grp_name in group_order.keys():
-            if grp_name == "Exclude" and user_has_exclude:
-                matched_dict_adjusted["Exclude"] = []
+        try:
+            user_finetuned_path = FILE_PATHS["user_finetuned_list"]
+            filtered_path = FILE_PATHS["filtered_group_assignment"]
+            
+            source_path = None
+            if os.path.exists(user_finetuned_path):
+                source_path = user_finetuned_path
+                print(f"   Loading from user_finetuned_list.json")
+            elif os.path.exists(filtered_path):
+                source_path = filtered_path
+                print(f"   Loading from filtered_group_assignment.json")
             else:
-                matched_dict_adjusted[grp_name] = []
+                print(f"   No filtered results found! Cannot run finetune without training first.")
+                raise Exception("No filtered results found. Please run training first.")
+            
+            with open(source_path, "r", encoding="utf-8") as f:
+                matched_dict_adjusted = json.load(f)
+            
+            print(f"   Loaded base group assignments:")
+            for grp_name, indices in matched_dict_adjusted.items():
+                print(f"      {grp_name}: {len(indices)} documents")
+            
+            for grp_name in group_order.keys():
+                if grp_name not in matched_dict_adjusted:
+                    matched_dict_adjusted[grp_name] = []
+                    print(f"   Added missing group: {grp_name}")
+                    
+        except Exception as e:
+            print(f"   Failed to load filtered results: {e}")
+            raise
         
-        for i in range(len(df)):
-            text_lower = str(df.iloc[i, 1]).lower()
-            assigned = False
-            for grp_name, kw_list in adjusted_group_order.items():
-                match_count = sum(1 for kw in kw_list if kw.lower() in text_lower)
-                if match_count >= 1:
-                    matched_dict_adjusted[grp_name].append(i)
-                    if i < 5:  
-                        print(f"   DEBUG: Doc {i} assigned to {grp_name} (keywords: {kw_list})")
-                    assigned = True
-                    break
 
-        
- 
         if temp_assignments:
             for idx_str, target_group in temp_assignments.items():
                 if idx_str.endswith("_original"):
@@ -7792,10 +8139,10 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                 elif target_group in matched_dict_adjusted:
                     matched_dict_adjusted[target_group].append(idx)
         
-        print(f"Adjusted group distribution:")
+
         for grp_name, indices in matched_dict_adjusted.items():
-            print(f"  {grp_name}: {len(indices)} samples")
-        
+            print(f"   {grp_name}: {len(indices)} samples")
+
 
         model_path = FILE_PATHS["triplet_trained_encoder"]
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -8101,18 +8448,35 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         print(f"        Saved finetuned model to {model_path}")
         
   
+
+ 
+
+        ordered_matched_dict = {}
+        for grp_name in group_order.keys():
+            if grp_name in matched_dict_adjusted:
+                ordered_matched_dict[grp_name] = matched_dict_adjusted[grp_name]
+
+        for grp_name, indices in matched_dict_adjusted.items():
+            if grp_name not in ordered_matched_dict:
+                ordered_matched_dict[grp_name] = indices
+                
+        
+       
+        for grp_name, indices in ordered_matched_dict.items():
+            print(f"   {grp_name}: {len(indices)} samples")
+
+        print(f"{'='*80}\n")
+        
         user_finetuned_path = FILE_PATHS["user_finetuned_list"]
         with open(user_finetuned_path, "w", encoding="utf-8") as f:
-            json.dump(matched_dict_adjusted, f, ensure_ascii=False, indent=2)
+            json.dump(ordered_matched_dict, f, ensure_ascii=False, indent=2)
         print(f"        Saved user finetuned results to {user_finetuned_path}")
 
 
         filtered_path = FILE_PATHS["filtered_group_assignment"]
         with open(filtered_path, "w", encoding="utf-8") as f:
-            json.dump(matched_dict_adjusted, f, ensure_ascii=False, indent=2)
+            json.dump(ordered_matched_dict, f, ensure_ascii=False, indent=2)
 
-        for grp_name, indices in matched_dict_adjusted.items():
-            print(f"  {grp_name}: {len(indices)} samples")
 
         encoder.eval()
         with torch.no_grad():
@@ -8129,8 +8493,9 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         tsne = TSNE(n_components=2, random_state=42, perplexity=30)
         projected_2d_after = tsne.fit_transform(Z_after)
      
+
         group_centers = {}
-        for grp_name, indices in matched_dict_adjusted.items():
+        for grp_name, indices in ordered_matched_dict.items():
             if indices and len(indices) > 0:
                 valid_indices = [i for i in indices if i < len(projected_2d_after)]
                 if valid_indices:
@@ -8214,7 +8579,7 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
         updated_figures = {"before": fig_before_dict, "after": fig_after_dict}
         print(f"     2D visualization generated")
 
-        if not current_selected_group or current_selected_group not in matched_dict_adjusted:
+        if not current_selected_group or current_selected_group not in ordered_matched_dict:
             print(f"    No selected group, trying to auto-select from adjustments")
 
             if temp_assignments:
@@ -8225,8 +8590,8 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                     current_selected_group = most_common[0][0]
                     print(f"   Auto-selected group: {current_selected_group} (most adjusted)")
 
-            if not current_selected_group or current_selected_group not in matched_dict_adjusted:
-                for grp in matched_dict_adjusted.keys():
+            if not current_selected_group or current_selected_group not in ordered_matched_dict:
+                for grp in ordered_matched_dict.keys():
                     if grp != "Other":
                         current_selected_group = grp
                         print(f"   Auto-selected group: {current_selected_group} (first non-Other)")
@@ -8427,7 +8792,6 @@ if __name__ == "__main__":
         )
     except OSError as e:
 
-        
         try:
             app.run(
                 debug=True, 
@@ -8437,7 +8801,7 @@ if __name__ == "__main__":
                 threaded=True
             )
         except OSError as e2:
-
+            
 
             
             def find_free_port():
@@ -8460,4 +8824,3 @@ if __name__ == "__main__":
                 )
             except Exception as e3:
                 print(" Failed")
-
