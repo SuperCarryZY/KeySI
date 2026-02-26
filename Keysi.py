@@ -8253,14 +8253,46 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
             return batches
 
         user_selected_indices = set()
+        moved_to_exclude = set()
         if temp_assignments:
-            for idx_str in temp_assignments.keys():
+            for idx_str, target_group in temp_assignments.items():
                 if idx_str.endswith("_original"):
                     continue
                 try:
-                    user_selected_indices.add(int(idx_str))
+                    idx = int(idx_str)
+                    user_selected_indices.add(idx)
+                    if target_group == "Exclude" and user_has_exclude:
+                        moved_to_exclude.add(idx)
                 except (ValueError, TypeError):
                     continue
+
+        pos_groups = {g: list(idxs) for g, idxs in matched_dict_adjusted.items() if g != "Exclude" and len(idxs) > 0}
+
+        def gen_triplets(n_samples=2000):
+            out = []
+            user_first = []
+            for g, idxs in pos_groups.items():
+                neg_for_g = [i for grp, g_idxs in matched_dict_adjusted.items() if grp != g for i in g_idxs]
+                if not neg_for_g:
+                    continue
+                for anchor in idxs:
+                    pos_cand = [i for i in idxs if i != anchor]
+                    if not pos_cand:
+                        continue
+                    pos = random.choice(pos_cand)
+                    neg_cand = [i for i in neg_for_g if i != anchor and i != pos]
+                    if not neg_cand:
+                        continue
+                    neg = random.choice(neg_cand)
+                    w = 15.0 if anchor in user_selected_indices else 1.0
+                    tup = (anchor, pos, neg, w)
+                    if anchor in user_selected_indices or neg in moved_to_exclude:
+                        user_first.append(tup)
+                    else:
+                        out.append(tup)
+            random.shuffle(out)
+            out = user_first + out
+            return out[:n_samples]
 
         def recompute_group_prototypes():
             try:
@@ -8281,119 +8313,105 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
             total_loss = 0
             n_batches = 0
             stage = "triplet" if epoch < 5 else "center"
-            if epoch == 5:
-                new_protos = recompute_group_prototypes()
-                if new_protos:
-                    group_prototypes = new_protos
-        
-            train_samples = []
-            
-            for grp_name, indices in matched_dict_adjusted.items():
-                if grp_name == "Exclude":
+            new_protos = recompute_group_prototypes()
+            if new_protos:
+                group_prototypes = new_protos
+
+            if stage == "triplet":
+                triplets_list = gen_triplets()
+                if not triplets_list:
                     continue
-                for idx in indices:
-                    train_samples.append((idx, grp_name))
-            
-            
-            if len(train_samples) == 0:
-                continue
-            
-            balanced_batches = build_balanced_batches(train_samples, batch_size)
-            for i, batch_indices in enumerate(balanced_batches):
-                batch_texts = [texts[idx] for idx in batch_indices]
-                batch_groups = [idx_to_group.get(idx) for idx in batch_indices]
-                
-                try:
-                    toks = tokenizer(batch_texts, return_tensors='pt', padding=True, truncation=True, max_length=256)
-                    
-                    if 'input_ids' in toks:
-                        input_ids = toks['input_ids']
-                        min_id = input_ids.min().item()
-                        max_id = input_ids.max().item()
-                        
-                        if max_id >= model_vocab_size:
-                            toks['input_ids'] = torch.clamp(input_ids, 0, model_vocab_size - 1)
-                        else:
-                            pass
-
-                        toks['input_ids'] = torch.clamp(input_ids, 0, model_vocab_size - 1)
-                    
-                    toks = {k: v.to(device) for k, v in toks.items()}
-                    
-                    if 'input_ids' in toks:
-                        final_min = toks['input_ids'].min().item()
-                        final_max = toks['input_ids'].max().item()
-                        if final_max >= model_vocab_size:
-                            pass
-
-                    embeds = encoder.encode_tokens(toks)
-                except Exception as cuda_error:
-                    traceback.print_exc()
-
-                    if torch.cuda.is_available():
-                        torch.cuda.empty_cache()
-                    encoder = SentenceEncoder(device="cpu")
-                    encoder = encoder.to("cpu")
-                    _assert_locked_checkpoint(state_dict)
-                    encoder.load_state_dict(state_dict, strict=True)
-                    encoder.train()
-                    device = torch.device("cpu")
-                    cpu_model_vocab_size = None
-                    if hasattr(encoder, 'bert') and hasattr(encoder.bert, 'config'):
-                        cpu_model_vocab_size = encoder.bert.config.vocab_size
-                    if hasattr(encoder, 'bert') and hasattr(encoder.bert, 'embeddings') and hasattr(encoder.bert.embeddings, 'word_embeddings'):
-                        cpu_emb_vocab_size = encoder.bert.embeddings.word_embeddings.weight.shape[0]
-                        if cpu_model_vocab_size is None:
-                            cpu_model_vocab_size = cpu_emb_vocab_size
-                        else:
-                            cpu_model_vocab_size = cpu_emb_vocab_size
-                    if cpu_model_vocab_size is None:
-                        cpu_model_vocab_size = tokenizer.vocab_size
-                    
-                    toks = tokenizer(batch_texts, return_tensors='pt', padding=True, truncation=True, max_length=256)
-                    if 'input_ids' in toks:
-                        input_ids = toks['input_ids']
-                        min_id = input_ids.min().item()
-                        max_id = input_ids.max().item()
-                        if max_id >= cpu_model_vocab_size:
-                            toks['input_ids'] = torch.clamp(input_ids, 0, cpu_model_vocab_size - 1)
-                        else:
-                            toks['input_ids'] = torch.clamp(input_ids, 0, cpu_model_vocab_size - 1)
-                    toks = {k: v.to("cpu") for k, v in toks.items()}
-                    embeds = encoder.encode_tokens(toks)
-                
-                if stage == "triplet":
-                    triplet_loss = torch.tensor(0.0, device=device)
-                    triplet_count = 0
-                    if user_selected_indices and len(batch_groups) >= 2:
-                        margin = 0.5
-                        for j, (idx, grp) in enumerate(zip(batch_indices, batch_groups)):
-                            if idx not in user_selected_indices:
-                                continue
-                            if not grp:
-                                continue
-                            pos_positions = [k for k, g in enumerate(batch_groups) if g == grp and k != j]
-                            neg_positions = [k for k, g in enumerate(batch_groups) if g != grp and g is not None]
-                            if not pos_positions or not neg_positions:
-                                continue
-                            anchor = embeds[j]
-                            pos_embeds = embeds[pos_positions]
-                            neg_embeds = embeds[neg_positions]
-                            d_ap = torch.norm(anchor - pos_embeds, p=2, dim=1)
-                            d_an = torch.norm(anchor - neg_embeds, p=2, dim=1)
-                            d_ap_hard = d_ap[torch.argmax(d_ap)]
-                            semi_hard_mask = (d_an > d_ap_hard) & (d_an < d_ap_hard + margin)
-                            if semi_hard_mask.any():
-                                d_an_sel = d_an[semi_hard_mask].min()
-                            else:
-                                d_an_sel = d_an.min()
-                            triplet_loss = triplet_loss + torch.relu(d_ap_hard - d_an_sel + margin)
-                            triplet_count += 1
-                    if triplet_count == 0:
+                random.shuffle(triplets_list)
+                for chunk_start in range(0, len(triplets_list), batch_size):
+                    batch_triplets = triplets_list[chunk_start:chunk_start + batch_size]
+                    anchor_idxs = [t[0] for t in batch_triplets]
+                    pos_idxs = [t[1] for t in batch_triplets]
+                    neg_idxs = [t[2] for t in batch_triplets]
+                    weights = [t[3] for t in batch_triplets]
+                    batch_texts_a = [texts[i] for i in anchor_idxs]
+                    batch_texts_p = [texts[i] for i in pos_idxs]
+                    batch_texts_n = [texts[i] for i in neg_idxs]
+                    try:
+                        toks_a = tokenizer(batch_texts_a, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        toks_p = tokenizer(batch_texts_p, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        toks_n = tokenizer(batch_texts_n, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        if 'input_ids' in toks_a:
+                            toks_a['input_ids'] = torch.clamp(toks_a['input_ids'], 0, model_vocab_size - 1)
+                        if 'input_ids' in toks_p:
+                            toks_p['input_ids'] = torch.clamp(toks_p['input_ids'], 0, model_vocab_size - 1)
+                        if 'input_ids' in toks_n:
+                            toks_n['input_ids'] = torch.clamp(toks_n['input_ids'], 0, model_vocab_size - 1)
+                        toks_a = {k: v.to(device) for k, v in toks_a.items()}
+                        toks_p = {k: v.to(device) for k, v in toks_p.items()}
+                        toks_n = {k: v.to(device) for k, v in toks_n.items()}
+                        za = encoder.encode_tokens(toks_a)
+                        zp = encoder.encode_tokens(toks_p)
+                        zn = encoder.encode_tokens(toks_n)
+                    except Exception as cuda_error:
+                        traceback.print_exc()
+                        if torch.cuda.is_available():
+                            torch.cuda.empty_cache()
+                        encoder = SentenceEncoder(device="cpu")
+                        encoder.load_state_dict(state_dict, strict=True)
+                        encoder.train()
+                        device = torch.device("cpu")
+                        toks_a = tokenizer(batch_texts_a, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        toks_p = tokenizer(batch_texts_p, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        toks_n = tokenizer(batch_texts_n, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        toks_a = {k: v.to(device) for k, v in toks_a.items()}
+                        toks_p = {k: v.to(device) for k, v in toks_p.items()}
+                        toks_n = {k: v.to(device) for k, v in toks_n.items()}
+                        za = encoder.encode_tokens(toks_a)
+                        zp = encoder.encode_tokens(toks_p)
+                        zn = encoder.encode_tokens(toks_n)
+                    margin = 0.5
+                    d_ap = torch.norm(za - zp, dim=1)
+                    d_an = torch.norm(za - zn, dim=1)
+                    losses = torch.relu(d_ap - d_an + margin)
+                    w_t = torch.tensor(weights, device=device, dtype=za.dtype)
+                    triplet_loss = (losses * w_t).sum() / w_t.sum().clamp(min=1e-8)
+                    optimizer.zero_grad()
+                    triplet_loss.backward()
+                    optimizer.step()
+                    total_loss += triplet_loss.item()
+                    n_batches += 1
+                if n_batches == 0:
+                    continue
+            else:
+                train_samples = []
+                for grp_name, indices in matched_dict_adjusted.items():
+                    if grp_name == "Exclude":
                         continue
-                    triplet_loss = triplet_loss / triplet_count
-                    total_batch_loss = triplet_loss
-                else:
+                    for idx in indices:
+                        train_samples.append((idx, grp_name))
+                if len(train_samples) == 0:
+                    continue
+                balanced_batches = build_balanced_batches(train_samples, batch_size)
+                for i, batch_indices in enumerate(balanced_batches):
+                    batch_texts = [texts[idx] for idx in batch_indices]
+                    batch_groups = [idx_to_group.get(idx) for idx in batch_indices]
+                    try:
+                        toks = tokenizer(batch_texts, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        if 'input_ids' in toks:
+                            toks['input_ids'] = torch.clamp(toks['input_ids'], 0, model_vocab_size - 1)
+                        toks = {k: v.to(device) for k, v in toks.items()}
+                        embeds = encoder.encode_tokens(toks)
+                    except Exception as cuda_error:
+                        traceback.print_exc()
+                        if torch.cuda.is_available():
+                            torch.cuda.empty_cache()
+                        encoder = SentenceEncoder(device="cpu")
+                        encoder.load_state_dict(state_dict, strict=True)
+                        encoder.train()
+                        device = torch.device("cpu")
+                        cpu_model_vocab_size = tokenizer.vocab_size
+                        if hasattr(encoder, 'bert') and hasattr(encoder.bert, 'embeddings') and hasattr(encoder.bert.embeddings, 'word_embeddings'):
+                            cpu_model_vocab_size = encoder.bert.embeddings.word_embeddings.weight.shape[0]
+                        toks = tokenizer(batch_texts, return_tensors='pt', padding=True, truncation=True, max_length=256)
+                        if 'input_ids' in toks:
+                            toks['input_ids'] = torch.clamp(toks['input_ids'], 0, cpu_model_vocab_size - 1)
+                        toks = {k: v.to(device) for k, v in toks.items()}
+                        embeds = encoder.encode_tokens(toks)
                     center_loss = torch.tensor(0.0, device=device)
                     center_count = 0
                     for j, grp in enumerate(batch_groups):
