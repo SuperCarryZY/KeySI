@@ -237,7 +237,7 @@ class SentenceEncoder(nn.Module):
     def __init__(self, device='cpu'):
         super().__init__()
 
-        self.bert = BertModel.from_pretrained(LOCKED_BERT_NAME)
+        self.bert = BertModel.from_pretrained(LOCKED_BERT_NAME, low_cpu_mem_usage=False)
         self.hidden = self.bert.config.hidden_size
         assert self.hidden == LOCKED_BERT_HIDDEN, f"Expected hidden_size={LOCKED_BERT_HIDDEN}, got {self.hidden}"
         self.proj = nn.Linear(self.hidden, LOCKED_PROJ_DIM)
@@ -2804,6 +2804,7 @@ def run_training():
                 opt.step()
                 total_loss += loss.item()
             avg_loss = total_loss / len(dl)
+            print(f"[Triplet] epoch {ep+1}/{epochs} loss={avg_loss:.4f}")
         return model
 
     def encode_corpus(model, tokenizer, texts, device, bs=None, max_len=None):
@@ -3071,6 +3072,8 @@ def run_training():
         sampler = BalancedBatchSampler(matched_dict, list(global_prototypes.keys()), 
                                      m_per_group=m_per_group, batch_size=bs)
         
+        print(f"Balanced Batch: {list(global_prototypes.keys())}")
+        print(f"Balanced Batch: {m_per_group}")
         
         encoder.train()
         for ep in range(epochs):
@@ -3125,7 +3128,9 @@ def run_training():
             if steps > 0:
                 avg_center = total_center_loss / steps
                 avg_total = total_loss / steps
-            
+                print(f"[Proto] epoch {ep+1}/{epochs} center_loss={avg_center:.4f} total={avg_total:.4f}")
+            print(f"  Epoch {ep+1}...")
+
             with torch.no_grad():
                 encoder.eval()
                 Z_all = []
@@ -3152,6 +3157,8 @@ def run_training():
                 
                 encoder.train() 
         
+        for group_name, indices in matched_dict.items():
+            print(f"  {group_name}: {len(indices)} docs")
         return encoder
 
     def evaluate_clustering_quality(Z, true_labels, matched_dict, group_names):
@@ -5079,6 +5086,26 @@ def handle_train_button(n_clicks, group_order):
                 }
             }
             return "Train (Failed)", normal_style, False, {"display": "block"}, "keywords", {"before": error_fig, "after": error_fig}, ""
+        
+        if fig_before is None or fig_after is None:
+            error_fig = {
+                'data': [],
+                'layout': {
+                    'title': 'Training Failed',
+                    'xaxis': {'title': 'X'},
+                    'yaxis': {'title': 'Y'},
+                    'annotations': [{
+                        'text': f'Training failed.<br>{gap_warning_text or "Check console for details."}',
+                        'x': 0.5,
+                        'y': 0.5,
+                        'xref': 'paper',
+                        'yref': 'paper',
+                        'showarrow': False,
+                        'font': {'size': 16, 'color': '#f44336'}
+                    }]
+                }
+            }
+            return "Train (Failed)", normal_style, False, {"display": "block"}, "keywords", {"before": error_fig, "after": error_fig}, gap_warning_text or ""
         
         group_info_path = FILE_PATHS["training_group_info"]
         with open(group_info_path, "w", encoding="utf-8") as f:
@@ -8414,7 +8441,9 @@ def run_finetune_training(n_clicks, temp_assignments, group_order, current_train
                                 group_prototypes[grp_name] = new_prototype
             
             avg_loss = total_loss / n_batches if n_batches > 0 else 0
-            
+            if n_batches > 0:
+                print(f"[Finetune] epoch {epoch+1}/{epochs} stage={stage} loss={avg_loss:.4f}")
+
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
         
