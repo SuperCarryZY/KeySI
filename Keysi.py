@@ -321,7 +321,7 @@ if not os.getcwd().endswith("CSV") and not os.path.exists("CSV"):
     exit(1)
 
 max_d = 30
-word_count_threshold = 3
+word_count_threshold = 2
 
 
 GROUP_COLORS = {
@@ -2821,7 +2821,7 @@ def run_training():
                 Z.append(z.cpu().numpy())
         return np.vstack(Z)
 
-    def gap_based_group_filtering(Z_raw, matched_dict, label_map, alpha=None):
+    def gap_based_group_filtering(Z_raw, matched_dict, label_map, alpha=None, query_groups=None, all_texts=None):
         if alpha is None:
             alpha = get_config("gap_alpha")
         warning_groups = []
@@ -2835,7 +2835,18 @@ def run_training():
             valid_indices = [idx for idx in indices if idx < len(Z_norm)]
             if len(valid_indices) == 0:
                 continue
-            mu = np.mean(Z_norm[valid_indices], axis=0)
+            if query_groups and all_texts and group_name in query_groups:
+                keyword_protos = []
+                for kw in query_groups[group_name]:
+                    matched = [i for i in valid_indices if i < len(all_texts) and contains_keyword_word_boundary(str(all_texts[i]), kw)]
+                    if matched:
+                        keyword_protos.append(np.mean(Z_norm[matched], axis=0))
+                if keyword_protos:
+                    mu = np.mean(keyword_protos, axis=0)
+                else:
+                    mu = np.mean(Z_norm[valid_indices], axis=0)
+            else:
+                mu = np.mean(Z_norm[valid_indices], axis=0)
             if group_name == "Exclude":
                 c_ex = np.linalg.norm(mu)
                 if c_ex < tau_ex:
@@ -3302,7 +3313,7 @@ def run_training():
         except Exception as e:
             pass
 
-    clean_matched_dict_gap1, gap1_warning_groups = gap_based_group_filtering(Z_raw, matched_dict, label_map, alpha=0.7)  # stricter: fewer high-confidence core samples
+    clean_matched_dict_gap1, gap1_warning_groups = gap_based_group_filtering(Z_raw, matched_dict, label_map, alpha=0.7, query_groups=query_groups, all_texts=all_texts)
     if gap1_warning_groups:
         gap_warning_text = "Semantic gap too large for group(s) in gap1: " + ", ".join(gap1_warning_groups) + ". Original documents were kept."
     user_data["gap_filter_applied_once"] = True
@@ -3404,7 +3415,7 @@ def run_training():
             label_map2[g] = cur2
             cur2 += 1
     clean_matched_dict_gap2, gap2_warning_groups = gap_based_group_filtering(
-        Z_trained_gap2_source, matched_dict_gap2_source, label_map2, alpha=0.5  
+        Z_trained_gap2_source, matched_dict_gap2_source, label_map2, alpha=0.5, query_groups=query_groups, all_texts=all_texts
     )
     if gap2_warning_groups:
         suffix = "Semantic gap too large for group(s) in gap2: " + ", ".join(gap2_warning_groups) + ". Original documents were kept."
