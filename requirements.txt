@@ -1,0 +1,13 @@
+dash
+keybert
+matplotlib
+nltk
+numpy
+pandas
+plotly
+rank-bm25
+scikit-learn
+scipy
+sentence-transformers
+torch
+transformers

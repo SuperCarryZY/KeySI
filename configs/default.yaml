@@ -1,0 +1,37 @@
+project:
+  name: KeySI
+  random_seed: 42
+  reset_user_data_on_start: false
+
+paths:
+  data_dir: CSV
+  output_dir: KeySI_results
+  input_csv: CSV/risk_factors.csv
+
+model:
+  encoder_name: bert-base-uncased
+  hidden_size: 768
+  projection_dim: 256
+  max_length: 256
+
+training:
+  freeze_layers: 6
+  triplet_epochs: 10
+  triplet_batch_size: 16
+  triplet_margin: 1.2
+  triplet_lr: 0.00001
+  proto_epochs: 5
+  proto_batch_size: 64
+  proto_lr: 0.00001
+
+gap_filter:
+  alpha: 0.5
+  min_samples: 20
+  percentile_fallback: 20
+  floor_threshold: 0.05
+  mix_ratio: 0.3
+  exclude_concentration_threshold: 0.25
+
+visualization:
+  tsne_max_iter: 500
+  encoding_batch_size: 64

@@ -1,0 +1,27 @@
+[project]
+name = "keysi"
+version = "0.1.0"
+description = "KeySI: interactive keyword-based semantic inspection and fine-tuning prototype."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "dash",
+  "keybert",
+  "matplotlib",
+  "nltk",
+  "numpy",
+  "pandas",
+  "plotly",
+  "rank-bm25",
+  "scikit-learn",
+  "scipy",
+  "sentence-transformers",
+  "torch",
+  "transformers",
+]
+
+[project.scripts]
+keysi = "keysi_app.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
