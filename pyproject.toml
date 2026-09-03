@@ -1,7 +1,7 @@
 [project]
 name = "keysi"
 version = "0.1.0"
-description = "KeySI: interactive keyword-based semantic inspection and fine-tuning prototype."
+description = "KeySI: interactive keyword-based semantic inspection and fine-tuning system."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

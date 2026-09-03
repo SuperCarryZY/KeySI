@@ -1,4 +1,4 @@
-"""KeySI research prototype package."""
+"""KeySI package."""
 
 __all__ = ["__version__"]
 
