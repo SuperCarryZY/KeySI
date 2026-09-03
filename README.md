@@ -18,6 +18,8 @@ This repository is organized as a publication-ready code package: the original p
 └── tests/                        # Place focused regression tests here
 ```
 
+Legacy root-level prototype files from the original repository are retained for traceability. New work should prefer the package entry point under `src/keysi_app/`.
+
 ## Data
 
 Place the input file at:
@@ -59,6 +61,15 @@ $env:KEYSI_DEBUG="1"
 $env:KEYSI_RANDOM_SEED="42"
 $env:KEYSI_RESET_USER_DATA_ON_START="0"
 ```
+
+## Main Workflow
+
+1. Choose the number of concept groups.
+2. Click **Generate Groups**.
+3. Select a group, then click keywords in **Keywords 2D Visualization** to assign them.
+4. Use **Exclude** for irrelevant or noisy keywords.
+5. Click **Train Model** and inspect the before/after projections in Training View.
+6. Use Refinement Mode to move documents between groups or exclude documents, then rerun refinement training.
 
 ## Publication Notes
 
